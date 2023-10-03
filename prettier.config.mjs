@@ -4,6 +4,15 @@ const config = {
     "prettier-plugin-tailwindcss",
     "@trivago/prettier-plugin-sort-imports",
   ],
+  semi: true,
+  trailingComma: "all",
+  singleQuote: false,
+  printWidth: 80,
+  tabWidth: 2,
+
+  importOrder: ["^(~/)", "^[./]"],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
 };
 
 export default config;
