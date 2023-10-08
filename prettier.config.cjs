@@ -1,8 +1,8 @@
 /** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').options} */
-const config = {
+module.exports = {
   plugins: [
-    "prettier-plugin-tailwindcss",
-    "@trivago/prettier-plugin-sort-imports",
+    require.resolve("prettier-plugin-tailwindcss"),
+    require("@trivago/prettier-plugin-sort-imports"),
   ],
   semi: true,
   trailingComma: "all",
@@ -14,5 +14,3 @@ const config = {
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
 };
-
-export default config;
