@@ -1,8 +1,8 @@
-/** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').options} */
+/** @type {import('prettier-plugin-tailwindcss').options & import('@trivago/prettier-plugin-sort-imports').PrettierConfig} */
 module.exports = {
   plugins: [
-    require.resolve("prettier-plugin-tailwindcss"),
-    require("@trivago/prettier-plugin-sort-imports"),
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss",
   ],
   semi: true,
   trailingComma: "all",
