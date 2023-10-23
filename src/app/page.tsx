@@ -1,5 +1,8 @@
-import { LoginButton, SignOutButton } from "~/components/LoginButton";
-import Profile from "~/components/Profile";
+import Link from "next/link";
+
+import { SignOutButton } from "~/components/authButtons";
+import Profile from "~/components/profile";
+import { Button } from "~/components/ui/button";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function Home() {
@@ -7,7 +10,9 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-slate-500 text-white">
-      <LoginButton />
+      <Link href="/api/auth/signin">
+        <Button>Sign in</Button>
+      </Link>
 
       <SignOutButton />
 
