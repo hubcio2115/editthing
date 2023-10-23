@@ -6,6 +6,7 @@ import {
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import { mysqlTable } from "~/server/db/schema";
 
@@ -49,8 +50,8 @@ export const authOptions: NextAuthOptions = {
   providers: [
     // Sign in with Google Oauth provider
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
 };
