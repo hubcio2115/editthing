@@ -1,0 +1,19 @@
+# For dev MySQL database image
+
+# Variable for .env config:
+# DATABASE_URL='mysql://root:my-secret-pw@db:3306/mydb'
+
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: my-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    # Change volume path to your liking
+    # Default is set to create in {home}/mysql-data directory
+    volumes:
+      - ~/mysql-data:/var/lib/mysql
