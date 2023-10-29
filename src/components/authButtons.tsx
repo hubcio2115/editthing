@@ -1,9 +1,8 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { type PropsWithChildren } from "react";
 
-import { Button } from "./ui/button";
-
-export function SignOutButton() {
-  return <Button onClick={() => void signOut()}>Sign out</Button>;
+export function SignOutButton({ children }: PropsWithChildren) {
+  return <span onClick={() => signOut()}>{children}</span>;
 }
