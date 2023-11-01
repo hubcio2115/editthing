@@ -39,19 +39,15 @@ export default function CardStandard({ className, ...props }: CardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="mb-10 grid gap-4">
-        {featureList.map((feature, index) => (
+        {featureList.map(({ title, description }) => (
           <div
-            key={index}
+            key={title}
             className="flex h-20 items-center space-x-4 rounded-md border p-4"
           >
             <Check />
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {feature.title}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {feature.description}
-              </p>
+              <p className="text-sm font-medium leading-none">{title}</p>
+              <p className="text-sm text-muted-foreground">{description}</p>
             </div>
           </div>
         ))}
