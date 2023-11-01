@@ -40,8 +40,7 @@ jobs:
           ~/.bun/bin/bun install @microsoft/eslint-formatter-sarif
 
       - name: Run ESLint
-        run: |
-          ~/.bun/bin/bun lint .
+        run: SKIP_ENV_VALIDATION=true ~/.bun/bin/bun lint .
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-results.sarif
         continue-on-error: true
