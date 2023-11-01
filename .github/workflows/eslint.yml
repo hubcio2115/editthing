@@ -33,20 +33,15 @@ jobs:
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          source /home/runner/.bashrc
 
-      - name: Check if bun is installed
+      - name: Install dependencies and @microsoft/eslint-formatter-serif
         run: |
-          ~/.bun/bin/bun --help
-          bun --help
-
-      - name: Install ESLint
-        run: |
-          bun install eslint
-          bun install @microsoft/eslint-formatter-sarif
+          ~/.bun/bin/bun i
+          ~/.bun/bin/bun install @microsoft/eslint-formatter-sarif
 
       - name: Run ESLint
-        run: bun lint .
+        run: |
+          ~/.bun/bin/bun lint .
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-results.sarif
         continue-on-error: true
