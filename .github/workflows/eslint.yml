@@ -37,7 +37,7 @@ jobs:
 
       - name: Check if bun is installed
         run: |
-          ~/.bun/bin --help
+          ~/.bun/bin/bun --help
           bun --help
 
       - name: Install ESLint
