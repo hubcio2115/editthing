@@ -33,10 +33,12 @@ jobs:
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-
-      - name: Source Bun
-        run: |
           source /home/runner/.bashrc
+
+      - name: Check if bun is installed
+        run: |
+          ~/.bun/bin --help
+          bun --help
 
       - name: Install ESLint
         run: |
