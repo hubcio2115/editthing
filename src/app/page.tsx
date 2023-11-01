@@ -4,8 +4,8 @@ import { SignOutButton } from "~/components/authButtons";
 import Profile from "~/components/profile";
 import { Button } from "~/components/ui/button";
 import { getServerAuthSession } from "~/server/auth";
-import CardPremium from "~/components/premiumPricingCard";
-import CardStandard from "~/components/standardPricingCard";
+import PremiumPricingCard from "~/components/premiumPricingCard";
+import StandardPricingCard from "~/components/standardPricingCard";
 
 export default async function Home() {
   const session = await getServerAuthSession();
@@ -18,8 +18,8 @@ export default async function Home() {
       <SignOutButton />
       {session ? <Profile session={session} /> : null}
       <div className="flex gap-10">
-        <CardStandard></CardStandard>
-        <CardPremium></CardPremium>
+        <StandardPricingCard />
+        <PremiumPricingCard />
       </div>
     </main>
   );
