@@ -1,3 +1,4 @@
+import { type ComponentProps } from "react";
 import { Check } from "lucide-react";
 import { cn } from "~/lib/utils";
 
@@ -26,7 +27,7 @@ const featureList = [
   },
 ];
 
-type CardProps = React.ComponentProps<typeof Card>;
+type CardProps = ComponentProps<typeof Card>;
 
 export default function CardStandard({ className, ...props }: CardProps) {
   return (
