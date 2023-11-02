@@ -25,7 +25,7 @@ const featureList = [
     title: "Scheduled Video Uploads",
     description: "Automatically post videos to YouTube.",
   },
-];
+] as const;
 
 type CardProps = ComponentProps<typeof Card>;
 
