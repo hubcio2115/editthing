@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
 import PremiumPricingCard from "~/components/pricing/premiumPricingCard";
 import StandardPricingCard from "~/components/pricing/standardPricingCard";
@@ -52,8 +51,6 @@ export default function Home() {
 
         <PremiumPricingCard />
       </div>
-
-      <Footer />
     </div>
   );
 }
