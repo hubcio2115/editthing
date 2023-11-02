@@ -49,8 +49,10 @@ export default function Home() {
 
       <div className="min-w-screen mt-10 flex justify-center gap-10 bg-[url('/wiggle.svg')] py-24 ">
         <StandardPricingCard />
+
         <PremiumPricingCard />
       </div>
+
       <Footer />
     </div>
   );
