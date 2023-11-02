@@ -39,7 +39,7 @@ export default async function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Link href="/">
+            <Link href="/dashboard/overview">
               <Button variant="outline" className="rounded-full">
                 Go to Dashboard
               </Button>
