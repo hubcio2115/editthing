@@ -4,10 +4,10 @@ import StandardPricingCard from "~/components/standardPricingCard";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col gap-4">
       <Navbar />
 
-      <div className="flex gap-10">
+      <div className="mx-auto flex gap-10">
         <StandardPricingCard />
         <PremiumPricingCard />
       </div>
