@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
 import PremiumPricingCard from "~/components/premiumPricingCard";
 import StandardPricingCard from "~/components/standardPricingCard";
@@ -48,9 +49,9 @@ export default function Home() {
 
       <div className="min-w-screen mt-10 flex justify-center gap-10 bg-[url('/wiggle.svg')] py-24 ">
         <StandardPricingCard />
-
         <PremiumPricingCard />
       </div>
+      <Footer />
     </div>
   );
 }
