@@ -1,6 +1,6 @@
 import { type PropsWithChildren } from "react";
 
-import Dashnav from "~/components/dashnav";
+import Dashnav from "~/components/dashboard/dashnav";
 
 export default function Dashboard({ children }: PropsWithChildren) {
   return (
