@@ -1,11 +1,12 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { Home, ListVideo, LogOut, Settings, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
+import useWindowDimensions from "~/hooks/useWindowDimensions";
 import { cn } from "~/lib/utils";
 
 import { SignOutButton } from "../authButtons";
@@ -22,6 +23,7 @@ import { Separator } from "../ui/separator";
 export default function Dashnav() {
   const pathname = usePathname();
   const session = useSession();
+  const { sm: isDisplaySmall } = useWindowDimensions();
 
   if (!session) {
     redirect("/");
@@ -31,7 +33,9 @@ export default function Dashnav() {
     <div>
       <nav className="p- flex items-center justify-between bg-slate-100 p-2">
         <div className="flex pl-1">
-          <h1 className="pr-3 text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="pr-3 text-3xl font-bold text-gray-900">
+            {isDisplaySmall ? "D" : "Dashboard"}
+          </h1>
           <Button
             className={cn(
               "mx-2",
@@ -41,7 +45,9 @@ export default function Dashnav() {
             )}
             variant="ghost"
           >
-            <Link href={"/dashboard/overview"}>overview</Link>
+            <Link href={"/dashboard/overview"}>
+              {isDisplaySmall ? <ListVideo /> : "overview"}
+            </Link>
           </Button>
           {/* for some reason separator does not display */}
           <Separator orientation="vertical" />
@@ -54,7 +60,9 @@ export default function Dashnav() {
             )}
             variant="ghost"
           >
-            <Link href={"/dashboard/settings"}>settings</Link>
+            <Link href={"/dashboard/settings"}>
+              {isDisplaySmall ? <Settings /> : "settings"}
+            </Link>
           </Button>
         </div>
         <div>
@@ -75,13 +83,15 @@ export default function Dashnav() {
 
               <Link href="/">
                 <Button variant="outline" className="rounded-full">
-                  Back to Homepage
+                  {isDisplaySmall ? <Home /> : "Back to homepage"}
                 </Button>
               </Link>
             </div>
           ) : (
             <Link href="/api/auth/signin">
-              <Button variant="ghost">Sign in</Button>
+              <Button variant="ghost">
+                {isDisplaySmall ? <User /> : "Sign in"}
+              </Button>
             </Link>
           )}
         </div>
