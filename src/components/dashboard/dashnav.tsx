@@ -18,7 +18,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
+
+const links = [
+  {
+    path: "/dashboard/overview",
+    label: "overview",
+  },
+  {
+    path: "/dashboard/settings",
+    label: "settings",
+  },
+] as const;
 
 export default function Dashnav() {
   const pathname = usePathname();
@@ -31,39 +41,12 @@ export default function Dashnav() {
 
   return (
     <div>
-      <nav className="p- flex items-center justify-between bg-slate-100 p-2">
+      <div className="p- flex items-center justify-between bg-slate-100 p-2">
         <div className="flex pl-1">
-          <h1 className="pr-3 text-3xl font-bold text-gray-900">
-            {isDisplaySmall ? "D" : "Dashboard"}
-          </h1>
-          <Button
-            className={cn(
-              "mx-2",
-              pathname === "/dashboard/overview"
-                ? "border-x-2 border-slate-200 font-bold"
-                : "px-4",
-            )}
-            variant="ghost"
-          >
-            <Link href={"/dashboard/overview"}>
-              {isDisplaySmall ? <ListVideo /> : "overview"}
-            </Link>
-          </Button>
-          {/* for some reason separator does not display */}
-          <Separator orientation="vertical" />
-          <Button
-            className={cn(
-              "mx-2",
-              pathname === "/dashboard/settings"
-                ? "border-x-2 border-slate-200 font-bold"
-                : "px-4",
-            )}
-            variant="ghost"
-          >
-            <Link href={"/dashboard/settings"}>
-              {isDisplaySmall ? <Settings /> : "settings"}
-            </Link>
-          </Button>
+          <h2 className="text-3xl font-bold text-gray-900">
+            <span className="text-fuchsia-900">Edit</span>
+            thing
+          </h2>
         </div>
         <div>
           {session ? (
@@ -95,6 +78,21 @@ export default function Dashnav() {
             </Link>
           )}
         </div>
+      </div>
+      <nav className="flex justify-center bg-slate-100 ">
+        {links.map((link) => (
+          <div
+            key={link.path}
+            className={cn(
+              "border-slate-300 px-2 pb-2 text-xl capitalize last:border-r-0 hover:border-b",
+              pathname === link.path
+                ? "border-b border-b-fuchsia-900 text-fuchsia-900"
+                : "",
+            )}
+          >
+            <Link href={link.path}>{link.label}</Link>
+          </div>
+        ))}
       </nav>
     </div>
   );
