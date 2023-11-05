@@ -8,7 +8,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "Editthing",
-  description: "Welcome to Editthing - your go-to platform for enhanced collaboration between editors and YouTube creators.",
+  description:
+    "Welcome to Editthing - your go-to platform for enhanced collaboration between editors and YouTube creators.",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
