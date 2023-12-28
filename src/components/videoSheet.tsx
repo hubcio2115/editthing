@@ -33,6 +33,8 @@ export default function VideoSheet() {
     });
     await fetch(upload.url, { method: "PUT", body: buffer });
 
+    // create "video" entry in db with upload id and foreign key to a project
+
     return { success: true };
   }
 
