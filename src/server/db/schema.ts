@@ -49,6 +49,7 @@ export const users = mysqlTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  videoEntries: many(videoEntries),
 }));
 
 export const accounts = mysqlTable(
@@ -107,3 +108,21 @@ export const verificationTokens = mysqlTable(
     compoundKey: primaryKey(vt.identifier, vt.token),
   }),
 );
+
+export const videoEntries = mysqlTable("videoEntry", {
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  uploadId: varchar("uploadId", { length: 256 }).notNull(),
+  assetId: varchar("assetId", { length: 256 }),
+  downloadUrl: varchar("url", { length: 256 }),
+  // projectId: bigint("projectId", { mode: "number" }).references(() => project.id),
+  authorId: varchar("id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+});
+
+export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
+  author: one(users, {
+    fields: [videoEntries.authorId],
+    references: [users.id],
+  }),
+}));
