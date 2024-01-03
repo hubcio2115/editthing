@@ -17,8 +17,8 @@ export default function VideoSheet() {
     "use server";
 
     const file = data.get("file") as File | null;
-    if (!file) {
-      console.log("Error");
+
+    if (!file || file.type !== "video/mp4" || file.size <= 0) {
       return;
     }
 
@@ -33,7 +33,7 @@ export default function VideoSheet() {
     });
     await fetch(upload.url, { method: "PUT", body: buffer });
 
-    // create "video" entry in db with upload id and foreign key to a project
+    // create "video" entry in db with upload id and foreign key to the project
 
     return { success: true };
   }
