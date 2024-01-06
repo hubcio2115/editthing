@@ -115,7 +115,7 @@ export const videoEntries = mysqlTable("videoEntry", {
   assetId: varchar("assetId", { length: 256 }),
   downloadUrl: varchar("url", { length: 256 }),
   // projectId: bigint("projectId", { mode: "number" }).references(() => project.id),
-  authorId: varchar("id", { length: 255 })
+  authorId: varchar("authorId", { length: 255 })
     .notNull()
     .references(() => users.id),
 });
