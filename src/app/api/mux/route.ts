@@ -29,17 +29,19 @@ export async function POST(req: NextRequest) {
       return new Response("Missing signature", { status: 400 });
     }
 
-    Mux.Webhooks.verifyHeader(
-      JSON.stringify(await req.json()),
-      signature,
-      env.WEBHOOK_SECRET,
-    );
-
-    const webhookEvent = muxWebhookAssetBodySchema.safeParse(await req.json());
+    const webhookEvent = muxWebhookAssetBodySchema
+      .passthrough()
+      .safeParse(await req.json());
 
     if (!webhookEvent.success) {
       return new Response("Event received", { status: 200 });
     }
+
+    Mux.Webhooks.verifyHeader(
+      JSON.stringify(webhookEvent.data),
+      signature,
+      env.WEBHOOK_SECRET,
+    );
 
     if (
       webhookEvent.data.type === "video.asset.ready" &&
