@@ -32,10 +32,17 @@ export async function POST(req: NextRequest) {
       env.WEBHOOK_SECRET,
     );
 
-    if (body.type === "video.asset.ready" && body.data.upload_id) {
+    if (
+      body.type === "video.asset.ready" &&
+      body.data.upload_id &&
+      body.data.playback_ids
+    ) {
       await db
         .update(videoEntries)
-        .set({ assetId: body.object.id })
+        .set({
+          assetId: body.object.id,
+          playbackId: body.data.playback_ids[0]?.id,
+        })
         .where(eq(videoEntries.uploadId, body.data.upload_id));
     } else if (body.type === "video.asset.master.ready") {
       await db
