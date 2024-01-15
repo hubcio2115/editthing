@@ -1,20 +1,25 @@
-import Mux, { type Asset } from "@mux/mux-node";
+import Mux from "@mux/mux-node";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import { videoEntries } from "~/server/db/schema";
 
-type MuxWebhookAssetBody = {
-  type: string;
-  object: {
-    type: "asset";
-    id: string;
-  };
-  data: Asset;
-};
+const muxWebhookAssetBodySchema = z.object({
+  type: z.string(),
+  object: z.object({
+    type: z.union([z.literal("asset"), z.literal("upload")]),
+    id: z.string(),
+  }),
+  data: z.object({
+    upload_id: z.string().optional(),
+    playback_ids: z.array(z.object({ id: z.string() })).optional(),
+    master: z.object({ url: z.string() }).optional(),
+  }),
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,31 +29,35 @@ export async function POST(req: NextRequest) {
       return new Response("Missing signature", { status: 400 });
     }
 
-    const body = (await req.json()) as MuxWebhookAssetBody;
-
     Mux.Webhooks.verifyHeader(
-      JSON.stringify(body),
+      JSON.stringify(await req.json()),
       signature,
       env.WEBHOOK_SECRET,
     );
 
+    const webhookEvent = muxWebhookAssetBodySchema.safeParse(await req.json());
+
+    if (!webhookEvent.success) {
+      return new Response("Event received", { status: 200 });
+    }
+
     if (
-      body.type === "video.asset.ready" &&
-      body.data.upload_id &&
-      body.data.playback_ids
+      webhookEvent.data.type === "video.asset.ready" &&
+      webhookEvent.data.data.upload_id &&
+      webhookEvent.data.data.playback_ids
     ) {
       await db
         .update(videoEntries)
         .set({
-          assetId: body.object.id,
-          playbackId: body.data.playback_ids[0]?.id,
+          assetId: webhookEvent.data.object.id,
+          playbackId: webhookEvent.data.data.playback_ids[0]?.id,
         })
-        .where(eq(videoEntries.uploadId, body.data.upload_id));
-    } else if (body.type === "video.asset.master.ready") {
+        .where(eq(videoEntries.uploadId, webhookEvent.data.data.upload_id));
+    } else if (webhookEvent.data.type === "video.asset.master.ready") {
       await db
         .update(videoEntries)
-        .set({ downloadUrl: body.data.master?.url })
-        .where(eq(videoEntries.assetId, body.object.id));
+        .set({ downloadUrl: webhookEvent.data.data.master?.url })
+        .where(eq(videoEntries.assetId, webhookEvent.data.object.id));
     }
 
     return new Response("Event received", { status: 200 });
