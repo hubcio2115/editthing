@@ -119,6 +119,7 @@ export const videoEntries = mysqlTable("videoEntry", {
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
   assetId: varchar("assetId", { length: 255 }),
   downloadUrl: varchar("url", { length: 256 }),
+  playbackId: varchar("playbackId", { length: 256 }),
 });
 
 export const organizations = mysqlTable("organization", {
@@ -137,6 +138,7 @@ export const organizationsRelations = relations(
       references: [users.id],
     }),
     usersToOrganizations: many(usersToOrganizations),
+    projects: many(projects),
   }),
 );
 
@@ -184,8 +186,15 @@ export const projects = mysqlTable("project", {
   videoEntryId: bigint("videoEntryId", { mode: "number" }).references(
     () => videoEntries.id,
   ),
+  organizationId: bigint("organizationId", { mode: "number" })
+    .notNull()
+    .references(() => organizations.id),
 });
 
 export const projectsRelations = relations(projects, ({ one }) => ({
   videoEntry: one(videoEntries),
+  organization: one(organizations, {
+    fields: [projects.organizationId],
+    references: [organizations.id],
+  }),
 }));
