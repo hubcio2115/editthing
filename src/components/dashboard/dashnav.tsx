@@ -1,12 +1,11 @@
 "use client";
 
-import { Home, LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
-import useWindowDimensions from "~/hooks/useWindowDimensions";
 import { cn } from "~/lib/utils";
 
 import { SignOutButton } from "../authButtons";
@@ -33,7 +32,6 @@ const links = [
 export default function Dashnav() {
   const pathname = usePathname();
   const session = useSession();
-  const { sm: isDisplaySmall } = useWindowDimensions();
 
   if (session.status === "unauthenticated") {
     redirect("/");
