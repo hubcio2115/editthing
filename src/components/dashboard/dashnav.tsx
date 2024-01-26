@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, ListVideo, LogOut, Settings, User } from "lucide-react";
+import { Home, LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
