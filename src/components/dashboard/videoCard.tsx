@@ -34,7 +34,7 @@ export default function VideoCard({ video }: VideoCardProps) {
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <Image
+          <img
             src={video.thumbnail}
             alt="Video Thumbnail"
             className="h-40 w-full object-cover"

@@ -66,15 +66,13 @@ export default function Dashnav() {
 
               <Link href="/">
                 <Button variant="outline" className="rounded-full">
-                  {isDisplaySmall ? <Home /> : "Back to homepage"}
+                  Back to homepage
                 </Button>
               </Link>
             </div>
           ) : (
             <Link href="/api/auth/signin">
-              <Button variant="ghost">
-                {isDisplaySmall ? <User /> : "Sign in"}
-              </Button>
+              <Button variant="ghost">Sign in</Button>
             </Link>
           )}
         </div>
