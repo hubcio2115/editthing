@@ -1,6 +1,5 @@
-import { type ComponentProps } from "react";
 import { Check } from "lucide-react";
-import { cn } from "~/lib/utils";
+import { type ComponentProps } from "react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -11,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { cn } from "~/lib/utils";
 
 const featureList = [
   {
