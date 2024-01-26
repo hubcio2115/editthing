@@ -35,7 +35,7 @@ export default function Dashnav() {
   const session = useSession();
   const { sm: isDisplaySmall } = useWindowDimensions();
 
-  if (!session) {
+  if (session.status === "unauthenticated") {
     redirect("/");
   }
 
@@ -49,7 +49,7 @@ export default function Dashnav() {
           </h2>
         </div>
         <div>
-          {session ? (
+          {session.status === "authenticated" ? (
             <div className="flex gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none">
