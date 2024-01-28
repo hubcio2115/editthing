@@ -124,7 +124,7 @@ export const videoEntries = mysqlTable("videoEntry", {
 
 export const organizations = mysqlTable("organization", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  name: varchar("name", { length: 128 }).notNull(),
+  name: varchar("name", { length: 128 }).notNull().unique(),
   owner: varchar("ownerId", { length: 255 })
     .notNull()
     .references(() => users.id),
