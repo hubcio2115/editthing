@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import type { Session } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -20,14 +21,20 @@ function getInitials(name: string) {
 
 export default function Profile({ session }: ProfileProps) {
   return (
-    <Avatar>
-      <AvatarImage
-        src={session?.user.image ?? undefined}
-        alt="profile picture"
-      />
-      <AvatarFallback>
-        {session?.user.name ? getInitials(session.user.name) : ""}
-      </AvatarFallback>
-    </Avatar>
+    <div className="relative">
+      <Avatar>
+        <AvatarImage
+          src={session?.user.image ?? undefined}
+          alt="profile picture"
+        />
+        <AvatarFallback>
+          {session?.user.name ? getInitials(session.user.name) : ""}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="absolute bottom-0 right-0 rounded-full bg-secondary">
+        <ChevronDown size={12} />
+      </div>
+    </div>
   );
 }
