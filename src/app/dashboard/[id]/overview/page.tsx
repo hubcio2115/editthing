@@ -10,11 +10,15 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import mockdata from "~/lib/mockdata";
+import { api } from "~/trpc/react";
 
 export default function Dashboard() {
+  const { data: organizations } = api.organization.getOwnOrganizations.useQuery();
+
   const [listDisplay, setListDisplay] = useState(false);
+
   return (
-    <div className="mx-auto flex max-w-[920px] flex-col items-center md:px-2">
+    <div className="mx-auto flex flex-col items-center md:px-2">
       <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
         <div className="flex">
           <div className="flex flex-1">
@@ -23,6 +27,7 @@ export default function Dashboard() {
             </div>
             <Input className="mr-2 rounded-l-none border-l-0" />
           </div>
+
           <Toggle
             variant="outline"
             onClick={() => {
@@ -32,9 +37,11 @@ export default function Dashboard() {
           >
             <StretchHorizontal />
           </Toggle>
+
           <Button variant="outline">Add video</Button>
         </div>
       </div>
+
       {listDisplay ? (
         <div className="my-5 flex flex-col justify-center gap-4">
           {mockdata.map((video, index) => (
