@@ -5,7 +5,9 @@ import StandardPricingCard from "~/components/pricing/standardPricingCard";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col gap-4">
-      <Navbar />
+      <div className="flex flex-col items-center justify-between border-b border-slate-200 bg-slate-100 p-2">
+        <Navbar />
+      </div>
 
       <div className="mx-auto flex gap-10">
         <StandardPricingCard />
