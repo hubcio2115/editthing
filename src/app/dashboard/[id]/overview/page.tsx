@@ -13,7 +13,8 @@ import mockdata from "~/lib/mockdata";
 import { api } from "~/trpc/react";
 
 export default function Dashboard() {
-  const { data: organizations } = api.organization.getOwnOrganizations.useQuery();
+  const { data: organizations } =
+    api.organization.getOwnOrganizations.useQuery();
 
   const [listDisplay, setListDisplay] = useState(false);
 
