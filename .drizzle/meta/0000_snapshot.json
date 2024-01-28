@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "f4380c30-8a02-4f89-819f-2f6030f7c761",
+  "id": "0e5101b9-7fb4-4fba-886e-0f7000b54c7d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "t3-app_account": {
-      "name": "t3-app_account",
+    "editthing-app_account": {
+      "name": "editthing-app_account",
       "columns": {
         "userId": {
           "name": "userId",
@@ -96,8 +96,8 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "t3-app_account_provider_providerAccountId": {
-          "name": "t3-app_account_provider_providerAccountId",
+        "editthing-app_account_provider_providerAccountId": {
+          "name": "editthing-app_account_provider_providerAccountId",
           "columns": [
             "provider",
             "providerAccountId"
@@ -106,8 +106,59 @@
       },
       "uniqueConstraints": {}
     },
-    "t3-app_post": {
-      "name": "t3-app_post",
+    "editthing-app_organization": {
+      "name": "editthing-app_organization",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "editthing-app_organization_ownerId_editthing-app_user_id_fk": {
+          "name": "editthing-app_organization_ownerId_editthing-app_user_id_fk",
+          "tableFrom": "editthing-app_organization",
+          "tableTo": "editthing-app_user",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "editthing-app_organization_id": {
+          "name": "editthing-app_organization_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "editthing-app_post": {
+      "name": "editthing-app_post",
       "columns": {
         "id": {
           "name": "id",
@@ -165,8 +216,8 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "t3-app_post_id": {
-          "name": "t3-app_post_id",
+        "editthing-app_post_id": {
+          "name": "editthing-app_post_id",
           "columns": [
             "id"
           ]
@@ -174,8 +225,156 @@
       },
       "uniqueConstraints": {}
     },
-    "t3-app_session": {
-      "name": "t3-app_session",
+    "editthing-app_project": {
+      "name": "editthing-app_project",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "projectName": {
+          "name": "projectName",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "projectDescription": {
+          "name": "projectDescription",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "categoryId": {
+          "name": "categoryId",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "defaultLanguage": {
+          "name": "defaultLanguage",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "embeddable": {
+          "name": "embeddable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "license": {
+          "name": "license",
+          "type": "enum('youtube','creativeCommon')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "privacyStatus": {
+          "name": "privacyStatus",
+          "type": "enum('public','unlisted','private')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "publicStatsViewable": {
+          "name": "publicStatsViewable",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "publishAt": {
+          "name": "publishAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "selfDeclaredMadeForKids": {
+          "name": "selfDeclaredMadeForKids",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "videoEntryId": {
+          "name": "videoEntryId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "editthing-app_project_videoEntryId_editthing-app_videoEntry_id_fk": {
+          "name": "editthing-app_project_videoEntryId_editthing-app_videoEntry_id_fk",
+          "tableFrom": "editthing-app_project",
+          "tableTo": "editthing-app_videoEntry",
+          "columnsFrom": [
+            "videoEntryId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "editthing-app_project_organizationId_editthing-app_organization_id_fk": {
+          "name": "editthing-app_project_organizationId_editthing-app_organization_id_fk",
+          "tableFrom": "editthing-app_project",
+          "tableTo": "editthing-app_organization",
+          "columnsFrom": [
+            "organizationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "editthing-app_project_id": {
+          "name": "editthing-app_project_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "editthing-app_session": {
+      "name": "editthing-app_session",
       "columns": {
         "sessionToken": {
           "name": "sessionToken",
@@ -210,8 +409,8 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "t3-app_session_sessionToken": {
-          "name": "t3-app_session_sessionToken",
+        "editthing-app_session_sessionToken": {
+          "name": "editthing-app_session_sessionToken",
           "columns": [
             "sessionToken"
           ]
@@ -219,8 +418,8 @@
       },
       "uniqueConstraints": {}
     },
-    "t3-app_user": {
-      "name": "t3-app_user",
+    "editthing-app_user": {
+      "name": "editthing-app_user",
       "columns": {
         "id": {
           "name": "id",
@@ -262,8 +461,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "t3-app_user_id": {
-          "name": "t3-app_user_id",
+        "editthing-app_user_id": {
+          "name": "editthing-app_user_id",
           "columns": [
             "id"
           ]
@@ -271,8 +470,66 @@
       },
       "uniqueConstraints": {}
     },
-    "t3-app_verificationToken": {
-      "name": "t3-app_verificationToken",
+    "editthing-app_usersToOrganizations": {
+      "name": "editthing-app_usersToOrganizations",
+      "columns": {
+        "memberId": {
+          "name": "memberId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "editthing-app_usersToOrganizations_memberId_editthing-app_user_id_fk": {
+          "name": "editthing-app_usersToOrganizations_memberId_editthing-app_user_id_fk",
+          "tableFrom": "editthing-app_usersToOrganizations",
+          "tableTo": "editthing-app_user",
+          "columnsFrom": [
+            "memberId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "editthing-app_usersToOrganizations_organizationId_editthing-app_organization_id_fk": {
+          "name": "editthing-app_usersToOrganizations_organizationId_editthing-app_organization_id_fk",
+          "tableFrom": "editthing-app_usersToOrganizations",
+          "tableTo": "editthing-app_organization",
+          "columnsFrom": [
+            "organizationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "editthing-app_usersToOrganizations_memberId_organizationId": {
+          "name": "editthing-app_usersToOrganizations_memberId_organizationId",
+          "columns": [
+            "memberId",
+            "organizationId"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "editthing-app_verificationToken": {
+      "name": "editthing-app_verificationToken",
       "columns": {
         "identifier": {
           "name": "identifier",
@@ -299,11 +556,62 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "t3-app_verificationToken_identifier_token": {
-          "name": "t3-app_verificationToken_identifier_token",
+        "editthing-app_verificationToken_identifier_token": {
+          "name": "editthing-app_verificationToken_identifier_token",
           "columns": [
             "identifier",
             "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "editthing-app_videoEntry": {
+      "name": "editthing-app_videoEntry",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "uploadId": {
+          "name": "uploadId",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "assetId": {
+          "name": "assetId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "playbackId": {
+          "name": "playbackId",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "editthing-app_videoEntry_id": {
+          "name": "editthing-app_videoEntry_id",
+          "columns": [
+            "id"
           ]
         }
       },
