@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   Card,
   CardContent,
@@ -32,10 +34,12 @@ export default function VideoCard({ video }: VideoCardProps) {
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <img
+          <Image
             src={video.thumbnail}
             alt="Video Thumbnail"
-            className="h-40 w-full object-cover"
+            width={320}
+            height={320}
+            className="w-full object-cover"
           />
           <div className="absolute bottom-0 right-0 bg-black p-2 text-white">
             {video.duration}

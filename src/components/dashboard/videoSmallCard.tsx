@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   Card,
   CardContent,
@@ -25,9 +27,11 @@ export default function VideoSmallCard({ video }: VideoCardProps) {
       <div className="m-0 flex flex-col sm:flex-row">
         <CardContent>
           <div className="relative mt-5 hidden h-16 w-28 sm:flex">
-            <img
+            <Image
               src={video.thumbnail}
               alt="Video Thumbnail"
+              height={160}
+              width={160}
               className="object-cover"
             />
             <div className="absolute bottom-0 left-0 bg-black text-white ">
