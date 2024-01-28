@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LogOut } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
@@ -49,6 +49,8 @@ import { Label } from "./ui/label";
 type OrganizationForm = Omit<InsertOrganization, "owner">;
 
 export default function Navbar() {
+  const organizationFromPathname = usePathname().split("/").at(2);
+
   const router = useRouter();
   const session = useSession();
   const { data: organizations } =
@@ -76,6 +78,11 @@ export default function Navbar() {
     console.error(error);
   };
 
+  const shouldShowOrganizationsSelect = useMemo(
+    () => session.status === "authenticated" && organizations?.length !== 0,
+    [session, organizations],
+  );
+
   return (
     <>
       <div className="flex w-full items-center justify-between">
@@ -85,7 +92,7 @@ export default function Navbar() {
             thing
           </h1>
 
-          {session.status === "authenticated" && (
+          {shouldShowOrganizationsSelect && (
             <Select>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a fruit" />
