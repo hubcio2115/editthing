@@ -1,22 +1,11 @@
 "use client";
 
-import { LogOut } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 import { cn } from "~/lib/utils";
-
-import { SignOutButton } from "../authButtons";
-import Profile from "../profile";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 
 const links = [
   {
@@ -38,43 +27,7 @@ export default function Dashnav() {
   }
 
   return (
-    <div>
-      <div className="p- flex items-center justify-between bg-slate-100 p-2">
-        <div className="flex pl-1">
-          <h2 className="text-3xl font-bold text-gray-900">
-            <span className="text-fuchsia-900">Edit</span>
-            thing
-          </h2>
-        </div>
-        <div>
-          {session.status === "authenticated" ? (
-            <div className="flex gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
-                  <Profile session={session.data} />
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" color="red" />
-                    <SignOutButton>Log out</SignOutButton>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Link href="/">
-                <Button variant="outline" className="rounded-full">
-                  Back to homepage
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <Link href="/api/auth/signin">
-              <Button variant="ghost">Sign in</Button>
-            </Link>
-          )}
-        </div>
-      </div>
+    <>
       <nav className="flex justify-center bg-slate-100 ">
         {links.map((link) => (
           <div
@@ -90,6 +43,6 @@ export default function Dashnav() {
           </div>
         ))}
       </nav>
-    </div>
+    </>
   );
 }
