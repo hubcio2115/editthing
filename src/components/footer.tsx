@@ -2,7 +2,7 @@ import { Monitor, Moon, Sun } from "lucide-react";
 
 import { Toggle } from "./ui/toggle";
 
-export default async function Footer() {
+export default function Footer() {
   return (
     <nav className="flex items-center justify-between border-t border-slate-300 bg-slate-200 p-2">
       <h1 className="text-l font-bold text-gray-900">
