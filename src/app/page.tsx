@@ -2,8 +2,8 @@ import Image from "next/image";
 
 import Footer from "~/components/footer";
 import Navbar from "~/components/navbar";
-import PremiumPricingCard from "~/components/premiumPricingCard";
-import StandardPricingCard from "~/components/standardPricingCard";
+import PremiumPricingCard from "~/components/pricing/premiumPricingCard";
+import StandardPricingCard from "~/components/pricing/standardPricingCard";
 
 export default function Home() {
   return (
