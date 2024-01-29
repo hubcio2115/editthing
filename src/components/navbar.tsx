@@ -123,7 +123,10 @@ export default function Navbar() {
                       {org.name}
                     </SelectItem>
                   ))}
-                  <div className="text-slate m-auto text-sm font-light text-slate-400 hover:cursor-pointer" onClick={() => setIsModalOpen(true)}>
+                  <div
+                    className="text-slate m-auto text-sm font-light text-slate-400 hover:cursor-pointer"
+                    onClick={() => setIsModalOpen(true)}
+                  >
                     Add new..
                   </div>
                 </SelectGroup>
@@ -162,7 +165,13 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href="/dashboard/">
+              <Link
+                href={
+                  organizations.length > 0
+                    ? `/dashboard/${organizations[0]?.id}/overview`
+                    : "/dashboard/"
+                }
+              >
                 <Button variant="outline" className="rounded-full">
                   Go to Dashboard
                 </Button>
