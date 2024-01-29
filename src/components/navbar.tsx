@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import organizationsMock from "~/lib/mock/organizations";
 import {
   type InsertOrganization,
   insertOrganizationSchema,
@@ -53,8 +54,15 @@ export default function Navbar() {
 
   const router = useRouter();
   const session = useSession();
-  const { data: organizations } =
-    api.organization.getOwnOrganizations.useQuery();
+
+  // todo: replace mock data with actual query
+  // const { data: organizations } =
+  //   api.organization.getOwnOrganizations.useQuery();
+
+  const organizations = organizationsMock;
+  const currentOrganization = organizations.find(
+    (org) => org.id === organizationFromPathname,
+  );
 
   const { mutate: createOrganization } =
     api.organization.createOrganization.useMutation({
@@ -78,8 +86,12 @@ export default function Navbar() {
     console.error(error);
   };
 
+  const selectOrganization = (orgId: string) =>
+    router.push(`/dashboard/${orgId}/`);
+
   const shouldShowOrganizationsSelect = useMemo(
-    () => session.status === "authenticated" && organizations?.length !== 0,
+    () =>
+      session.status === "authenticated" /* && organizations?.length == 0 */,
     [session, organizations],
   );
 
@@ -93,15 +105,21 @@ export default function Navbar() {
           </h1>
 
           {shouldShowOrganizationsSelect && (
-            <Select>
+            <Select onValueChange={(newValue) => selectOrganization(newValue)}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a fruit" />
+                <SelectValue placeholder={currentOrganization?.name} />
               </SelectTrigger>
+
+              {/* <button onClick={() => console.log(123)}>click</button> */}
 
               <SelectContent>
                 <SelectGroup>
                   {organizations?.map((org) => (
-                    <SelectItem value={org.name} key={org.id}>
+                    <SelectItem
+                      value={org.id}
+                      key={org.id}
+                      className="hover:cursor-pointer"
+                    >
                       {org.name}
                     </SelectItem>
                   ))}
@@ -121,6 +139,7 @@ export default function Navbar() {
 
                 <DropdownMenuContent className="w-[200px]">
                   <DropdownMenuItem
+                    className="hover:cursor-pointer"
                     onClick={() => {
                       setIsModalOpen(true);
                     }}
@@ -131,13 +150,16 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" color="red" />
+                    <LogOut
+                      className="mr-2 h-4 w-4 hover:cursor-pointer"
+                      color="red"
+                    />
                     <SignOutButton>Log out</SignOutButton>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link href="/dashboard/overview">
+              <Link href="/dashboard/">
                 <Button variant="outline" className="rounded-full">
                   Go to Dashboard
                 </Button>
