@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogOut } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -86,8 +86,9 @@ export default function Navbar() {
     console.error(error);
   };
 
-  const selectOrganization = (orgId: string) =>
+  const selectOrganization = (orgId: string) => {
     router.push(`/dashboard/${orgId}/`);
+  };
 
   const shouldShowOrganizationsSelect = useMemo(
     () =>
@@ -105,7 +106,11 @@ export default function Navbar() {
           </h1>
 
           {shouldShowOrganizationsSelect && (
-            <Select onValueChange={(newValue) => selectOrganization(newValue)}>
+            <Select
+              onValueChange={(newValue) => {
+                selectOrganization(newValue);
+              }}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={currentOrganization?.name} />
               </SelectTrigger>
@@ -114,7 +119,7 @@ export default function Navbar() {
 
               <SelectContent>
                 <SelectGroup>
-                  {organizations?.map((org) => (
+                  {organizations.map((org) => (
                     <SelectItem
                       value={org.id}
                       key={org.id}
@@ -124,10 +129,12 @@ export default function Navbar() {
                     </SelectItem>
                   ))}
                   <div
-                    className="text-slate m-auto text-sm font-light text-slate-400 hover:cursor-pointer"
-                    onClick={() => setIsModalOpen(true)}
+                    className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                    }}
                   >
-                    Add new..
+                    Add new <Plus size={16} />
                   </div>
                 </SelectGroup>
               </SelectContent>
