@@ -9,7 +9,7 @@ import VideoSmallCard from "~/components/dashboard/videoSmallCard";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
-import mockdata from "~/lib/mockdata";
+import mockdata from "~/lib/mock/organizationOverview";
 import { api } from "~/trpc/react";
 
 export default function Dashboard() {
@@ -26,7 +26,7 @@ export default function Dashboard() {
             <div className="rounded-lg  rounded-r-none border border-r-0">
               <SearchIcon className="m-2 h-5 w-6" />
             </div>
-            <Input className="mr-2 rounded-l-none border-l-0" />
+            <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
           </div>
 
           <Toggle
