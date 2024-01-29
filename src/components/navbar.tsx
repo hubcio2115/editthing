@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import organizationsMock from "~/lib/mock/organizations";
 import {
   type InsertOrganization,
   insertOrganizationSchema,
@@ -55,19 +54,13 @@ export default function Navbar() {
   const router = useRouter();
   const session = useSession();
 
-  // todo: replace mock data with actual query
-  // const { data: organizations } =
-  //   api.organization.getOwnOrganizations.useQuery();
-
-  const organizations = organizationsMock;
-  const currentOrganization = organizations.find(
-    (org) => org.id === organizationFromPathname,
-  );
+  const { data: organizations } =
+    api.organization.getOwnOrganizations.useQuery();
 
   const { mutate: createOrganization } =
     api.organization.createOrganization.useMutation({
       onSuccess: (data) => {
-        if (!!data) router.push(`/dashboard/${data.id}`);
+        if (!!data) router.push(`/dashboard/${data.id}/overview`);
       },
     });
 
@@ -78,8 +71,8 @@ export default function Navbar() {
   });
 
   const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
-    // createOrganization({ name: data.name });
-    console.log(data);
+    createOrganization({ name: data.name });
+    setIsModalOpen(false);
   };
 
   const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
@@ -91,8 +84,7 @@ export default function Navbar() {
   };
 
   const shouldShowOrganizationsSelect = useMemo(
-    () =>
-      session.status === "authenticated" /* && organizations?.length == 0 */,
+    () => session.status === "authenticated" && organizations?.length !== 0,
     [session, organizations],
   );
 
@@ -112,16 +104,16 @@ export default function Navbar() {
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={currentOrganization?.name} />
+                <SelectValue placeholder={organizationFromPathname} />
               </SelectTrigger>
 
               {/* <button onClick={() => console.log(123)}>click</button> */}
 
               <SelectContent>
                 <SelectGroup>
-                  {organizations.map((org) => (
+                  {organizations?.map((org) => (
                     <SelectItem
-                      value={org.id}
+                      value={org.name}
                       key={org.id}
                       className="hover:cursor-pointer"
                     >
@@ -174,7 +166,7 @@ export default function Navbar() {
 
               <Link
                 href={
-                  organizations.length > 0
+                  organizations && organizations.length > 0
                     ? `/dashboard/${organizations[0]?.id}/overview`
                     : "/dashboard/"
                 }
