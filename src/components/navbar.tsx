@@ -123,6 +123,9 @@ export default function Navbar() {
                       {org.name}
                     </SelectItem>
                   ))}
+                  <div className="text-slate m-auto text-sm font-light text-slate-400 hover:cursor-pointer" onClick={() => setIsModalOpen(true)}>
+                    Add new..
+                  </div>
                 </SelectGroup>
               </SelectContent>
             </Select>
