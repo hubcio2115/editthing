@@ -5,7 +5,7 @@ import type { Session } from "next-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 interface ProfileProps {
-  session: Session;
+  session: Session | null;
 }
 
 function getInitials(name: string) {
@@ -22,12 +22,11 @@ export default function Profile({ session }: ProfileProps) {
   return (
     <Avatar>
       <AvatarImage
-        // eslint-disable-next-line
-        src={session.user.image!}
+        src={session?.user.image ?? undefined}
         alt="profile picture"
       />
-      <AvatarFallback className="bg-white transition-colors hover:bg-accent hover:text-accent-foreground">
-        {session.user.name ? getInitials(session.user.name) : ""}
+      <AvatarFallback>
+        {session?.user.name ? getInitials(session.user.name) : ""}
       </AvatarFallback>
     </Avatar>
   );
