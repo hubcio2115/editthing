@@ -39,7 +39,7 @@ export default function Dashnav() {
 
   return (
     <div>
-      <div className="p- flex items-center justify-between bg-slate-100 p-2">
+      <div className=" flex items-center justify-between bg-slate-100 p-2">
         <div className="flex pl-1">
           <h2 className="text-3xl font-bold text-gray-900">
             <span className="text-fuchsia-900">Edit</span>
