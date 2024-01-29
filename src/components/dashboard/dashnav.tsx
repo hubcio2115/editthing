@@ -5,29 +5,34 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
+import organizationsMock from "~/lib/mock/organizations";
 import { cn } from "~/lib/utils";
 
-const links = [
-  {
-    path: "/dashboard/overview",
-    label: "overview",
-  },
-  {
-    path: "/dashboard/settings",
-    label: "settings",
-  },
-] as const;
-
 export default function Dashnav() {
+  const organizations = organizationsMock;
+
   const pathname = usePathname();
   const session = useSession();
+  const orgId = pathname.split("/").at(2);
 
   if (session.status === "unauthenticated") {
     redirect("/");
   }
 
-  return (
+  const links = [
+    {
+      path: `/dashboard/${orgId}/overview`,
+      label: "overview",
+    },
+    {
+      path: `/dashboard/${orgId}/settings`,
+      label: "settings",
+    },
+  ];
+
+  return organizations.find((org) => org.id === orgId) ? (
     <>
+      {" "}
       <nav className="flex justify-center bg-slate-100 ">
         {links.map((link) => (
           <div
@@ -44,5 +49,7 @@ export default function Dashnav() {
         ))}
       </nav>
     </>
+  ) : (
+    <div></div>
   );
 }
