@@ -6,6 +6,8 @@ import { useEffect } from "react";
 export default function OrganizationView() {
   const router = useRouter();
   const pathname = usePathname();
-  useEffect(() => router.push(`${pathname}/overview`));
+  useEffect(() => {
+    router.push(`${pathname}/overview`);
+  });
   return <div></div>;
 }
