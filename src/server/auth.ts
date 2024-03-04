@@ -4,6 +4,7 @@ import {
   type NextAuthOptions,
   getServerSession,
 } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env.mjs";
@@ -46,7 +47,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: DrizzleAdapter(db, mysqlTable),
+  adapter: DrizzleAdapter(db, mysqlTable) as Adapter,
   providers: [
     // Sign in with Google Oauth provider
     GoogleProvider({
