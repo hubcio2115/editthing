@@ -30,7 +30,7 @@ jobs:
       - name: Install Bun
         run: npm install -g pnpm
       - name: Install dependencies and @microsoft/eslint-formatter-sarif
-        run: pnpm install @microsoft/eslint-formatter-sarif
+        run: pnpm install -w @microsoft/eslint-formatter-sarif
       - name: Run ESLint
         run: SKIP_ENV_VALIDATION=true pnpm lint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
