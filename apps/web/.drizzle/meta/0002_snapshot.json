@@ -1,6 +1,6 @@
 {
-  "id": "fa7d381f-19c2-461c-bb0b-a4b4f273c2af",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "dce344be-446e-4c85-bffc-2f8ab1dc8947",
+  "prevId": "aa8d3546-1e18-4860-a7b0-7595361326fa",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -290,34 +290,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk": {
-          "name": "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk",
-          "tableFrom": "editthing_app_project",
-          "tableTo": "editthing_app_videoEntry",
-          "columnsFrom": [
-            "videoEntryId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "editthing_app_project_organizationId_editthing_app_organization_id_fk": {
-          "name": "editthing_app_project_organizationId_editthing_app_organization_id_fk",
-          "tableFrom": "editthing_app_project",
-          "tableTo": "editthing_app_organization",
-          "columnsFrom": [
-            "organizationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -524,6 +497,12 @@
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -532,7 +511,23 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "license": {
+      "name": "license",
+      "values": {
+        "youtube": "youtube",
+        "creativeCommon": "creativeCommon"
+      }
+    },
+    "privacyStatus": {
+      "name": "privacyStatus",
+      "values": {
+        "public": "public",
+        "unlisted": "unlisted",
+        "private": "private"
+      }
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},
