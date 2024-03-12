@@ -53,7 +53,7 @@ export default function CardStandard({ className, ...props }: CardProps) {
         ))}
       </CardContent>
       <CardFooter>
-        {/* TODO - redirect to shop */}
+        {/* TODO: redirect to shop */}
         <Button className="w-full">$29 USD/mo</Button>
       </CardFooter>
     </Card>
