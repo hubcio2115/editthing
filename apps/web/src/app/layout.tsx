@@ -1,4 +1,4 @@
-import { GeistSans } from "geist/font";
+import { GeistSans } from "geist/font/sans";
 import { headers } from "next/headers";
 import type { PropsWithChildren } from "react";
 

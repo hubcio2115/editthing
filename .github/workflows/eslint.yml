@@ -28,14 +28,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install Bun
-        run: npm install -g bun
-      - name: Install dependencies and @microsoft/eslint-formatter-sarif
-        run: bun install @microsoft/eslint-formatter-sarif
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm install
       - name: Run ESLint
-        run: SKIP_ENV_VALIDATION=true bun lint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        run: SKIP_ENV_VALIDATION=true pnpm lint
         continue-on-error: true
-      - name: Upload analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
