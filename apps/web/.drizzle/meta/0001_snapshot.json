@@ -1,6 +1,6 @@
 {
-  "id": "fa7d381f-19c2-461c-bb0b-a4b4f273c2af",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "aa8d3546-1e18-4860-a7b0-7595361326fa",
+  "prevId": "fa7d381f-19c2-461c-bb0b-a4b4f273c2af",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -532,7 +532,23 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "license": {
+      "name": "license",
+      "values": {
+        "youtube": "youtube",
+        "creativeCommon": "creativeCommon"
+      }
+    },
+    "privacyStatus": {
+      "name": "privacyStatus",
+      "values": {
+        "public": "public",
+        "unlisted": "unlisted",
+        "private": "private"
+      }
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},
