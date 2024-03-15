@@ -25,7 +25,7 @@ const featureList = [
     title: "Scheduled Video Uploads",
     description: "Automatically post videos to YouTube.",
   },
-] as const;
+];
 
 type CardProps = ComponentProps<typeof Card>;
 
@@ -53,7 +53,7 @@ export default function CardStandard({ className, ...props }: CardProps) {
         ))}
       </CardContent>
       <CardFooter>
-        {/* TODO: redirect to shop */}
+        {/* TODO - redirect to shop */}
         <Button className="w-full">$29 USD/mo</Button>
       </CardFooter>
     </Card>
