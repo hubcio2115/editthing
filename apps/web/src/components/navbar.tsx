@@ -55,7 +55,7 @@ export default function Navbar() {
   const router = useRouter();
   const session = useSession();
 
-  // this tries to fetch the user's organizations even if the user is not authenticated
+  //TODO: this tries to fetch the user's organizations even if the user is not authenticated
   const { data: organizations } =
     api.organization.getOwnOrganizations.useQuery();
 
@@ -162,6 +162,7 @@ export default function Navbar() {
                       className="mr-2 h-4 w-4 hover:cursor-pointer"
                       color="red"
                     />
+                    {/*TODO: Log Out has some issues on the dashboard page */}
                     <SignOutButton>Log out</SignOutButton>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
