@@ -50,10 +50,12 @@ type OrganizationForm = Omit<InsertOrganization, "owner">;
 
 export default function Navbar() {
   const organizationFromPathname = usePathname().split("/").at(2);
+  const isOnDashboard = usePathname().includes("/dashboard");
 
   const router = useRouter();
   const session = useSession();
 
+  // this tries to fetch the user's organizations even if the user is not authenticated
   const { data: organizations } =
     api.organization.getOwnOrganizations.useQuery();
 
@@ -84,7 +86,10 @@ export default function Navbar() {
   };
 
   const shouldShowOrganizationsSelect = useMemo(
-    () => session.status === "authenticated" && organizations?.length !== 0,
+    () =>
+      session.status === "authenticated" &&
+      organizations?.length !== 0 &&
+      isOnDashboard,
     [session, organizations],
   );
 
@@ -106,8 +111,6 @@ export default function Navbar() {
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={organizationFromPathname} />
               </SelectTrigger>
-
-              {/* <button onClick={() => console.log(123)}>click</button> */}
 
               <SelectContent>
                 <SelectGroup>
@@ -143,17 +146,17 @@ export default function Navbar() {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent className="w-[200px]">
-                  <DropdownMenuItem
-                    className="hover:cursor-pointer"
-                    onClick={() => {
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    Create Organization
-                  </DropdownMenuItem>
-
+                  {isOnDashboard && (
+                    <DropdownMenuItem
+                      className="hover:cursor-pointer"
+                      onClick={() => {
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Create Organization
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
-
                   <DropdownMenuItem>
                     <LogOut
                       className="mr-2 h-4 w-4 hover:cursor-pointer"
@@ -164,17 +167,19 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Link
-                href={
-                  organizations && organizations.length > 0
-                    ? `/dashboard/${organizations[0]?.id}/overview`
-                    : "/dashboard/"
-                }
-              >
-                <Button variant="outline" className="rounded-full">
-                  Go to Dashboard
-                </Button>
-              </Link>
+              {!isOnDashboard && (
+                <Link
+                  href={
+                    organizations && organizations.length > 0
+                      ? `/dashboard/${organizations[0]?.id}/overview`
+                      : "/dashboard/"
+                  }
+                >
+                  <Button variant="outline" className="rounded-full">
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              )}
             </div>
           ) : (
             <Link href="/api/auth/signin">
