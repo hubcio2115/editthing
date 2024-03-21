@@ -14,7 +14,7 @@ import mockdata from "~/lib/mock/organizationOverview";
 import { api } from "~/trpc/react";
 
 export default function Dashboard() {
-  // todo: replace mocks with db queries
+  // TODO: replace mocks with db queries
   const { data: organizations } =
     api.organization.getOwnOrganizations.useQuery();
 
