@@ -9,5 +9,5 @@ export default function OrganizationView() {
   useEffect(() => {
     router.push(`${pathname}/overview`);
   });
-  return <div></div>;
+  return <></>;
 }

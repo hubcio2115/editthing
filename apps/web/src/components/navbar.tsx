@@ -55,7 +55,7 @@ export default function Navbar() {
   const router = useRouter();
   const session = useSession();
 
-  //TODO: this tries to fetch the user's organizations even if the user is not authenticated
+  // FIXME: this tries to fetch the user's organizations even if the user is not authenticated
   const { data: organizations } =
     api.organization.getOwnOrganizations.useQuery();
 

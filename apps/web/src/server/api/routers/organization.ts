@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 
 import { insertOrganizationSchema } from "~/lib/validators/organization";
 import { organizations, usersToOrganizations } from "~/server/db/schema";
