@@ -46,7 +46,5 @@ export default function Dashnav() {
         </div>
       ))}
     </nav>
-  ) : (
-    <div></div>
-  );
+  ) : null;
 }
