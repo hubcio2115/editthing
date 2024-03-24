@@ -5,7 +5,7 @@ interface OrgMockData {
   ownerId: string;
 }
 
-const organizationsMock: OrgMockData[] = [
+const organizationsMock = [
   {
     id: "7b74f4d5-ef62-4c55-91fc-73eeb6a2f700",
     name: "MrBeast",
@@ -16,6 +16,6 @@ const organizationsMock: OrgMockData[] = [
     name: "spryciarze.pl",
     ownerId: "e6d6bc24-6f4d-4f40-b7f1-ded2f7a72ac8",
   },
-];
+] as const;
 
 export default organizationsMock;
