@@ -1,9 +1,4 @@
 /* eslint-disable */
-interface OrgMockData {
-  id: string;
-  name: string;
-  ownerId: string;
-}
 
 const organizationsMock = [
   {
