@@ -36,6 +36,6 @@ export const organizationRouter = createTRPCRouter({
         .values({ name: input.name, owner: ctx.session.user.id })
         .returning();
 
-      return newOrganization;
+      return newOrganization[0];
     }),
 });
