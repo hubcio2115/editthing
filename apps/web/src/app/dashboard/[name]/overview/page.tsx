@@ -15,13 +15,10 @@ import { api } from "~/trpc/react";
 
 export default function Dashboard() {
   // TODO: replace mocks with db queries
-const { data: _organizations } =
+  const { data: _organizations } =
     api.organization.getOwnOrganizations.useQuery();
 
   const organizationFromPathname = usePathname().split("/").at(2);
-  const mockData = mockdata.find((d) => d.orgId === organizationFromPathname);
-  const projects = mockData?.projects;
-
   const [listDisplay, setListDisplay] = useState(false);
 
   return (
