@@ -62,7 +62,7 @@ export default function Navbar() {
   const { mutate: createOrganization } =
     api.organization.createOrganization.useMutation({
       onSuccess: (data) => {
-        if (!!data) router.push(`/dashboard/${data.id}/overview`);
+        if (!!data) router.push(`/dashboard/${data.name}/overview`);
       },
     });
 
