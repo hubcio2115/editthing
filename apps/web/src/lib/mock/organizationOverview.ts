@@ -1,5 +1,3 @@
-import type { mock } from "node:test";
-
 interface ProjectMockData {
   title: string;
   description: string;
@@ -9,7 +7,7 @@ interface ProjectMockData {
   editor: string;
 }
 
-const projectMockData = [...] as const;
+const projectMockData: ProjectMockData[] = [
   {
     title: "We kidnapped children!",
     description: "Learn how to create a stunning website from scratch.",
@@ -97,4 +95,4 @@ const projectMockData = [...] as const;
   },
 ];
 
-export default mockdata1;
+export default projectMockData;
