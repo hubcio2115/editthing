@@ -31,16 +31,10 @@ export const organizationRouter = createTRPCRouter({
   createOrganization: protectedProcedure
     .input(insertOrganizationSchema.omit({ owner: true }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const newOrganization = await ctx.db
         .insert(organizations)
-        .values({ name: input.name, owner: ctx.session.user.id });
-
-      const newOrganization = (
-        await ctx.db
-          .select()
-          .from(organizations)
-          .where(eq(organizations.name, input.name))
-      ).at(0);
+        .values({ name: input.name, owner: ctx.session.user.id })
+        .returning();
 
       return newOrganization;
     }),
