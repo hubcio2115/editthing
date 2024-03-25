@@ -10,7 +10,7 @@ import VideoSmallCard from "~/components/dashboard/videoSmallCard";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
-import mockdata from "~/lib/mock/organizationOverview";
+import projectMockData from "~/lib/mock/organizationOverview";
 import { api } from "~/trpc/react";
 
 export default function Dashboard() {
@@ -49,13 +49,13 @@ export default function Dashboard() {
 
         {listDisplay ? (
           <div className="my-5 flex flex-col justify-center gap-4">
-            {projects?.map((video, index) => (
+            {projectMockData?.map((video, index) => (
               <VideoSmallCard key={index} video={video} />
             ))}
           </div>
         ) : (
           <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
-            {projects?.map((video, index) => (
+            {projectMockData?.map((video, index) => (
               <VideoCard key={index} video={video} />
             ))}
           </div>
