@@ -25,7 +25,7 @@ export default function VideoCard({ video }: VideoCardProps) {
   return (
     <Card className="max-w-[460px] hover:cursor-pointer hover:bg-slate-50">
       <CardHeader>
-        <CardTitle className="h-6 overflow-hidden text-base sm:text-2xl">
+        <CardTitle className="h-6 text-base sm:text-2xl">
           {video.title}
         </CardTitle>
         <CardDescription className="h-10 overflow-hidden">

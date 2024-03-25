@@ -1,4 +1,4 @@
-interface MockData {
+interface ProjectMockData {
   title: string;
   description: string;
   thumbnail: string;
@@ -7,7 +7,7 @@ interface MockData {
   editor: string;
 }
 
-const mockdata: MockData[] = [
+const projectMockData: ProjectMockData[] = [
   {
     title: "We kidnapped children!",
     description: "Learn how to create a stunning website from scratch.",
@@ -95,4 +95,4 @@ const mockdata: MockData[] = [
   },
 ];
 
-export default mockdata;
+export default projectMockData;
