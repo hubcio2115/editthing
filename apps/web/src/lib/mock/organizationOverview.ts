@@ -12,7 +12,7 @@ interface ProjectMockData {
   editor: string;
 }
 
-const mockdata1: ProjectMockData[] = [
+const projectMockData = [...] as const;
   {
     title: "We kidnapped children!",
     description: "Learn how to create a stunning website from scratch.",
