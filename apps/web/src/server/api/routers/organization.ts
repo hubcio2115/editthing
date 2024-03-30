@@ -29,7 +29,7 @@ export const organizationRouter = createTRPCRouter({
   }),
 
   createOrganization: protectedProcedure
-    .input(insertOrganizationSchema.omit({ owner: true }))
+    .input(insertOrganizationSchema)
     .mutation(async ({ ctx, input }) => {
       const newOrganization = await ctx.db
         .insert(organizations)
