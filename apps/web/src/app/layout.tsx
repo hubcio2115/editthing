@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   const session = await getServerAuthSession();
 
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body>
         <TRPCReactProvider headers={headers()}>
           <SessionProvider session={session}>
