@@ -8,8 +8,11 @@ import type { Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env.mjs";
+import { generateSeedForOrgName, stripSpecialCharacters } from "~/lib/utils";
 import { db } from "~/server/db";
 import { createTable } from "~/server/db/schema";
+
+import { createOrganization, getOrganizationByName } from "./db/organizations";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -55,6 +58,67 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  events: {
+    async createUser({ user }) {
+      const userName = user.name;
+
+      if (!userName) {
+        throw new Error("Username is no present, this shouldn't happen!");
+      }
+
+      const splitUsername = userName.split(" ");
+
+      let newOrgName = stripSpecialCharacters(
+        (() => {
+          switch (splitUsername.length) {
+            case 1: {
+              const [name, ..._rest] = splitUsername;
+
+              return `${name!.toLowerCase()}`;
+            }
+
+            case 2:
+            case 3: {
+              const [firstName, lastName, ..._rest] = splitUsername;
+
+              return `${firstName!
+                .at(0)
+                ?.toLowerCase()}${lastName!.toLowerCase()}`;
+            }
+
+            default:
+              throw new Error("Couldn't create a new organization from name");
+          }
+        })(),
+      );
+
+      let isFirstIteration = true;
+      for (;;) {
+        const isNameAvailable =
+          (await getOrganizationByName(db, newOrgName)).length === 0;
+
+        if (isNameAvailable) {
+          break;
+        }
+
+        if (!isFirstIteration) {
+          newOrgName =
+            newOrgName.slice(0, -4) + generateSeedForOrgName.toString();
+        } else {
+          newOrgName += generateSeedForOrgName().toString();
+          isFirstIteration = false;
+        }
+      }
+
+      const newOrganization = (
+        await createOrganization(db, newOrgName, user.id)
+      )[0];
+
+      if (!newOrganization) {
+        throw new Error("Couldn't create new organization.");
+      }
+    },
+  },
 };
 
 /**
