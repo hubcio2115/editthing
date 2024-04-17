@@ -66,8 +66,8 @@ importers:
         specifier: ^4.36.1
         version: 4.36.1(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-query-devtools':
-        specifier: ^5.29.2
-        version: 5.29.2(@tanstack/react-query@4.36.1)(react@18.2.0)
+        specifier: ^4.36.1
+        version: 4.36.1(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react@18.2.0)
       '@trpc/client':
         specifier: ^10.45.2
         version: 10.45.2(@trpc/server@10.45.2)
@@ -81,8 +81,8 @@ importers:
         specifier: ^10.45.2
         version: 10.45.2
       '@vercel/postgres':
-        specifier: ^0.7.2
-        version: 0.7.2
+        specifier: ^0.8.0
+        version: 0.8.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -91,7 +91,7 @@ importers:
         version: 2.1.0
       drizzle-orm:
         specifier: ^0.30.8
-        version: 0.30.8(@types/react@18.2.79)(@vercel/postgres@0.7.2)(pg@8.11.5)(react@18.2.0)
+        version: 0.30.8(@types/react@18.2.79)(@vercel/postgres@0.8.0)(pg@8.11.5)(react@18.2.0)
       drizzle-zod:
         specifier: ^0.5.1
         version: 0.5.1(drizzle-orm@0.30.8)(zod@3.22.4)
@@ -2072,23 +2072,30 @@ packages:
       zod: 3.22.4
     dev: false
 
+  /@tanstack/match-sorter-utils@8.15.1:
+    resolution: {integrity: sha512-PnVV3d2poenUM31ZbZi/yXkBu3J7kd5k2u51CGwwNojag451AjTH9N6n41yjXz2fpLeewleyLBmNS6+HcGDlXw==}
+    engines: {node: '>=12'}
+    dependencies:
+      remove-accents: 0.5.0
+    dev: false
+
   /@tanstack/query-core@4.36.1:
     resolution: {integrity: sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==}
     dev: false
 
-  /@tanstack/query-devtools@5.28.10:
-    resolution: {integrity: sha512-5UN629fKa5/1K/2Pd26gaU7epxRrYiT1gy+V+pW5K6hnf1DeUKK3pANSb2eHKlecjIKIhTwyF7k9XdyE2gREvQ==}
-    dev: false
-
-  /@tanstack/react-query-devtools@5.29.2(@tanstack/react-query@4.36.1)(react@18.2.0):
-    resolution: {integrity: sha512-EmsaLNa8iFtReAW+5ftom0/TW78fIosVor517ak/+JFaoTBw8Yub3ao937JFE6AM3K/HXhteqvObetgt1ndLcw==}
+  /@tanstack/react-query-devtools@4.36.1(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-WYku83CKP3OevnYSG8Y/QO9g0rT75v1om5IvcWUwiUZJ4LanYGLVCZ8TdFG5jfsq4Ej/lu2wwDAULEUnRIMBSw==}
     peerDependencies:
-      '@tanstack/react-query': ^5.29.2
-      react: ^18.0.0
+      '@tanstack/react-query': ^4.36.1
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@tanstack/query-devtools': 5.28.10
+      '@tanstack/match-sorter-utils': 8.15.1
       '@tanstack/react-query': 4.36.1(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      superjson: 1.13.3
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /@tanstack/react-query@4.36.1(react-dom@18.2.0)(react@18.2.0):
@@ -2637,8 +2644,8 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@vercel/postgres@0.7.2:
-    resolution: {integrity: sha512-IqR/ZAvoPGcPaXl9eWWB5KaA+w/81RzZa/18P4izQRHpNBkTGt9HwGfYi9+wut5UgxNq4QSX9A7HIQR6QDvX2Q==}
+  /@vercel/postgres@0.8.0:
+    resolution: {integrity: sha512-/QUV9ExwaNdKooRjOQqvrKNVnRvsaXeukPNI5DB1ovUTesglfR/fparw7ngo1KUWWKIVpEj2TRrA+ObRHRdaLg==}
     engines: {node: '>=14.6'}
     dependencies:
       '@neondatabase/serverless': 0.7.2
@@ -3500,7 +3507,7 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.30.8(@types/react@18.2.79)(@vercel/postgres@0.7.2)(pg@8.11.5)(react@18.2.0):
+  /drizzle-orm@0.30.8(@types/react@18.2.79)(@vercel/postgres@0.8.0)(pg@8.11.5)(react@18.2.0):
     resolution: {integrity: sha512-9pBJA0IjnpPpzZ6s9jlS1CQAbKoBmbn2GJesPhXaVblAA/joOJ4AWWevYcqvLGj9SvThBAl7WscN8Zwgg5mnTw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -3581,7 +3588,7 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.2.79
-      '@vercel/postgres': 0.7.2
+      '@vercel/postgres': 0.8.0
       pg: 8.11.5
       react: 18.2.0
     dev: false
@@ -3592,7 +3599,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.30.8(@types/react@18.2.79)(@vercel/postgres@0.7.2)(pg@8.11.5)(react@18.2.0)
+      drizzle-orm: 0.30.8(@types/react@18.2.79)(@vercel/postgres@0.8.0)(pg@8.11.5)(react@18.2.0)
       zod: 3.22.4
     dev: false
 
@@ -6619,6 +6626,10 @@ packages:
     dependencies:
       jsesc: 0.5.0
     dev: true
+
+  /remove-accents@0.5.0:
+    resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
+    dev: false
 
   /resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
