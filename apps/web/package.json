@@ -7,7 +7,9 @@
     "db:push": "dotenv drizzle-kit push:pg",
     "studio": "dotenv drizzle-kit studio",
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
     "lint": "next lint",
+    "test": "vitest",
     "start": "next start"
   },
   "dependencies": {

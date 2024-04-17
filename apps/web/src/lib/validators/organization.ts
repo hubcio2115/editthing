@@ -1,8 +1,20 @@
 import { createInsertSchema } from "drizzle-zod";
-import type { z } from "zod";
+import { z } from "zod";
 
 import { organizations } from "~/server/db/schema";
 
-export const insertOrganizationSchema = createInsertSchema(organizations);
+const orgNameRegex = /^[a-zA-Z0-9-]+$/;
+
+export const insertOrganizationSchema = createInsertSchema(organizations)
+  .omit({ owner: true })
+  .extend({
+    name: z
+      .string()
+      .min(3, "Name must contain at least 3 characters")
+      .refine((name) => orgNameRegex.test(name), {
+        message:
+          "Name can only contain alphanumeric characters and '-' sign",
+      }),
+  });
 
 export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;

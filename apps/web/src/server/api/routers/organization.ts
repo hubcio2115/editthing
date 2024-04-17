@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { insertOrganizationSchema } from "~/lib/validators/organization";
+import { createOrganization } from "~/server/db/organizations";
 import { organizations, usersToOrganizations } from "~/server/db/schema";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -29,13 +30,14 @@ export const organizationRouter = createTRPCRouter({
   }),
 
   createOrganization: protectedProcedure
-    .input(insertOrganizationSchema.omit({ owner: true }))
+    .input(insertOrganizationSchema)
     .mutation(async ({ ctx, input }) => {
-      const newOrganization = await ctx.db
-        .insert(organizations)
-        .values({ name: input.name, owner: ctx.session.user.id })
-        .returning();
+      const newOrganization = (await createOrganization(
+        ctx.db,
+        input.name,
+        ctx.session.user.id,
+      ))[0];
 
-      return newOrganization[0];
+      return newOrganization;
     }),
 });
