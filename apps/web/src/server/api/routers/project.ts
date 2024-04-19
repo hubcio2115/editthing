@@ -32,4 +32,10 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(projects).values(input);
     }),
+
+  deleteProject: protectedProcedure
+    .input(z.object({ projId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(projects).where(eq(projects.id, input.projId));
+    }),
 });
