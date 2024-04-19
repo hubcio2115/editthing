@@ -2,8 +2,8 @@
 
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -11,17 +11,27 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
+import { organizations } from "~/server/db/schema";
 import { api } from "~/trpc/react";
 
 export default function Dashboard() {
-  // TODO: replace mocks with db queries
-  const { data: _organizations } =
+  const { data: organizations, isLoading } =
     api.organization.getOwnOrganizations.useQuery();
 
-  const organizationFromPathname = usePathname().split("/").at(2);
+  const router = useRouter();
+  const organizationFromPathname = usePathname().split("/").at(2)!;
   const [listDisplay, setListDisplay] = useState(false);
 
+  useEffect(() => {
+    if (
+      !organizations?.map((org) => org.name!).includes(organizationFromPathname)
+    ) {
+      router.push("/dashboard");
+    }
+  }, []);
+
   return (
+    !isLoading &&
     organizationFromPathname && (
       <div className="mx-auto flex flex-col items-center md:px-2">
         <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
