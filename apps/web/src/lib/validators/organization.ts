@@ -12,9 +12,20 @@ export const insertOrganizationSchema = createInsertSchema(organizations)
       .string()
       .min(3, "Name must contain at least 3 characters")
       .refine((name) => orgNameRegex.test(name), {
-        message:
-          "Name can only contain alphanumeric characters and '-' sign",
+        message: "Name can only contain alphanumeric characters and '-' sign",
       }),
   });
 
+export const updateOrganizationNameSchema = insertOrganizationSchema
+  .pick({
+    name: true,
+  })
+  .extend({
+    oldName: z.string(),
+  });
+
 export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
+
+export type UpdateOrganizationName = z.infer<
+  typeof updateOrganizationNameSchema
+>;
