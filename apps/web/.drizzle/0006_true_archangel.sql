@@ -1,0 +1,2 @@
+ALTER TABLE "editthing_app_usersToOrganizations" DROP CONSTRAINT "editthing_app_usersToOrganizations_memberId_role_organizationId_pk";--> statement-breakpoint
+ALTER TABLE "editthing_app_usersToOrganizations" ADD CONSTRAINT "editthing_app_usersToOrganizations_memberId_organizationId_pk" PRIMARY KEY("memberId","organizationId");

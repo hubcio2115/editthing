@@ -1,0 +1,1 @@
+ALTER TABLE "editthing_app_usersToOrganizations" DROP COLUMN IF EXISTS "role";
