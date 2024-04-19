@@ -1,9 +1,9 @@
 import { GeistSans } from "geist/font/sans";
 import type { PropsWithChildren } from "react";
 
-import { ReactQueryProvider } from "~/context/react-query-provider";
-import { SessionProvider } from "~/context/session-provider";
-import { ThemeProvider } from "~/context/theme-provider";
+import { ReactQueryProvider } from "~/providers/react-query-provider";
+import { SessionProvider } from "~/providers/session-provider";
+import { ThemeProvider } from "~/providers/theme-provider";
 import { getServerAuthSession } from "~/server/auth";
 import "~/styles/globals.css";
 
