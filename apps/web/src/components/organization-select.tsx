@@ -1,11 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { SubmitErrorHandler, SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 
 import {
   Select,
@@ -17,9 +19,11 @@ import {
 } from "~/components/ui/select";
 import {
   type InsertOrganization,
+  type Organization,
   insertOrganizationSchema,
+  organizationSchema,
 } from "~/lib/validators/organization";
-import { api } from "~/trpc/react";
+import { getOwnOrganizations } from "~/server/actions/organization";
 
 import { Button } from "./ui/button";
 import {
@@ -42,17 +46,21 @@ import { Input } from "./ui/input";
 type OrganizationForm = Omit<InsertOrganization, "owner">;
 
 export default function OrganizationSelect() {
+  const pathname = usePathname();
+
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
-    usePathname().split("/").at(2),
+    pathname.split("/").at(2),
   );
 
   const router = useRouter();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: organizations } =
-    api.organization.getOwnOrganizations.useQuery();
+  const { data: organizations, refetch } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: () => getOwnOrganizations(),
+  });
 
   function selectOrganization(orgId: string) {
     router.push(`/dashboard/${orgId}/`);
@@ -65,18 +73,48 @@ export default function OrganizationSelect() {
     },
   });
 
-  const { mutate: createOrganization } =
-    api.organization.createOrganization.useMutation({
-      onSuccess: (data) => {
-        if (!!data) {
-          router.push(`/dashboard/${data.name}/overview`);
-        }
-      },
-    });
+  const { mutate: createOrganization } = useMutation<
+    Organization | undefined,
+    Error,
+    InsertOrganization
+  >({
+    mutationKey: ["create", "organization"],
+    mutationFn: async (insertData) => {
+      const res = await fetch(`/api/organizations`, {
+        method: "POST",
+        body: JSON.stringify(insertData),
+      });
+
+      if (res.ok) {
+        const data = organizationSchema.parse(await res.json());
+
+        return data;
+      }
+
+      switch (res.status) {
+        case 401:
+          form.setError(
+            "name",
+            {
+              type: "value",
+              message: "The name is already taken please try another one.",
+            },
+            { shouldFocus: true },
+          );
+          break;
+      }
+    },
+    onSuccess: (data) => {
+      if (!!data) {
+        router.push(`/dashboard/${data.name}/overview`);
+        setIsModalOpen(false);
+        refetch();
+      }
+    },
+  });
 
   const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
     createOrganization({ name: data.name });
-    setIsModalOpen(false);
   };
 
   const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
