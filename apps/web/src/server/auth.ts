@@ -111,7 +111,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       const newOrganization = (
-        await createOrganization(db, newOrgName, user.id)
+        await createOrganization(db, newOrgName, user.id, true)
       )[0];
 
       if (!newOrganization) {
