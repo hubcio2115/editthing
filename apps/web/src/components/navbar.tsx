@@ -16,7 +16,8 @@ import {
 } from "./ui/dropdown-menu";
 
 export default function Navbar() {
-  const isOnDashboard = usePathname().includes("/dashboard");
+  const pathname = usePathname();
+  const isOnDashboard = pathname.includes("/dashboard");
 
   const session = useSession();
 
