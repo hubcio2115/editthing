@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { SubmitErrorHandler, SubmitHandler } from "react-hook-form";
 
@@ -42,16 +42,18 @@ import { Input } from "./ui/input";
 type OrganizationForm = Omit<InsertOrganization, "owner">;
 
 export default function OrganizationSelect() {
-  const organizationFromPathname = decodeURIComponent(
-    // @ts-expect-error Since we are taking something from a pathname there has to be something
-    usePathname().split("/").at(2),
-  );
-
   const router = useRouter();
+  const pathname = usePathname();
+  const [organizationFromPathname, setOrganizationFromPathname] =
+    useState<string>(pathname.split("/").at(2)!);
+
+  useEffect(() => {
+    setOrganizationFromPathname(pathname.split("/").at(2)!);
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: organizations } =
+  const { data: organizations, isLoading } =
     api.organization.getOwnOrganizations.useQuery();
 
   function selectOrganization(orgId: string) {
@@ -85,79 +87,83 @@ export default function OrganizationSelect() {
 
   return (
     <>
-      <Select
-        value={organizationFromPathname}
-        onValueChange={(newValue) => {
-          selectOrganization(newValue);
-        }}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={organizationFromPathname} />
-        </SelectTrigger>
+      {!isLoading && (
+        <>
+          <Select
+            value={organizationFromPathname}
+            onValueChange={(newValue) => {
+              selectOrganization(newValue);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={organizationFromPathname} />
+            </SelectTrigger>
 
-        <SelectContent>
-          <SelectGroup>
-            {organizations?.map((org) => (
-              <SelectItem
-                value={org.name}
-                key={org.id}
-                className="hover:cursor-pointer"
-              >
-                {org.name}
-              </SelectItem>
-            ))}
-            <div
-              className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            >
-              Add new <Plus size={16} />
-            </div>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+            <SelectContent>
+              <SelectGroup>
+                {organizations?.map((org) => (
+                  <SelectItem
+                    value={org.name}
+                    key={org.id}
+                    className="hover:cursor-pointer"
+                  >
+                    {org.name}
+                  </SelectItem>
+                ))}
+                <div
+                  className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Add new <Plus size={16} />
+                </div>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
 
-      <Dialog
-        open={isModalOpen}
-        onOpenChange={(open) => {
-          setIsModalOpen(open);
-        }}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <Form {...form}>
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-            >
-              <DialogHeader>
-                <DialogTitle>New Organization</DialogTitle>
-              </DialogHeader>
+          <Dialog
+            open={isModalOpen}
+            onOpenChange={(open) => {
+              setIsModalOpen(open);
+            }}
+          >
+            <DialogContent className="sm:max-w-[425px]">
+              <Form {...form}>
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={form.handleSubmit(onSubmit, onError)}
+                >
+                  <DialogHeader>
+                    <DialogTitle>New Organization</DialogTitle>
+                  </DialogHeader>
 
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="mt-4 flex flex-col gap-2">
-                    <FormLabel htmlFor="name">Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Your new orgnization name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    name="name"
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem className="mt-4 flex flex-col gap-2">
+                        <FormLabel htmlFor="name">Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Your new orgnization name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <DialogFooter>
-                <Button type="submit">Create</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                  <DialogFooter>
+                    <Button type="submit">Create</Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </>
   );
 }
