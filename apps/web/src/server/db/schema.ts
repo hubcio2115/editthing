@@ -117,6 +117,12 @@ export const verificationTokens = createTable(
   }),
 );
 
+export const roleEnum = pgEnum("role", ["admin", "user", "owner"]);
+
+export const roles = createTable("role", {
+  name: roleEnum("role").notNull().primaryKey(),
+});
+
 export const videoEntries = createTable("videoEntry", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
@@ -135,10 +141,11 @@ export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
 
 export const organizations = createTable("organization", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  name: varchar("name", { length: 128 }).notNull(),
+  name: varchar("name", { length: 128 }).notNull().unique(),
   owner: varchar("ownerId", { length: 255 })
     .notNull()
     .references(() => users.id),
+  defaultOrg: boolean("defaultOrg").notNull().default(false),
 });
 
 export const organizationsRelations = relations(
