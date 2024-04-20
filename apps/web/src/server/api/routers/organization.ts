@@ -1,5 +1,4 @@
 import { and, eq } from "drizzle-orm";
-import { createSelectSchema } from "drizzle-zod";
 import { string, z } from "zod";
 
 import {

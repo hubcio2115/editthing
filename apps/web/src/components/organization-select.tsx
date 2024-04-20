@@ -44,12 +44,7 @@ type OrganizationForm = Omit<InsertOrganization, "owner">;
 export default function OrganizationSelect() {
   const router = useRouter();
   const pathname = usePathname();
-  const [organizationFromPathname, setOrganizationFromPathname] =
-    useState<string>(pathname.split("/").at(2)!);
-
-  useEffect(() => {
-    setOrganizationFromPathname(pathname.split("/").at(2)!);
-  });
+  const organizationFromPathname = pathname.split("/").at(2)!;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
