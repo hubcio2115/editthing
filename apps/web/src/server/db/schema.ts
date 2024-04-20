@@ -166,11 +166,16 @@ export const usersToOrganizations = createTable(
     memberId: varchar("memberId", { length: 255 })
       .notNull()
       .references(() => users.id),
+    role: roleEnum("role")
+      .notNull()
+      .references(() => roles.name),
     organizationId: bigint("organizationId", { mode: "number" })
       .notNull()
       .references(() => organizations.id),
   },
-  (t) => ({ pk: primaryKey({ columns: [t.memberId, t.organizationId] }) }),
+  (t) => ({
+    pk: primaryKey({ columns: [t.memberId, t.role, t.organizationId] }),
+  }),
 );
 
 export const usersToOrganizationsRelations = relations(
@@ -179,6 +184,10 @@ export const usersToOrganizationsRelations = relations(
     organization: one(organizations, {
       fields: [usersToOrganizations.organizationId],
       references: [organizations.id],
+    }),
+    role: one(roles, {
+      fields: [usersToOrganizations.role],
+      references: [roles.name],
     }),
     user: one(users, {
       fields: [usersToOrganizations.memberId],
