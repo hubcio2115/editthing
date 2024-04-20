@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 import { cn } from "~/lib/utils";
@@ -15,7 +15,11 @@ export default function Settings({ children }: PropsWithChildren) {
         <div className="flex h-full flex-col lg:flex-row">
           <nav className="mr-2 w-full shrink-0 lg:w-1/5">
             <div className="mt-1 hidden flex-col pr-2 lg:flex">
-              <Link href="/dashboard/stasiu/settings/general">
+              <Link
+                href={`/dashboard/${pathname
+                  .split("/")
+                  .at(2)}/settings/general`}
+              >
                 <div
                   className={cn(
                     "text-l border-l  border-transparent px-2 pl-2 capitalize last:border-r-0",
@@ -27,7 +31,11 @@ export default function Settings({ children }: PropsWithChildren) {
                   general
                 </div>
               </Link>
-              <Link href="/dashboard/stasiu/settings/members">
+              <Link
+                href={`/dashboard/${pathname
+                  .split("/")
+                  .at(2)}/settings/members`}
+              >
                 <div
                   className={cn(
                     "text-l border-l  border-transparent px-2 pl-2 capitalize last:border-r-0",
