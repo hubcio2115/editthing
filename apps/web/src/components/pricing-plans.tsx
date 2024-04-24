@@ -61,7 +61,7 @@ export default function PrincingPlans() {
           className={cn(
             "select-none rounded-full px-2 text-sm",
             billingPeriod === "monthly"
-              ? "cursor-default bg-indigo-500 text-white"
+              ? "cursor-default bg-fuchsia-800 text-white"
               : "cursor-pointer text-gray-700",
           )}
           onClick={() => setBillingPeriod("monthly")}
@@ -73,7 +73,7 @@ export default function PrincingPlans() {
           className={cn(
             "select-none rounded-full px-2 text-sm",
             billingPeriod === "yearly"
-              ? "cursor-default bg-indigo-500 text-white"
+              ? "cursor-default bg-fuchsia-800 text-white"
               : "cursor-pointer text-gray-700",
           )}
           onClick={() => setBillingPeriod("yearly")}
@@ -101,7 +101,7 @@ export default function PrincingPlans() {
                 </span>
               </p>
 
-              <Button className="w-full bg-indigo-600 hover:bg-indigo-500">
+              <Button className="w-full bg-fuchsia-700 hover:bg-fuchsia-600">
                 Buy plan
               </Button>
 
