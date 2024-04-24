@@ -106,7 +106,7 @@ export default function Home() {
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2
               id="deploy-faster"
-              className="text-base font-semibold leading-7 text-indigo-600"
+              className="text-base font-semibold leading-7 text-fuchsia-900"
             >
               Upload faster
             </h2>
@@ -126,7 +126,7 @@ export default function Home() {
               {features.map((feature) => (
                 <div key={feature.name} className="relative pl-16">
                   <dt className="text-base font-semibold leading-7 text-gray-900">
-                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-900">
                       <feature.icon
                         className="h-6 w-6 text-white"
                         aria-hidden="true"
