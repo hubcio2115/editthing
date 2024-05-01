@@ -2,8 +2,6 @@ import { redirect } from "next/navigation";
 
 import { getOwnOrganizations } from "~/server/actions/organization";
 
-export const dynamic = "force-dynamic";
-
 export default async function Dashboard() {
   const organizations = await getOwnOrganizations();
   const orgNames = organizations.map((org) => org.name!);
