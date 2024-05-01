@@ -18,11 +18,12 @@ import {
 } from "~/components/ui/select";
 import {
   type InsertOrganization,
-  type Organization,
   insertOrganizationSchema,
-  organizationSchema,
 } from "~/lib/validators/organization";
-import { getOwnOrganizations } from "~/server/actions/organization";
+import {
+  createOrganization,
+  getOwnOrganizations,
+} from "~/server/actions/organization";
 
 import { Button } from "./ui/button";
 import {
@@ -72,37 +73,13 @@ export default function OrganizationSelect() {
     },
   });
 
-  const { mutate: createOrganization } = useMutation<
-    Organization | undefined,
+  const { mutate: createOrganizationMutation } = useMutation<
+    InsertOrganization | undefined,
     Error,
     InsertOrganization
   >({
     mutationKey: ["create", "organization"],
-    mutationFn: async (insertData) => {
-      const res = await fetch(`/api/organizations`, {
-        method: "POST",
-        body: JSON.stringify(insertData),
-      });
-
-      if (res.ok) {
-        const data = organizationSchema.parse(await res.json());
-
-        return data;
-      }
-
-      switch (res.status) {
-        case 401:
-          form.setError(
-            "name",
-            {
-              type: "value",
-              message: "The name is already taken please try another one.",
-            },
-            { shouldFocus: true },
-          );
-          break;
-      }
-    },
+    mutationFn: async (insertData) => createOrganization(insertData),
     onSuccess: (data) => {
       if (!!data) {
         router.push(`/dashboard/${data.name}/overview`);
@@ -113,7 +90,7 @@ export default function OrganizationSelect() {
   });
 
   const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
-    createOrganization({ name: data.name });
+    createOrganizationMutation({ name: data.name });
   };
 
   const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
