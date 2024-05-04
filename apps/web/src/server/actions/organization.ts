@@ -10,6 +10,7 @@ import { projects as projectsTable } from "~/server/db/schema";
 
 import { getServerAuthSession } from "../auth";
 import { db } from "../db";
+import { createOrganization as innerCreateOrganization } from "../db/organizations";
 import { organizations, usersToOrganizations } from "../db/schema";
 
 export async function getOwnOrganizations() {
@@ -58,12 +59,11 @@ export async function getOrganizations() {
 export async function createOrganization({ name }: InsertOrganization) {
   const session = await getServerAuthSession();
 
-  const newOrg = (
-    await db
-      .insert(organizations)
-      .values({ name, owner: session!.user.id })
-      .returning()
-  )[0];
+  if (!session) {
+    throw new Error("You must be signed in to perform this action");
+  }
+
+  const newOrg = (await innerCreateOrganization(db, name, session.user.id))[0];
 
   return newOrg;
 }
