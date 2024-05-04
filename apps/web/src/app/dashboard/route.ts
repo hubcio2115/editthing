@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getOwnOrganizations } from "~/server/actions/organization";
 
-export default async function Dashboard() {
+export async function GET() {
   const organizations = await getOwnOrganizations();
   const orgNames = organizations.map((org) => org.name!);
 
