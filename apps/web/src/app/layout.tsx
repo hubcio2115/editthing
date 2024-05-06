@@ -1,13 +1,12 @@
 import { GeistSans } from "geist/font/sans";
-import { headers } from "next/headers";
 import type { PropsWithChildren } from "react";
 
+import { ReactQueryProvider } from "~/providers/react-query-provider";
 import { Toaster } from "~/components/ui/toaster";
-import { SessionProvider } from "~/context/session-provider";
-import { ThemeProvider } from "~/context/theme-provider";
+import { SessionProvider } from "~/providers/session-provider";
+import { ThemeProvider } from "~/providers/theme-provider";
 import { getServerAuthSession } from "~/server/auth";
 import "~/styles/globals.css";
-import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "Editthing",
@@ -21,7 +20,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body>
-        <TRPCReactProvider headers={headers()}>
+        <ReactQueryProvider>
           <SessionProvider session={session}>
             <ThemeProvider
               attribute="class"
@@ -33,7 +32,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
               <Toaster />
             </ThemeProvider>
           </SessionProvider>
-        </TRPCReactProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );
