@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,12 +12,13 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
-import { organizations } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+import { getOwnOrganizations } from "~/server/actions/organization";
 
 export default function Dashboard() {
-  const { data: organizations, isLoading } =
-    api.organization.getOwnOrganizations.useQuery();
+  const { data: organizations, isLoading } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: () => getOwnOrganizations(),
+  });
 
   const router = useRouter();
   const organizationFromPathname = usePathname().split("/").at(2)!;

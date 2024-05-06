@@ -1,4 +1,4 @@
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 import { organizations } from "~/server/db/schema";
@@ -25,6 +25,10 @@ export const updateOrganizationNameSchema = insertOrganizationSchema
   });
 
 export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
+
+export const organizationSchema = createSelectSchema(organizations);
+
+export type Organization = z.infer<typeof organizationSchema>;
 
 export type UpdateOrganizationName = z.infer<
   typeof updateOrganizationNameSchema
