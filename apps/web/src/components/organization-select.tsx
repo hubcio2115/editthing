@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,7 +20,10 @@ import {
   type InsertOrganization,
   insertOrganizationSchema,
 } from "~/lib/validators/organization";
-import { api } from "~/trpc/react";
+import {
+  createOrganization,
+  getOwnOrganizations,
+} from "~/server/actions/organization";
 
 import { Button } from "./ui/button";
 import {
@@ -42,17 +46,21 @@ import { Input } from "./ui/input";
 type OrganizationForm = Omit<InsertOrganization, "owner">;
 
 export default function OrganizationSelect() {
+  const pathname = usePathname();
+
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
-    usePathname().split("/").at(2),
+    pathname.split("/").at(2),
   );
 
   const router = useRouter();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: organizations } =
-    api.organization.getOwnOrganizations.useQuery();
+  const { data: organizations, refetch } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: () => getOwnOrganizations(),
+  });
 
   function selectOrganization(orgId: string) {
     router.push(`/dashboard/${orgId}/`);
@@ -65,18 +73,24 @@ export default function OrganizationSelect() {
     },
   });
 
-  const { mutate: createOrganization } =
-    api.organization.createOrganization.useMutation({
-      onSuccess: (data) => {
-        if (!!data) {
-          router.push(`/dashboard/${data.name}/overview`);
-        }
-      },
-    });
+  const { mutate: createOrganizationMutation } = useMutation<
+    InsertOrganization | undefined,
+    Error,
+    InsertOrganization
+  >({
+    mutationKey: ["create", "organization"],
+    mutationFn: async (insertData) => createOrganization(insertData),
+    onSuccess: (data) => {
+      if (!!data) {
+        router.push(`/dashboard/${data.name}/overview`);
+        setIsModalOpen(false);
+        refetch();
+      }
+    },
+  });
 
   const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
-    createOrganization({ name: data.name });
-    setIsModalOpen(false);
+    createOrganizationMutation({ name: data.name });
   };
 
   const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
