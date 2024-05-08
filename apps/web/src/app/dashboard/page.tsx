@@ -1,10 +1,16 @@
 import { redirect } from "next/navigation";
 
-import { getOwnOrganizations } from "~/server/actions/organization";
+import {
+  getOwnOrganizations,
+} from "~/server/actions/organization";
 
 export default async function Dashboard() {
-  const organizations = await getOwnOrganizations();
-  const orgNames = organizations.map((org) => org.name!);
+  const [organizations, err] = await getOwnOrganizations();
 
-  redirect(`/dashboard/${orgNames[0]}/overview`);
+  if (err !== null) {
+    throw err;
+  } else {
+    const orgNames = organizations.map((org) => org.name);
+    redirect(`/dashboard/${orgNames[0]}/overview`);
+  }
 }
