@@ -1,9 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
@@ -12,58 +11,56 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
-import { getOwnOrganizations } from "~/server/actions/organization";
 
-export default function Dashboard() {
-  // TODO: replace mocks with db queries
-  const { data: _organizations } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOwnOrganizations(),
-  });
+type DasboardPageProps = {
+  params: {
+    name: string;
+  };
+};
 
-  const organizationFromPathname = usePathname().split("/").at(2);
+export default function DashboardPage({ params }: DasboardPageProps) {
   const [listDisplay, setListDisplay] = useState(false);
 
   return (
-    organizationFromPathname && (
-      <div className="mx-auto flex flex-col items-center md:px-2">
-        <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
-          <div className="flex">
-            <div className="flex flex-1">
-              <div className="rounded-lg  rounded-r-none border border-r-0">
-                <SearchIcon className="m-2 h-5 w-6" />
-              </div>
-              <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
+    <div className="mx-auto flex flex-col items-center md:px-2">
+      <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
+        <div className="flex">
+          <div className="flex flex-1">
+            <div className="rounded-lg  rounded-r-none border border-r-0">
+              <SearchIcon className="m-2 h-5 w-6" />
             </div>
+            <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
+          </div>
 
-            <Toggle
-              variant="outline"
-              onClick={() => {
-                setListDisplay(!listDisplay);
-              }}
-              className="mr-2"
-            >
-              <StretchHorizontal />
-            </Toggle>
+          <Toggle
+            variant="outline"
+            onClick={() => {
+              setListDisplay(!listDisplay);
+            }}
+            className="mr-2"
+          >
+            <StretchHorizontal />
+          </Toggle>
 
+          <Link href={`/dashboard/${params.name}/create-project`}>
             <Button variant="outline">Add video</Button>
-          </div>
+          </Link>
         </div>
-
-        {listDisplay ? (
-          <div className="my-5 flex flex-col justify-center gap-4">
-            {projectMockData?.map((video, index) => (
-              <VideoSmallCard key={index} video={video} />
-            ))}
-          </div>
-        ) : (
-          <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
-            {projectMockData?.map((video, index) => (
-              <VideoCard key={index} video={video} />
-            ))}
-          </div>
-        )}
       </div>
-    )
+
+      {listDisplay ? (
+        <div className="my-5 flex flex-col justify-center gap-4">
+          {projectMockData?.map((video, index) => (
+            <VideoSmallCard key={index} video={video} />
+          ))}
+        </div>
+      ) : (
+        <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
+          {projectMockData?.map((video, index) => (
+            <VideoCard key={index} video={video} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
