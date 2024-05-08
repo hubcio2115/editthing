@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { eq, relations, sql } from "drizzle-orm";
 import {
   bigint,
   bigserial,
@@ -8,6 +8,7 @@ import {
   integer,
   pgEnum,
   pgTableCreator,
+  pgView,
   primaryKey,
   text,
   timestamp,
@@ -117,12 +118,6 @@ export const verificationTokens = createTable(
   }),
 );
 
-export const roleEnum = pgEnum("role", ["admin", "user", "owner"]);
-
-export const roles = createTable("role", {
-  name: roleEnum("role").notNull().primaryKey(),
-});
-
 export const videoEntries = createTable("videoEntry", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
@@ -142,23 +137,15 @@ export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
 export const organizations = createTable("organization", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   name: varchar("name", { length: 128 }).notNull().unique(),
-  owner: varchar("ownerId", { length: 255 })
-    .notNull()
-    .references(() => users.id),
   defaultOrg: boolean("defaultOrg").notNull().default(false),
 });
 
-export const organizationsRelations = relations(
-  organizations,
-  ({ one, many }) => ({
-    owner: one(users, {
-      fields: [organizations.owner],
-      references: [users.id],
-    }),
-    usersToOrganizations: many(usersToOrganizations),
-    projects: many(projects),
-  }),
-);
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  usersToOrganizations: many(usersToOrganizations),
+  projects: many(projects),
+}));
+
+export const roleEnum = pgEnum("role", ["admin", "user", "owner"]);
 
 export const usersToOrganizations = createTable(
   "usersToOrganizations",
@@ -166,9 +153,7 @@ export const usersToOrganizations = createTable(
     memberId: varchar("memberId", { length: 255 })
       .notNull()
       .references(() => users.id),
-    role: roleEnum("role")
-      .notNull()
-      .references(() => roles.name),
+    role: roleEnum("role").notNull(),
     organizationId: bigint("organizationId", { mode: "number" })
       .notNull()
       .references(() => organizations.id),
@@ -185,16 +170,25 @@ export const usersToOrganizationsRelations = relations(
       fields: [usersToOrganizations.organizationId],
       references: [organizations.id],
     }),
-    role: one(roles, {
-      fields: [usersToOrganizations.role],
-      references: [roles.name],
-    }),
     user: one(users, {
       fields: [usersToOrganizations.memberId],
       references: [users.id],
     }),
   }),
 );
+
+export const organizationWithMembersView = pgView(
+  "organization_with_members_view",
+  {
+    id: bigserial("id", { mode: "number" }).notNull(),
+    name: varchar("name", { length: 128 }).notNull(),
+    defaultOrg: boolean("default_org").notNull(),
+    memberId: varchar("member_id", { length: 255 }).notNull(),
+    memberName: varchar("member_name", { length: 255 }).notNull(),
+    memberEmail: varchar("member_email", { length: 255 }).notNull(),
+    memberRole: roleEnum("member_role").notNull(),
+  },
+).existing();
 
 export const licenseEnum = pgEnum("license", ["youtube", "creativeCommon"]);
 export const privacyStatus = pgEnum("privacyStatus", [
