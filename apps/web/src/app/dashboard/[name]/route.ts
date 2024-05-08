@@ -1,5 +1,3 @@
-"use client";
-
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 
