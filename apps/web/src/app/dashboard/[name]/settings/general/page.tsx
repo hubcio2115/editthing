@@ -1,8 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2Icon, Trash2 } from "lucide-react";
+
+import { useRouter } from "next/navigation";
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
@@ -24,67 +26,100 @@ import {
   type UpdateOrganizationName,
   updateOrganizationNameSchema,
 } from "~/lib/validators/organization";
-import { api } from "~/trpc/react";
+import { deleteOrganization, getOwnOrganizationByName, updateOrganizationName } from "~/server/actions/organization";
 
-function SettingsGeneral() {
+
+type SettingsMembersViewProps = {
+  params: {
+    name: string;
+  };
+
+};
+
+function SettingsGeneral({ params }: SettingsMembersViewProps) {
   const { toast } = useToast();
-  const organizationFromPathname = usePathname().split("/").at(2)!;
   const router = useRouter();
-  const { data: organization } =
-    api.organization.getOwnOrganizationByName.useQuery(
-      organizationFromPathname,
-    );
 
-  const { mutate: updateOrganizationName } =
-    api.organization.updateOrganizationName.useMutation({
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: `Failed to update organization name: ${error}`,
-        });
-      },
-      onSuccess: (_data, { name }) => {
-        toast({
-          title: "Success",
-          description: "Organization name updated",
-        });
-        router.push(`/dashboard/${name}/settings/general`);
-      },
-    });
 
-  const { mutate: deleteOrganization } =
-    api.organization.deleteOrganization.useMutation({
-      onError: (error) => {
-        console.error("Failed to delete organization", error);
-      },
-      onSuccess: () => {
-        router.push("/dashboard");
-      },
-    });
+  const { data: organization, isLoading } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: async () => {
+      const [organization, err] = await getOwnOrganizationByName(params.name)
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organization;
+    },
+  });
+
+
+  const { mutate: updateOrganizationNameMutation } = useMutation({
+    mutationFn: updateOrganizationName,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to update organization name: ${error.message}`
+
+      })
+    },
+    onSuccess: (_, { name }) => {
+      toast({
+        title: "Success",
+        description: `Organization name updated to ${name}`
+      });
+      router.push(`/dashboard/${name}/settings/general`);
+    },
+  });
+
+  const { mutate: deleteOrganizationMutation } = useMutation({
+    mutationFn: deleteOrganization,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete organization: ${error.message}`
+      })
+
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: `Organization deleted successfully`
+      });
+      router.push("/dashboard");
+    },
+  });
+
+
+
+
 
   const form = useForm<UpdateOrganizationName>({
     resolver: zodResolver(updateOrganizationNameSchema),
     defaultValues: {
-      name: organizationFromPathname,
-      oldName: organizationFromPathname,
+      name: params.name,
+      oldName: params.name,
     },
   });
 
   const onSubmit: SubmitHandler<UpdateOrganizationName> = (data) => {
-    updateOrganizationName(data);
+    updateOrganizationNameMutation(data);
   };
 
   const onError: SubmitErrorHandler<UpdateOrganizationName> = (error) => {
     console.error(error);
   };
 
-  return (
+
+
+  return (organization ? (
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="font-selibold text-xl">General</h2>
         <p className="text-gray-600">
           Settings and options for the{" "}
-          <span className="font-semibold">{organizationFromPathname}</span>{" "}
+          <span className="font-semibold">{organization?.name}</span>{" "}
           organization.
         </p>
       </div>
@@ -107,7 +142,7 @@ function SettingsGeneral() {
                 <FormControl>
                   <Input
                     className="w-fit"
-                    placeholder={organizationFromPathname}
+                    placeholder={params.name}
                     {...field}
                   />
                 </FormControl>
@@ -121,13 +156,13 @@ function SettingsGeneral() {
         </form>
       </Form>
 
-      {!organization?.defaultOrg ? (
+      {!organization[0]?.defaultOrg ? (
         <div className="flex flex-col gap-2 rounded-md border border-gray-600 p-4">
           <p className="font-semibold text-red-600">Delete organization</p>
           <p>
             Please note that deleting the{" "}
             <span className="font-semibold text-red-600">
-              {organizationFromPathname}{" "}
+              {organization?.name}{" "}
             </span>
             organization is{" "}
             <span className="font-semibold text-red-600">permanent</span> and{" "}
@@ -136,12 +171,12 @@ function SettingsGeneral() {
           </p>
           <Button
             onClick={() => {
-              if (organizationFromPathname) {
-                // #TODO: Add a proper confirmation dialog
+              if (organization?.name) {
+                // TODO: Add a proper confirmation dialog
                 if (
                   confirm("Are you sure you want to delete this organization?")
                 ) {
-                  deleteOrganization(organizationFromPathname);
+                  deleteOrganizationMutation(organization.name);
                 }
               }
             }}
@@ -157,7 +192,7 @@ function SettingsGeneral() {
           <p>
             The default{" "}
             <span className="font-semibold text-gray-600">
-              {organizationFromPathname}{" "}
+              {organization?.name}{" "}
             </span>
             organization{" "}
             <span className="font-semibold text-gray-600">cannot</span> be
@@ -166,7 +201,8 @@ function SettingsGeneral() {
         </div>
       )}
     </div>
-  );
+  ) : <div className="flex justify-center"><Loader2Icon size={"64px"} className="animate-spin" /></div>)
+
 }
 
 export default SettingsGeneral;
