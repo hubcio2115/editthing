@@ -1,9 +1,10 @@
-"use client";
+"use client"
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { type PropsWithChildren, useState } from "react";
+import React, { type PropsWithChildren, useState, useEffect } from "react";
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
@@ -30,11 +31,32 @@ import { Input } from "~/components/ui/input";
 import { toast } from "~/components/ui/use-toast";
 import { cn } from "~/lib/utils";
 import { type Invite, inviteSchema } from "~/lib/validators/invite";
+import { addMemberToOrganizationByUserEmail, getOwnOrganizationByName } from "~/server/actions/organization";
 
-function SettingsMembers({ children }: PropsWithChildren) {
+type SettingsMembersLayoutProps = {
+  params: {
+    name: string;
+  };
+
+} & PropsWithChildren;
+
+
+function SettingsMembersLayout({ children, params }: SettingsMembersLayoutProps) {
   const pathname = usePathname();
-  const organizationFromPathname = pathname.split("/").at(2);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: organization, refetch } = useQuery({
+    queryKey: ["organization", params.name],
+    queryFn: async () => {
+      const [organizations, err] = await getOwnOrganizationByName(params.name)
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organizations;
+    }
+  });
+
 
   const form = useForm<Invite>({
     resolver: zodResolver(inviteSchema),
@@ -43,19 +65,35 @@ function SettingsMembers({ children }: PropsWithChildren) {
     },
   });
 
-  const onSubmit: SubmitHandler<Invite> = (data) => {
-    // TODO: Handle invitation sending
-    toast({
-      title: "Success",
-      description: `Invitation sent to ${data.email}`,
-    });
+  const onSubmit: SubmitHandler<Invite> = async (data) => {
+    await addMemberToOrganizationByUserEmail({
+      email: data.email,
+      organizationId: organization!.id,
+      role: "user",
+    })
+      .then(() => {
+        refetch()
+        toast({
+          title: "Success",
+          description: `User ${data.email} was added successfully`,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: ` ${error.message}!`,
+        });
+      })
+
     setIsModalOpen(false);
   };
 
   const onError: SubmitErrorHandler<Invite> = (error) => {
+    console.log(error);
     toast({
       title: "Error",
-      description: `Failed to send and invitation: ${error}`,
+      description: `Failed to send and invitation: ${error.email!.message} !`,
     });
   };
 
@@ -67,12 +105,11 @@ function SettingsMembers({ children }: PropsWithChildren) {
             <h2 className="font-selibold text-xl">Members</h2>
             <p className="text-gray-600">
               All members and administrators with access to the{" "}
-              <span className="font-semibold">{organizationFromPathname}</span>{" "}
+              <span className="font-semibold">{params.name}</span>{" "}
               organization.
             </p>
           </div>
           <div className="flex items-center">
-            {/* TODO: Handle form submit */}
             <Button
               onClick={() => {
                 setIsModalOpen(true);
@@ -83,7 +120,7 @@ function SettingsMembers({ children }: PropsWithChildren) {
           </div>
         </div>
         <div className="flex">
-          <Link href="/dashboard/stasiu/settings/members">
+          <Link href={`/dashboard/${params.name}/settings/members`}>
             <div
               className={cn(
                 "text-l border-b  border-transparent px-2 pl-2 capitalize last:border-r-0",
@@ -95,7 +132,7 @@ function SettingsMembers({ children }: PropsWithChildren) {
               members
             </div>
           </Link>
-          <Link href="/dashboard/stasiu/settings/members/invitations">
+          <Link href={`/dashboard/${params.name}/settings/members/invitations`}>
             <div
               className={cn(
                 "text-l border-b  border-transparent px-2 pl-2 capitalize last:border-r-0",
@@ -152,4 +189,4 @@ function SettingsMembers({ children }: PropsWithChildren) {
   );
 }
 
-export default SettingsMembers;
+export default SettingsMembersLayout;
