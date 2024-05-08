@@ -1,17 +1,27 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
-import organizationsMock from "~/lib/mock/organizations";
 import { cn } from "~/lib/utils";
-import { api } from "~/trpc/react";
+import { getOwnOrganizations } from "~/server/actions/organization";
 
 export default function Dashnav() {
-  const { data: _organizations } =
-    api.organization.getOwnOrganizations.useQuery();
+  const { data: organizations } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: async () => {
+      const [organizations, err] = await getOwnOrganizations();
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organizations;
+    },
+  });
 
   const pathname = usePathname();
   const session = useSession();
@@ -32,7 +42,7 @@ export default function Dashnav() {
     },
   ];
 
-  return _organizations?.find((org) => org.name === orgName) ? (
+  return organizations?.find((org) => org.name === orgName) ? (
     <nav className="flex justify-center  bg-slate-100 ">
       {links.map((link) => (
         <div
