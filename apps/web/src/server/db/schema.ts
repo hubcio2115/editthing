@@ -23,23 +23,6 @@ import type { AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `editthing_app_${name}`);
 
-export const posts = createTable(
-  "post",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt"),
-  },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
-);
-
 export const users = createTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
@@ -117,6 +100,8 @@ export const verificationTokens = createTable(
   }),
 );
 
+export const statusEnum = pgEnum("status", ["created", "ready", "errored"]);
+
 export const videoEntries = createTable("videoEntry", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
@@ -159,7 +144,7 @@ export const usersToOrganizations = createTable(
     memberId: varchar("memberId", { length: 255 })
       .notNull()
       .references(() => users.id),
-    organizationId: bigint("organizationId", { mode: "number" })
+    organizationId: bigserial("organizationId", { mode: "number" })
       .notNull()
       .references(() => organizations.id),
   },
@@ -201,8 +186,8 @@ export const projects = createTable("project", {
   publicStatsViewable: boolean("publicStatsViewable"),
   publishAt: date("publishAt", { mode: "string" }),
   selfDeclaredMadeForKids: boolean("selfDeclaredMadeForKids"),
-  videoEntryId: bigint("videoEntryId", { mode: "number" }),
-  organizationId: bigint("organizationId", { mode: "number" }).notNull(),
+  videoEntryId: bigserial("videoEntryId", { mode: "number" }),
+  organizationId: bigserial("organizationId", { mode: "number" }).notNull(),
 });
 
 export const projectsRelations = relations(projects, ({ one }) => ({
