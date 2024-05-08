@@ -1,1 +1,0 @@
-ALTER TABLE "editthing_app_organization" RENAME COLUMN "default" TO "defaultOrg";

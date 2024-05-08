@@ -5,78 +5,15 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1710100191551,
-      "tag": "0000_flawless_ted_forrester",
+      "when": 1714930243468,
+      "tag": "0000_equal_unus",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1710171373064,
-      "tag": "0001_known_zaladane",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1710172643148,
-      "tag": "0002_dashing_wiccan",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1713462372300,
-      "tag": "0003_previous_baron_zemo",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1713463681077,
-      "tag": "0004_wandering_fenris",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1713482704794,
-      "tag": "0005_spotty_mysterio",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1713482857402,
-      "tag": "0006_true_archangel",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1713483019195,
-      "tag": "0007_lethal_adam_destine",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1713483097044,
-      "tag": "0008_goofy_speed",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "5",
-      "when": 1713647792338,
-      "tag": "0009_big_surge",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "5",
-      "when": 1713648220423,
-      "tag": "0010_outgoing_ma_gnuci",
+      "when": 1715031809881,
+      "tag": "0001_square_snowbird",
       "breakpoints": true
     }
   ]

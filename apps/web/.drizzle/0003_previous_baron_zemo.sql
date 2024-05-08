@@ -1,2 +1,0 @@
-ALTER TABLE "editthing_app_organization" ADD COLUMN "default" boolean DEFAULT false NOT NULL;--> statement-breakpoint
-ALTER TABLE "editthing_app_organization" ADD CONSTRAINT "editthing_app_organization_name_unique" UNIQUE("name");
