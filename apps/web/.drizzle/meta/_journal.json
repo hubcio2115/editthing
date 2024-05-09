@@ -15,6 +15,13 @@
       "when": 1715031809881,
       "tag": "0001_square_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1715213794953,
+      "tag": "0002_cuddly_harry_osborn",
+      "breakpoints": true
     }
   ]
 }

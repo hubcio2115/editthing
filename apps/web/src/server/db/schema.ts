@@ -12,6 +12,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
@@ -152,11 +153,11 @@ export const usersToOrganizations = createTable(
   {
     memberId: varchar("memberId", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     role: roleEnum("role").notNull(),
     organizationId: bigint("organizationId", { mode: "number" })
       .notNull()
-      .references(() => organizations.id),
+      .references(() => organizations.id, { onDelete: "cascade" }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.memberId, t.role, t.organizationId] }),
