@@ -15,5 +15,8 @@ export async function getOrganizationByName(db: DbConnection, name: string) {
 }
 
 export async function createOrganization(db: DbConnection, newOrgName: string) {
-  return db.insert(organizations).values({ name: newOrgName }).returning();
+  return db
+    .insert(organizations)
+    .values({ name: newOrgName, defaultOrg: true })
+    .returning();
 }
