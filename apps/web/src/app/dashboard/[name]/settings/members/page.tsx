@@ -35,7 +35,7 @@ type SettingsMembersViewProps = {
   params: {
     name: string;
   };
-} & PropsWithChildren;
+};
 
 type RoleInfo = {
   memberId: string;

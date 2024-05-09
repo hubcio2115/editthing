@@ -18,7 +18,7 @@ type DashboardOverviewProps = {
   params: {
     name: string;
   };
-} & PropsWithChildren;
+};
 
 
 export default function Dashboard({ params }: DashboardOverviewProps) {
