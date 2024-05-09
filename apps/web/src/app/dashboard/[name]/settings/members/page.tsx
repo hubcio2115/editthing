@@ -232,7 +232,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                     <div className="col-span-1 flex items-center">
                       <Select
                         value={usersToOrganizations.role}
-                        disabled={currentUserRole === "user" || (currentUserRole == "owner" && usersInOrganization!.length < 2)}
+                        disabled={currentUserRole === "user" || usersToOrganizations.role === "owner" || (currentUserRole === "owner" && usersInOrganization!.length < 2)}
                         onValueChange={(newValue: "user" | "owner" | "admin") => handleRoleChange(newValue, user!.id)}
                       >
                         <SelectTrigger className="w-[90px]">
