@@ -3,13 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
+import { AlertModal } from "~/components/modals/alertModal";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -26,33 +29,51 @@ import {
   type UpdateOrganizationName,
   updateOrganizationNameSchema,
 } from "~/lib/validators/organization";
-import { deleteOrganization, getOwnOrganizationByName, updateOrganizationName } from "~/server/actions/organization";
+import { deleteOrganization, getMembersOfOrganization, getOwnOrganizationByName, updateOrganizationName } from "~/server/actions/organization";
 
 
 type SettingsMembersViewProps = {
   params: {
     name: string;
   };
-
 };
 
 function SettingsGeneral({ params }: SettingsMembersViewProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const session = useSession();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
 
-  const { data: organization, isLoading } = useQuery({
-    queryKey: ["organizations"],
+  const { data: organization, isLoading, isFetched } = useQuery({
+    queryKey: ["organization", params.name],
     queryFn: async () => {
       const [organization, err] = await getOwnOrganizationByName(params.name)
+
+      console.log(organization, err);
 
       if (err !== null) {
         console.error(err);
       }
 
+      if (organization == undefined) {
+        router.push("/dashboard");
+        return null;
+      }
+
       return organization;
     },
   });
+
+
+
+  const { data: userData, refetch: refetchUsers, isFetched: usersLoaded } = useQuery({
+    queryKey: ["members", organization?.id],
+    queryFn: () => getMembersOfOrganization(organization!.id),
+    enabled: !!organization?.id && isFetched,
+  });
+
+  const currentUserRole = userData?.find(user => user.user?.id === session.data?.user.id)?.usersToOrganizations.role;
 
 
   const { mutate: updateOrganizationNameMutation } = useMutation({
@@ -61,7 +82,6 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
       toast({
         title: "Error",
         description: `Failed to update organization name: ${error.message}`
-
       })
     },
     onSuccess: (_, { name }) => {
@@ -78,7 +98,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     onError: (error) => {
       toast({
         title: "Error",
-        description: `Failed to delete organization: ${error.message}`
+        description: `${error.message}`
       })
 
     },
@@ -113,7 +133,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
 
 
 
-  return (organization ? (
+  return (organization && !isLoading ? (
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="font-selibold text-xl">General</h2>
@@ -143,6 +163,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
                   <Input
                     className="w-fit"
                     placeholder={params.name}
+                    disabled={currentUserRole !== "owner"}
                     {...field}
                   />
                 </FormControl>
@@ -150,13 +171,13 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-fit">
+          <Button disabled={currentUserRole !== "owner"} type="submit" className="w-fit">
             Save changes
           </Button>
         </form>
       </Form>
 
-      {!organization[0]?.defaultOrg ? (
+      {!organization?.defaultOrg ? (
         <div className="flex flex-col gap-2 rounded-md border border-gray-600 p-4">
           <p className="font-semibold text-red-600">Delete organization</p>
           <p>
@@ -171,14 +192,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
           </p>
           <Button
             onClick={() => {
-              if (organization?.name) {
-                // TODO: Add a proper confirmation dialog
-                if (
-                  confirm("Are you sure you want to delete this organization?")
-                ) {
-                  deleteOrganizationMutation(organization.name);
-                }
-              }
+              setIsAlertOpen(true);
             }}
             variant="outline"
             className="w-fit border-red-600"
@@ -200,6 +214,19 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
           </p>
         </div>
       )}
+      <AlertModal
+        isOpen={isAlertOpen}
+        onOpenChange={(open) => setIsAlertOpen(open)}
+        title="Are you absolutely sure?"
+
+        description={`This will permanently delete the organization and all its data. \n Enter the name of the organization "${organization.name}" to confirm.`}
+        unlockString={organization.name}
+        onCancel={() => setIsAlertOpen(false)}
+        onConfirm={() => {
+          deleteOrganizationMutation(organization.name)
+          setIsAlertOpen(false);
+        }}
+      />
     </div>
   ) : <div className="flex justify-center"><Loader2Icon size={"64px"} className="animate-spin" /></div>)
 
