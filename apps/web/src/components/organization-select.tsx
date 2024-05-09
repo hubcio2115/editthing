@@ -42,16 +42,25 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { useToast } from "./ui/use-toast";
 
-type OrganizationForm = Omit<InsertOrganization, "owner">;
 
-export default function OrganizationSelect() {
+
+type OrganizationSelectProps = {
+  params: {
+    name: string;
+  };
+};
+
+export default function OrganizationSelect({ params }: OrganizationSelectProps) {
   const pathname = usePathname();
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
     pathname.split("/").at(2),
   );
   const router = useRouter();
+  const { toast } = useToast();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -71,11 +80,11 @@ export default function OrganizationSelect() {
     }
   });
 
-  function selectOrganization(orgId: string) {
-    router.push(`/dashboard/${orgId}/`);
+  function selectOrganization(orgName: string) {
+    router.push(`/dashboard/${orgName}/overview`);
   }
 
-  const form = useForm<OrganizationForm>({
+  const form = useForm<InsertOrganization>({
     resolver: zodResolver(insertOrganizationSchema),
     defaultValues: {
       name: "",
@@ -91,55 +100,81 @@ export default function OrganizationSelect() {
     mutationFn: async (insertData) => createOrganization(insertData),
     onSuccess: (data) => {
       if (!!data) {
+        toast({
+          title: "Success",
+          description: "Organization created successfully",
+        });
         router.push(`/dashboard/${data.name}/overview`);
         setIsModalOpen(false);
         refetch();
       }
     },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+    }
   });
 
-  const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
+  const onSubmit: SubmitHandler<InsertOrganization> = (data) => {
     createOrganizationMutation({ name: data.name });
   };
 
-  const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
+  const onError: SubmitErrorHandler<InsertOrganization> = (error) => {
     console.error(error);
   };
 
   return !isLoading && (
     <>
-      <Select
-        value={organizationFromPathname}
-        onValueChange={(newValue) => {
-          selectOrganization(newValue);
-        }}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={organizationFromPathname} />
-        </SelectTrigger>
+      {
+        organizations && organizations.length > 0 ? (
+          <Select
+            value={organizationFromPathname}
+            onValueChange={(newValue) => {
+              selectOrganization(newValue);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={organizationFromPathname} />
+            </SelectTrigger>
 
-        <SelectContent>
-          <SelectGroup>
-            {organizations?.map((org) => (
-              <SelectItem
-                value={org.name}
-                key={org.id}
-                className="hover:cursor-pointer"
-              >
-                {org.name}
-              </SelectItem>
-            ))}
-            <div
-              className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+            <SelectContent>
+              <SelectGroup>
+                {organizations?.map((org) => (
+                  <SelectItem
+                    value={org.name}
+                    key={org.id}
+                    className="hover:cursor-pointer"
+                  >
+                    {org.name}
+                  </SelectItem>
+                ))}
+                <div
+
+                  className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Add new <Plus size={16} />
+                </div>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )
+          : (
+            <Button
               onClick={() => {
                 setIsModalOpen(true);
               }}
-            >
-              Add new <Plus size={16} />
-            </div>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+            ><span className="mr-3">Create organization</span><Plus size={16} />
+            </Button>
+          )
+      }
+
+
+
 
       <Dialog
         open={isModalOpen}
