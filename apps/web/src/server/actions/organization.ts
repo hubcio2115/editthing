@@ -110,21 +110,28 @@ export async function getOrganizations(): Promise<
 
 export async function createOrganization({ name }: InsertOrganization) {
   const session = await getServerAuthSession();
+  try {
+    const newOrg = (
+      await db
+        .insert(organizations)
+        .values({ name })
+        .returning({ id: organizations.id, name: organizations.name })
+        .execute()
+    )[0]!;
 
-  const newOrg = (
-    await db.insert(organizations).values({ name }).returning()
-  )[0]!;
+    await db
+      .insert(usersToOrganizations)
+      .values({
+        memberId: session!.user.id,
+        organizationId: newOrg.id,
+        role: "owner",
+      })
+      .execute();
 
-  await db
-    .insert(usersToOrganizations)
-    .values({
-      memberId: session!.user.id,
-      organizationId: newOrg.id,
-      role: "owner",
-    })
-    .execute();
-
-  return newOrg;
+    return newOrg;
+  } catch (e) {
+    throw new Error("Organization name already exists");
+  }
 }
 
 export async function updateOrganizationName({
@@ -140,11 +147,16 @@ export async function updateOrganizationName({
     await db
       .select()
       .from(organizationWithMembersView)
-      .where(sql`${organizationWithMembersView.memberRole} = 'owner'`)
+      .where(
+        and(
+          eq(organizationWithMembersView.name, oldName),
+          eq(organizationWithMembersView.memberRole, "owner"),
+        ),
+      )
   )[0]!;
 
   if (owner.memberId !== session!.user.id) {
-    return new Error(
+    throw new Error(
       "You must be the owner of the organization to perform this action",
     );
   }
@@ -162,18 +174,37 @@ export async function deleteOrganization(
 ): Promise<null | Error> {
   const session = await getServerAuthSession();
 
-  const owner = (
+  const orgWithMember = (
     await db
       .select()
       .from(organizationWithMembersView)
-      .where(sql`${organizationWithMembersView.memberRole} = 'owner'`)
+      .where(
+        and(
+          eq(organizationWithMembersView.memberRole, "owner"),
+          eq(organizationWithMembersView.name, name),
+        ),
+      )
   )[0]!;
 
-  if (owner.memberId !== session!.user.id) {
-    return new Error(
+  if (orgWithMember.memberId !== session!.user.id) {
+    throw new Error(
       "You must be the owner of the organization to perform this action",
     );
   }
+
+  const currentUserOrganizations = await db
+    .select()
+    .from(usersToOrganizations)
+    .where(eq(usersToOrganizations.memberId, session!.user.id))
+    .execute();
+
+  if (currentUserOrganizations.length < 2) {
+    throw new Error("You must be a member of at least one organization.");
+  }
+
+  await db
+    .delete(usersToOrganizations)
+    .where(eq(usersToOrganizations.organizationId, orgWithMember.id));
 
   await db.delete(organizations).where(eq(organizations.name, name));
 
@@ -209,7 +240,10 @@ export async function addMemberToOrganization({
     .values({ organizationId, memberId, role })
     .execute();
 }
-
+/**
+ *
+ * @throws {Error} returning an error instead of throwing an error ends up with the client not being able to recieve it
+ */
 export async function addMemberToOrganizationByUserEmail({
   organizationId,
   email,
@@ -224,7 +258,7 @@ export async function addMemberToOrganizationByUserEmail({
   )[0];
 
   if (!user) {
-    return new Error("User not found");
+    throw new Error("User not found");
   }
 
   const existingMember = (
@@ -241,7 +275,7 @@ export async function addMemberToOrganizationByUserEmail({
   )[0];
 
   if (existingMember) {
-    return new Error("User is already a member of the organization");
+    throw new Error("User is already a member of the organization");
   }
 
   await addMemberToOrganization({
@@ -259,10 +293,47 @@ export async function updateMemberRole({
   organizationId: Organization["id"];
   memberId: string;
   role: "user" | "owner" | "admin";
-}) {
+}): Promise<null | Error> {
+  const session = await getServerAuthSession();
+  const currentOwner = (
+    await db
+      .select()
+      .from(organizationWithMembersView)
+      .where(
+        and(
+          eq(organizationWithMembersView.memberRole, "owner"),
+          eq(organizationWithMembersView.id, organizationId),
+        ),
+      )
+  )[0]!;
+  if (role === "owner") {
+    if (currentOwner.memberId !== session!.user.id) {
+      return new Error(
+        "You must be the owner of the organization to perform this action",
+      );
+    }
+
+    await db
+      .update(usersToOrganizations)
+      .set({ role: "admin" })
+      .where(
+        and(
+          eq(usersToOrganizations.organizationId, organizationId),
+          eq(usersToOrganizations.memberId, currentOwner.memberId),
+        ),
+      )
+      .execute();
+  }
+
+  if (currentOwner.memberId === memberId) {
+    throw new Error(
+      "Cannot change the role of the owner, transfer ownership instead",
+    );
+  }
+
   await db
     .update(usersToOrganizations)
-    .set({ role })
+    .set({ role: role })
     .where(
       and(
         eq(usersToOrganizations.organizationId, organizationId),
@@ -270,6 +341,8 @@ export async function updateMemberRole({
       ),
     )
     .execute();
+
+  return null;
 }
 
 export async function removeMemberFromOrganization({
@@ -279,6 +352,28 @@ export async function removeMemberFromOrganization({
   organizationId: Organization["id"];
   memberId: string;
 }) {
+  const users = await db
+    .select()
+    .from(usersToOrganizations)
+    .where(eq(usersToOrganizations.organizationId, organizationId))
+    .execute();
+
+  if (users.length < 2) {
+    throw new Error("Unable to remove the last member of the organization");
+  }
+
+  if (users.filter((user) => user.memberId === memberId).length === 0) {
+    throw new Error("User is not a member of the organization");
+  }
+
+  if (
+    users
+      .filter((user) => user.role === "owner")
+      .find((user) => user.memberId === memberId)
+  ) {
+    throw new Error("Cannot remove the owner of the organization");
+  }
+
   await db
     .delete(usersToOrganizations)
     .where(
