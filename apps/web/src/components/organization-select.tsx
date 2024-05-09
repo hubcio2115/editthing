@@ -46,13 +46,9 @@ import { useToast } from "./ui/use-toast";
 
 
 
-type OrganizationSelectProps = {
-  params: {
-    name: string;
-  };
-};
 
-export default function OrganizationSelect({ params }: OrganizationSelectProps) {
+
+export default function OrganizationSelect() {
   const pathname = usePathname();
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
