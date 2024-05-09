@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type PropsWithChildren } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -14,27 +14,40 @@ import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
 import { getOwnOrganizations } from "~/server/actions/organization";
 
-export default function Dashboard() {
+type DashboardOverviewProps = {
+  params: {
+    name: string;
+  };
+} & PropsWithChildren;
+
+
+export default function Dashboard({ params }: DashboardOverviewProps) {
   const { data: organizations, isLoading } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOwnOrganizations(),
+    queryKey: ["organizations", params.name],
+    queryFn: async () => {
+      const [organizations, err] = await getOwnOrganizations()
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organizations;
+    },
   });
 
   const router = useRouter();
-  const organizationFromPathname = usePathname().split("/").at(2)!;
+
   const [listDisplay, setListDisplay] = useState(false);
 
   useEffect(() => {
-    if (
-      !organizations?.map((org) => org.name!).includes(organizationFromPathname)
-    ) {
+    console.log(organizations);
+    if (!isLoading && (!organizations || !organizations.map((org) => org.name).includes(params.name))) {
       router.push("/dashboard");
     }
-  }, []);
+  }, [organizations, router]);
 
   return (
-    !isLoading &&
-    organizationFromPathname && (
+    (!isLoading && organizations!.map((org) => org.name).includes(params.name) &&
+      params.name) && (
       <div className="mx-auto flex flex-col items-center md:px-2">
         <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
           <div className="flex">
