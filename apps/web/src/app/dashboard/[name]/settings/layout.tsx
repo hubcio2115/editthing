@@ -6,7 +6,13 @@ import type { PropsWithChildren } from "react";
 
 import { cn } from "~/lib/utils";
 
-export default function Settings({ children }: PropsWithChildren) {
+type SettingsProps = {
+  params: {
+    name: string;
+  };
+} & PropsWithChildren;
+
+export default function Settings({ params, children }: SettingsProps) {
   const pathname = usePathname();
 
   return (
@@ -15,11 +21,7 @@ export default function Settings({ children }: PropsWithChildren) {
         <div className="flex h-full flex-col lg:flex-row">
           <nav className="mr-2 w-full shrink-0 lg:w-1/5">
             <div className="mb-4 mt-1 flex flex-row pr-2 lg:flex-col">
-              <Link
-                href={`/dashboard/${pathname
-                  .split("/")
-                  .at(2)}/settings/general`}
-              >
+              <Link href={`/dashboard/${params.name}/settings/general`}>
                 <div
                   className={cn(
                     "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
@@ -31,11 +33,7 @@ export default function Settings({ children }: PropsWithChildren) {
                   general
                 </div>
               </Link>
-              <Link
-                href={`/dashboard/${pathname
-                  .split("/")
-                  .at(2)}/settings/members`}
-              >
+              <Link href={`/dashboard/${params.name}/settings/members`}>
                 <div
                   className={cn(
                     "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
