@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { type PropsWithChildren, useState, useEffect, use } from "react";
+import React, { type PropsWithChildren, use, useEffect, useState } from "react";
 import {
+  FormProvider,
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
-  FormProvider,
 } from "react-hook-form";
+
 import { AlertModal } from "~/components/modals/alertModal";
 import DialogModal from "~/components/modals/dialogModal";
 import { Button } from "~/components/ui/button";
-
 import {
   Form,
   FormControl,
@@ -25,11 +25,23 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { type Invite, inviteSchema } from "~/lib/validators/invite";
 import { roleEnum } from "~/lib/validators/organization";
-import { addMemberToOrganizationByUserEmail, getMembersOfOrganization, getOwnOrganizationByName, removeMemberFromOrganization, updateMemberRole } from "~/server/actions/organization";
+import {
+  addMemberToOrganizationByUserEmail,
+  getMembersOfOrganization,
+  getOwnOrganizationByName,
+  removeMemberFromOrganization,
+  updateMemberRole,
+} from "~/server/actions/organization";
 
 type SettingsMembersViewProps = {
   params: {
@@ -43,7 +55,6 @@ type RoleInfo = {
   role: "user" | "owner" | "admin";
 };
 
-
 function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const session = useSession();
   const formMethods = useForm();
@@ -53,39 +64,62 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [newRole, setNewRole] = useState<RoleInfo | null>(null);
 
-  const { data: organization, refetch: refetchOrg, isFetched } = useQuery({
+  const {
+    data: organization,
+    refetch: refetchOrg,
+    isFetched,
+  } = useQuery({
     queryKey: ["organization", params.name],
     queryFn: async () => {
-      const [organizations, err] = await getOwnOrganizationByName(params.name)
+      const [organizations, err] = await getOwnOrganizationByName(params.name);
       if (err !== null) {
         console.error(err);
       }
 
       return organizations;
-    }
+    },
   });
 
-  const { data: userData, refetch: refetchUsers, isFetched: usersLoaded } = useQuery({
+  const {
+    data: userData,
+    refetch: refetchUsers,
+    isFetched: usersLoaded,
+  } = useQuery({
     queryKey: ["members", organization?.id],
     queryFn: () => getMembersOfOrganization(organization!.id),
     enabled: !!organization?.id && isFetched,
   });
 
-  const currentUserRole = userData?.find(user => user.user?.id === session.data?.user.id)?.usersToOrganizations.role;
-  const usersInOrganization = userData?.map(({ usersToOrganizations }) => usersToOrganizations.memberId);
+  const currentUserRole = userData?.find(
+    (user) => user.user?.id === session.data?.user.id,
+  )?.usersToOrganizations.role;
+  const usersInOrganization = userData?.map(
+    ({ usersToOrganizations }) => usersToOrganizations.memberId,
+  );
 
   useEffect(() => {
     refetchOrg();
   }, [organization]);
 
-  const handleRoleChange = async (newValue: "user" | "owner" | "admin", userId: string) => {
+  const handleRoleChange = async (
+    newValue: "user" | "owner" | "admin",
+    userId: string,
+  ) => {
     if (newValue === "owner") {
       setIsAlertOpen(true);
-      setNewRole({ memberId: userId, organizationId: organization!.id, role: newValue });
+      setNewRole({
+        memberId: userId,
+        organizationId: organization!.id,
+        role: newValue,
+      });
       return;
     }
     try {
-      await updateMemberRole({ memberId: userId, organizationId: organization!.id, role: newValue });
+      await updateMemberRole({
+        memberId: userId,
+        organizationId: organization!.id,
+        role: newValue,
+      });
       refetchUsers();
       toast({
         title: "Success",
@@ -95,11 +129,11 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       if (error instanceof Error) {
         toast({
           title: "Error",
-          description: `${error.message} !`
+          description: `${error.message} !`,
         });
       }
     }
-  }
+  };
 
   const handleAlertAccepted = async () => {
     setIsAlertOpen(false);
@@ -108,11 +142,14 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       refetchUsers();
       setNewRole(null);
     }
-  }
+  };
 
   const handleRemoveMember = async (userId: string) => {
     try {
-      await removeMemberFromOrganization({ memberId: userId, organizationId: organization!.id });
+      await removeMemberFromOrganization({
+        memberId: userId,
+        organizationId: organization!.id,
+      });
       toast({
         title: "Success",
         description: "User was removed successfully",
@@ -121,32 +158,33 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       if (error instanceof Error) {
         toast({
           title: "Error",
-          description: `${error.message} !`
+          description: `${error.message} !`,
         });
       }
     }
-  }
+  };
 
   const handleLeave = async () => {
     try {
-      await removeMemberFromOrganization({ memberId: session.data!.user.id, organizationId: organization!.id });
+      await removeMemberFromOrganization({
+        memberId: session.data!.user.id,
+        organizationId: organization!.id,
+      });
       toast({
         title: "Success",
         description: "You have left the organization",
       });
       router.push("/dashboard");
       refetchUsers();
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
         toast({
           title: "Error",
-          description: `${error.message} !`
+          description: `${error.message} !`,
         });
       }
     }
-  }
-
+  };
 
   const form = useForm<Invite>({
     resolver: zodResolver(inviteSchema),
@@ -162,7 +200,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       role: "user",
     })
       .then(() => {
-        refetchUsers()
+        refetchUsers();
         toast({
           title: "Success",
           description: `User ${data.email} was added successfully`,
@@ -173,7 +211,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
           title: "Error",
           description: ` ${error.message}!`,
         });
-      })
+      });
 
     setIsModalOpen(false);
   };
@@ -199,7 +237,6 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                   <span className="font-semibold">{params.name}</span>{" "}
                   organization.
                 </p>
-
               </div>
               <div className="flex items-center">
                 <Button
@@ -213,8 +250,8 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
               </div>
             </div>
             {userData && (
-              <div className="w-full grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
-                <div className="col-span-full grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 rounded-md border bg-gray-100 p-2">
+              <div className="grid w-full grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
+                <div className="col-span-full grid grid-cols-4 rounded-md border bg-gray-100 p-2 sm:grid-cols-5 lg:grid-cols-8">
                   <div className="col-span-2 sm:col-span-3 lg:col-span-6">
                     Member
                   </div>
@@ -223,31 +260,52 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                   </div>
                 </div>
 
-
-
                 {userData?.map(({ user, usersToOrganizations }) => (
-
-                  <div key={user?.id} className="col-span-full border-b last:border-none py-2 grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
-                    <div className="pl-2 col-span-2 sm:col-span-3 lg:col-span-6 flex items-center">{user?.name}</div>
+                  <div
+                    key={user?.id}
+                    className="col-span-full grid grid-cols-4 border-b py-2 last:border-none sm:grid-cols-5 lg:grid-cols-8"
+                  >
+                    <div className="col-span-2 flex items-center pl-2 sm:col-span-3 lg:col-span-6">
+                      {user?.name}
+                    </div>
                     <div className="col-span-1 flex items-center">
                       <Select
                         value={usersToOrganizations.role}
-                        disabled={currentUserRole === "user" || usersToOrganizations.role === "owner" || (currentUserRole === "owner" && usersInOrganization!.length < 2)}
-                        onValueChange={(newValue: "user" | "owner" | "admin") => handleRoleChange(newValue, user!.id)}
+                        disabled={
+                          currentUserRole === "user" ||
+                          usersToOrganizations.role === "owner" ||
+                          (currentUserRole === "owner" &&
+                            usersInOrganization!.length < 2)
+                        }
+                        onValueChange={(newValue: "user" | "owner" | "admin") =>
+                          handleRoleChange(newValue, user!.id)
+                        }
                       >
                         <SelectTrigger className="w-[90px]">
-                          <SelectValue placeholder={usersToOrganizations.role} />
+                          <SelectValue
+                            placeholder={usersToOrganizations.role}
+                          />
                         </SelectTrigger>
 
-                        <SelectContent >
-                          <SelectGroup >
-                            <SelectItem key={roleEnum.Values.owner} disabled={currentUserRole === 'admin'} value={roleEnum.Values.owner}>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem
+                              key={roleEnum.Values.owner}
+                              disabled={currentUserRole === "admin"}
+                              value={roleEnum.Values.owner}
+                            >
                               {roleEnum.Values.owner}
                             </SelectItem>
-                            <SelectItem key={roleEnum.Values.admin} value={roleEnum.Values.admin}>
+                            <SelectItem
+                              key={roleEnum.Values.admin}
+                              value={roleEnum.Values.admin}
+                            >
                               {roleEnum.Values.admin}
                             </SelectItem>
-                            <SelectItem key={roleEnum.Values.user} value={roleEnum.Values.user}>
+                            <SelectItem
+                              key={roleEnum.Values.user}
+                              value={roleEnum.Values.user}
+                            >
                               {roleEnum.Values.user}
                             </SelectItem>
                           </SelectGroup>
@@ -256,13 +314,26 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                     </div>
                     <div className="col-span-1 flex justify-center">
                       {session.data?.user.id === user?.id ? (
-                        <Button variant="ghost" onClick={() => { handleLeave() }}>Leave</Button>
-                      ) : currentUserRole === 'owner' || (currentUserRole === 'admin' && usersToOrganizations.role !== 'owner') ? (
-                        <Button variant="ghost" onClick={() => handleRemoveMember(user!.id)}>Remove</Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            handleLeave();
+                          }}
+                        >
+                          Leave
+                        </Button>
+                      ) : currentUserRole === "owner" ||
+                        (currentUserRole === "admin" &&
+                          usersToOrganizations.role !== "owner") ? (
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleRemoveMember(user!.id)}
+                        >
+                          Remove
+                        </Button>
                       ) : null}
                     </div>
                   </div>
-
                 ))}
               </div>
             )}

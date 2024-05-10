@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type PropsWithChildren } from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -20,12 +20,11 @@ type DashboardOverviewProps = {
   };
 };
 
-
 export default function Dashboard({ params }: DashboardOverviewProps) {
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations", params.name],
     queryFn: async () => {
-      const [organizations, err] = await getOwnOrganizations()
+      const [organizations, err] = await getOwnOrganizations();
       if (err !== null) {
         console.error(err);
       }
@@ -40,14 +39,19 @@ export default function Dashboard({ params }: DashboardOverviewProps) {
 
   useEffect(() => {
     console.log(organizations);
-    if (!isLoading && (!organizations || !organizations.map((org) => org.name).includes(params.name))) {
+    if (
+      !isLoading &&
+      (!organizations ||
+        !organizations.map((org) => org.name).includes(params.name))
+    ) {
       router.push("/dashboard");
     }
   }, [organizations, router]);
 
   return (
-    (!isLoading && organizations!.map((org) => org.name).includes(params.name) &&
-      params.name) && (
+    !isLoading &&
+    organizations!.map((org) => org.name).includes(params.name) &&
+    params.name && (
       <div className="mx-auto flex flex-col items-center md:px-2">
         <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
           <div className="flex">

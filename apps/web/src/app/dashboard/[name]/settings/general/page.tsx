@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -12,8 +11,8 @@ import {
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { AlertModal } from "~/components/modals/alertModal";
 
+import { AlertModal } from "~/components/modals/alertModal";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -29,8 +28,12 @@ import {
   type UpdateOrganizationName,
   updateOrganizationNameSchema,
 } from "~/lib/validators/organization";
-import { deleteOrganization, getMembersOfOrganization, getOwnOrganizationByName, updateOrganizationName } from "~/server/actions/organization";
-
+import {
+  deleteOrganization,
+  getMembersOfOrganization,
+  getOwnOrganizationByName,
+  updateOrganizationName,
+} from "~/server/actions/organization";
 
 type SettingsMembersViewProps = {
   params: {
@@ -44,11 +47,14 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
   const session = useSession();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-
-  const { data: organization, isLoading, isFetched } = useQuery({
+  const {
+    data: organization,
+    isLoading,
+    isFetched,
+  } = useQuery({
     queryKey: ["organization", params.name],
     queryFn: async () => {
-      const [organization, err] = await getOwnOrganizationByName(params.name)
+      const [organization, err] = await getOwnOrganizationByName(params.name);
 
       console.log(organization, err);
 
@@ -65,29 +71,32 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     },
   });
 
-
-
-  const { data: userData, refetch: refetchUsers, isFetched: usersLoaded } = useQuery({
+  const {
+    data: userData,
+    refetch: refetchUsers,
+    isFetched: usersLoaded,
+  } = useQuery({
     queryKey: ["members", organization?.id],
     queryFn: () => getMembersOfOrganization(organization!.id),
     enabled: !!organization?.id && isFetched,
   });
 
-  const currentUserRole = userData?.find(user => user.user?.id === session.data?.user.id)?.usersToOrganizations.role;
-
+  const currentUserRole = userData?.find(
+    (user) => user.user?.id === session.data?.user.id,
+  )?.usersToOrganizations.role;
 
   const { mutate: updateOrganizationNameMutation } = useMutation({
     mutationFn: updateOrganizationName,
     onError: (error) => {
       toast({
         title: "Error",
-        description: `Failed to update organization name: ${error.message}`
-      })
+        description: `Failed to update organization name: ${error.message}`,
+      });
     },
     onSuccess: (_, { name }) => {
       toast({
         title: "Success",
-        description: `Organization name updated to ${name}`
+        description: `Organization name updated to ${name}`,
       });
       router.push(`/dashboard/${name}/settings/general`);
     },
@@ -98,22 +107,17 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     onError: (error) => {
       toast({
         title: "Error",
-        description: `${error.message}`
-      })
-
+        description: `${error.message}`,
+      });
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: `Organization deleted successfully`
+        description: `Organization deleted successfully`,
       });
       router.push("/dashboard");
     },
   });
-
-
-
-
 
   const form = useForm<UpdateOrganizationName>({
     resolver: zodResolver(updateOrganizationNameSchema),
@@ -131,9 +135,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     console.error(error);
   };
 
-
-
-  return (organization && !isLoading ? (
+  return organization && !isLoading ? (
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="font-selibold text-xl">General</h2>
@@ -171,7 +173,11 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
               </FormItem>
             )}
           />
-          <Button disabled={currentUserRole !== "owner"} type="submit" className="w-fit">
+          <Button
+            disabled={currentUserRole !== "owner"}
+            type="submit"
+            className="w-fit"
+          >
             Save changes
           </Button>
         </form>
@@ -218,18 +224,20 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
         isOpen={isAlertOpen}
         onOpenChange={(open) => setIsAlertOpen(open)}
         title="Are you absolutely sure?"
-
         description={`This will permanently delete the organization and all its data. \n Enter the name of the organization "${organization.name}" to confirm.`}
         unlockString={organization.name}
         onCancel={() => setIsAlertOpen(false)}
         onConfirm={() => {
-          deleteOrganizationMutation(organization.name)
+          deleteOrganizationMutation(organization.name);
           setIsAlertOpen(false);
         }}
       />
     </div>
-  ) : <div className="flex justify-center"><Loader2Icon size={"64px"} className="animate-spin" /></div>)
-
+  ) : (
+    <div className="flex justify-center">
+      <Loader2Icon size={"64px"} className="animate-spin" />
+    </div>
+  );
 }
 
 export default SettingsGeneral;
