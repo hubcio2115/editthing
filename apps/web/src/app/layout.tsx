@@ -1,8 +1,8 @@
 import { GeistSans } from "geist/font/sans";
 import type { PropsWithChildren } from "react";
 
-import { ReactQueryProvider } from "~/providers/react-query-provider";
 import { Toaster } from "~/components/ui/toaster";
+import { ReactQueryProvider } from "~/providers/react-query-provider";
 import { SessionProvider } from "~/providers/session-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
 import { getServerAuthSession } from "~/server/auth";

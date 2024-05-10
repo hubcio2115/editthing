@@ -14,7 +14,7 @@ export default function Settings({ children }: PropsWithChildren) {
       <div className=" mx-auto w-full max-w-6xl">
         <div className="flex h-full flex-col lg:flex-row">
           <nav className="mr-2 w-full shrink-0 lg:w-1/5">
-            <div className="mt-1 flex flex-row lg:flex-col pr-2 mb-4">
+            <div className="mb-4 mt-1 flex flex-row pr-2 lg:flex-col">
               <Link
                 href={`/dashboard/${pathname
                   .split("/")
@@ -22,10 +22,10 @@ export default function Settings({ children }: PropsWithChildren) {
               >
                 <div
                   className={cn(
-                    "text-l border-transparent pb-2 lg:pb-0 px-2 capitalize last:border-r-0",
+                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
                     pathname.split("/").at(-1) === "general"
-                      ? "cursor-default border-b lg:border-l lg:border-b-0 lg:border-l-fuchsia-900 border-b-fuchsia-900 text-fuchsia-900"
-                      : "hover:border-b border-slate-300 lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
+                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
                   )}
                 >
                   general
@@ -38,12 +38,12 @@ export default function Settings({ children }: PropsWithChildren) {
               >
                 <div
                   className={cn(
-                    "text-l border-transparent pb-2 lg:pb-0 px-2 capitalize last:border-r-0",
+                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
                     ["members", "invitations"].includes(
                       pathname.split("/").at(-1)!,
                     )
-                      ? "cursor-default border-b lg:border-l lg:border-b-0 lg:border-l-fuchsia-900 border-b-fuchsia-900 text-fuchsia-900"
-                      : "hover:border-b border-slate-300 lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
+                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
                   )}
                 >
                   members
