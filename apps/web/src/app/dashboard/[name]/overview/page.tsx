@@ -20,7 +20,9 @@ type DashboardOverviewProps = {
   };
 };
 
-export default function Dashboard({ params }: DashboardOverviewProps) {
+export default function DashboardOverviewPage({
+  params,
+}: DashboardOverviewProps) {
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations", params.name],
     queryFn: async () => {
@@ -41,8 +43,7 @@ export default function Dashboard({ params }: DashboardOverviewProps) {
     console.log(organizations);
     if (
       !isLoading &&
-      (!organizations ||
-        !organizations.map((org) => org.name).includes(params.name))
+      !organizations?.map((org) => org.name).includes(params.name)
     ) {
       router.push("/dashboard");
     }
