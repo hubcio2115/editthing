@@ -5,7 +5,7 @@ import { Select } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { type PropsWithChildren, use, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FormProvider,
   type SubmitErrorHandler,
@@ -34,7 +34,7 @@ import {
 } from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
 import { type Invite, inviteSchema } from "~/lib/validators/invite";
-import { roleEnum } from "~/lib/validators/organization";
+import { type OrgMemberRole, roleEnum } from "~/lib/validators/organization";
 import {
   addMemberToOrganizationByUserEmail,
   getMembersOfOrganization,
@@ -52,7 +52,7 @@ type SettingsMembersViewProps = {
 type RoleInfo = {
   memberId: string;
   organizationId: number;
-  role: "user" | "owner" | "admin";
+  role: OrgMemberRole;
 };
 
 function SettingsMembersView({ params }: SettingsMembersViewProps) {
@@ -62,8 +62,8 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [newRole, setNewRole] = useState<RoleInfo | null>(null);
 
+  const newRole = useRef<RoleInfo | null>(null);
   const {
     data: organization,
     refetch: refetchOrg,
@@ -101,17 +101,17 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
     refetchOrg();
   }, [organization]);
 
-  const handleRoleChange = async (
-    newValue: "user" | "owner" | "admin",
-    userId: string,
-  ) => {
+  async function handleRoleChange(
+    newValue: RoleInfo["role"],
+    userId: RoleInfo["memberId"],
+  ) {
     if (newValue === "owner") {
       setIsAlertOpen(true);
-      setNewRole({
+      newRole.current = {
         memberId: userId,
         organizationId: organization!.id,
         role: newValue,
-      });
+      };
       return;
     }
     try {
@@ -133,18 +133,18 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         });
       }
     }
-  };
+  }
 
-  const handleAlertAccepted = async () => {
+  async function handleAlertAccepted() {
     setIsAlertOpen(false);
-    if (newRole) {
-      await updateMemberRole(newRole);
+    if (newRole.current) {
+      await updateMemberRole(newRole.current);
       refetchUsers();
-      setNewRole(null);
+      newRole.current = null;
     }
-  };
+  }
 
-  const handleRemoveMember = async (userId: string) => {
+  async function handleRemoveMember(userId: string) {
     try {
       await removeMemberFromOrganization({
         memberId: userId,
@@ -162,7 +162,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         });
       }
     }
-  };
+  }
 
   const handleLeave = async () => {
     try {
@@ -175,7 +175,6 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         description: "You have left the organization",
       });
       router.push("/dashboard");
-      refetchUsers();
     } catch (error) {
       if (error instanceof Error) {
         toast({

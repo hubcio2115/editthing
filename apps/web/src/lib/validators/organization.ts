@@ -48,3 +48,5 @@ export type organizationWithMembers =
       memberRole: z.infer<typeof roleEnum>;
     }
   | undefined;
+
+export type OrgMemberRole = z.infer<typeof roleEnum>;
