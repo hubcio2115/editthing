@@ -35,7 +35,7 @@ export default function AlertModal({
 }: AlertModalProps) {
   const [inputValue, setInputValue] = useState("");
 
-  const isActionDisabled: boolean =
+  const isActionDisabled =
     unlockString !== undefined && unlockString !== inputValue;
 
   return (
