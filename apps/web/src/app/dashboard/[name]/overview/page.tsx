@@ -2,8 +2,9 @@
 
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { type PropsWithChildren, useEffect, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -12,22 +13,53 @@ import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
 
-type DasboardPageProps = {
+type DashboardOverviewProps = {
   params: {
     name: string;
   };
 };
 
-export default function DashboardPage({ params }: DasboardPageProps) {
+export default function DashboardOverviewPage({
+  params,
+}: DashboardOverviewProps) {
+  const { data: organizations, isLoading } = useQuery({
+    queryKey: ["organizations", params.name],
+    queryFn: async () => {
+      const [organizations, err] = await getOwnOrganizations();
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organizations;
+    },
+  });
+
+  const router = useRouter();
+
   const [listDisplay, setListDisplay] = useState(false);
 
+  useEffect(() => {
+    console.log(organizations);
+    if (
+      !isLoading &&
+      !organizations?.map((org) => org.name).includes(params.name)
+    ) {
+      router.push("/dashboard");
+    }
+  }, [organizations, router]);
+
   return (
-    <div className="mx-auto flex flex-col items-center md:px-2">
-      <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
-        <div className="flex">
-          <div className="flex flex-1">
-            <div className="rounded-lg  rounded-r-none border border-r-0">
-              <SearchIcon className="m-2 h-5 w-6" />
+    !isLoading &&
+    organizations!.map((org) => org.name).includes(params.name) &&
+    params.name && (
+      <div className="mx-auto flex flex-col items-center md:px-2">
+        <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
+          <div className="flex">
+            <div className="flex flex-1">
+              <div className="rounded-lg  rounded-r-none border border-r-0">
+                <SearchIcon className="m-2 h-5 w-6" />
+              </div>
+              <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
             </div>
             <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
           </div>

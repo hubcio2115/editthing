@@ -1,6 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import type { PropsWithChildren } from "react";
 
+import { Toaster } from "~/components/ui/toaster";
 import { ReactQueryProvider } from "~/providers/react-query-provider";
 import { SessionProvider } from "~/providers/session-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
@@ -27,7 +28,8 @@ export default async function RootLayout({ children }: PropsWithChildren) {
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <main>{children}</main>
+              <Toaster />
             </ThemeProvider>
           </SessionProvider>
         </ReactQueryProvider>

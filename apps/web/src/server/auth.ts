@@ -110,9 +110,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      const newOrganization = (
-        await createOrganization(db, newOrgName, user.id)
-      )[0];
+      const newOrganization = (await createOrganization(db, newOrgName))[0];
 
       if (!newOrganization) {
         throw new Error("Couldn't create new organization.");
