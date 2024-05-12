@@ -24,7 +24,7 @@ type AlertModalProps = {
   onConfirm: () => void;
 };
 
-export const AlertModal: FunctionComponent<AlertModalProps> = ({
+export default function AlertModal({
   isOpen,
   onOpenChange,
   title,
@@ -32,7 +32,7 @@ export const AlertModal: FunctionComponent<AlertModalProps> = ({
   unlockString,
   onCancel,
   onConfirm,
-}) => {
+}: AlertModalProps) {
   const [inputValue, setInputValue] = useState("");
 
   const isActionDisabled: boolean =
@@ -74,4 +74,4 @@ export const AlertModal: FunctionComponent<AlertModalProps> = ({
       </AlertDialogContent>
     </AlertDialog>
   );
-};
+}
