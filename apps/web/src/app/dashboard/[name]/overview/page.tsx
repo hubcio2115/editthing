@@ -31,6 +31,10 @@ export default function DashboardOverviewPage({
         console.error(err);
       }
 
+      if (organizations === null) {
+        return [];
+      }
+
       return organizations;
     },
   });
