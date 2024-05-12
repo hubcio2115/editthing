@@ -78,7 +78,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
   } = useQuery({
     queryKey: ["members", organization?.id],
     queryFn: () => getMembersOfOrganization(organization!.id),
-    enabled: !!organization?.id && isFetched,
+    enabled: isFetched && !!organization?.id,
   });
 
   const currentUserRole = userData?.find(
