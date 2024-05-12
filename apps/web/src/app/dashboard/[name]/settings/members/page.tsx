@@ -13,7 +13,7 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { AlertModal } from "~/components/modals/alertModal";
+import AlertModal from "~/components/modals/alertModal";
 import DialogModal from "~/components/modals/dialogModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -93,6 +93,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const currentUserRole = userData?.find(
     (user) => user.user?.id === session.data?.user.id,
   )?.usersToOrganizations.role;
+
   const usersInOrganization = userData?.map(
     ({ usersToOrganizations }) => usersToOrganizations.memberId,
   );
@@ -164,7 +165,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
     }
   }
 
-  const handleLeave = async () => {
+  async function handleLeave() {
     try {
       await removeMemberFromOrganization({
         memberId: session.data!.user.id,
@@ -183,7 +184,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         });
       }
     }
-  };
+  }
 
   const form = useForm<Invite>({
     resolver: zodResolver(inviteSchema),
@@ -276,7 +277,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                           (currentUserRole === "owner" &&
                             usersInOrganization!.length < 2)
                         }
-                        onValueChange={(newValue: "user" | "owner" | "admin") =>
+                        onValueChange={(newValue: OrgMemberRole) =>
                           handleRoleChange(newValue, user!.id)
                         }
                       >
@@ -364,7 +365,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
 
           <AlertModal
             isOpen={isAlertOpen}
-            onOpenChange={(open) => setIsAlertOpen(open)}
+            onOpenChange={(open: boolean) => setIsAlertOpen(open)}
             title="Are you absolutely sure?"
             description="You will transter the ownership of the organization to the selected user. Your role will be changed to admin."
             onCancel={() => setIsAlertOpen(false)}

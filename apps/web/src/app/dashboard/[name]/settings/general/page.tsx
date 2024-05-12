@@ -12,7 +12,7 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { AlertModal } from "~/components/modals/alertModal";
+import AlertModal from "~/components/modals/alertModal";
 import { Button } from "~/components/ui/button";
 import {
   Form,
