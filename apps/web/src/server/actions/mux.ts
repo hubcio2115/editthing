@@ -6,6 +6,7 @@ import type { Upload } from "@mux/mux-node/resources/video/uploads.mjs";
 import type { User } from "next-auth";
 
 import { env } from "~/env.mjs";
+import type { Result } from "~/lib/utils";
 
 import { db } from "../db";
 import { videoEntries } from "../db/schema";
@@ -16,7 +17,7 @@ const mux = new Mux({
 
 export async function createEndpointForMuxUpload(
   userId: User["id"],
-): Promise<[Upload, null] | [null, APIError]> {
+): Promise<Result<Upload>> {
   try {
     const upload = await mux.video.uploads.create({
       cors_origin: env.MUX_URL,
@@ -37,6 +38,6 @@ export async function createEndpointForMuxUpload(
 
     console.error(`${err.status} ${err.name}: ${err.headers}`);
 
-    return [null, err];
+    return [null, err.message];
   }
 }
