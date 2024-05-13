@@ -1,12 +1,14 @@
 "use server";
 
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 import type {
   InsertOrganization,
   Organization,
   organizationWithMembers,
 } from "~/lib/validators/organization";
+import { type OrgMemberRole } from "~/lib/validators/organization";
+import type { User } from "~/lib/validators/user";
 import {
   organizationWithMembersView,
   projects as projectsTable,
@@ -138,8 +140,8 @@ export async function updateOrganizationName({
   oldName,
   name,
 }: {
-  oldName: string;
-  name: string;
+  oldName: Organization["name"];
+  name: Organization["name"];
 }): Promise<null | Error> {
   const session = await getServerAuthSession();
 
@@ -233,15 +235,15 @@ export async function addMemberToOrganization({
 }: {
   organizationId: Organization["id"];
   memberId: string;
-  role: "user" | "owner" | "admin";
+  role: OrgMemberRole;
 }) {
   await db
     .insert(usersToOrganizations)
     .values({ organizationId, memberId, role })
     .execute();
 }
+
 /**
- *
  * @throws {Error} returning an error instead of throwing an error ends up with the client not being able to recieve it
  */
 export async function addMemberToOrganizationByUserEmail({
@@ -251,7 +253,7 @@ export async function addMemberToOrganizationByUserEmail({
 }: {
   organizationId: Organization["id"];
   email: string;
-  role: "user" | "owner" | "admin";
+  role: OrgMemberRole;
 }) {
   const user = (
     await db.select().from(users).where(eq(users.email, email)).execute()
@@ -291,8 +293,8 @@ export async function updateMemberRole({
   role,
 }: {
   organizationId: Organization["id"];
-  memberId: string;
-  role: "user" | "owner" | "admin";
+  memberId: User["id"];
+  role: OrgMemberRole;
 }): Promise<null | Error> {
   const session = await getServerAuthSession();
   const currentOwner = (
@@ -350,7 +352,7 @@ export async function removeMemberFromOrganization({
   memberId,
 }: {
   organizationId: Organization["id"];
-  memberId: string;
+  memberId: User["id"];
 }) {
   const users = await db
     .select()
