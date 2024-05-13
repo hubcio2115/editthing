@@ -9,10 +9,12 @@ import GoogleProvider from "next-auth/providers/google";
 
 import { env } from "~/env.mjs";
 import { generateSeedForOrgName, stripSpecialCharacters } from "~/lib/utils";
+import {
+  createOrganization,
+  getOrganizationByName,
+} from "~/server/api/utils/organizations";
 import { db } from "~/server/db";
 import { createTable } from "~/server/db/schema";
-
-import { createOrganization, getOrganizationByName } from "./db/organizations";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -110,7 +112,12 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      const newOrganization = (await createOrganization(db, newOrgName))[0];
+      const newOrganization = await createOrganization(
+        db,
+        newOrgName,
+        user.id,
+        true,
+      );
 
       if (!newOrganization) {
         throw new Error("Couldn't create new organization.");
