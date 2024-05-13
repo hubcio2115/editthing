@@ -5,6 +5,8 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
+export type Result<T> = [data: T, err: null] | [data: null, err: string];
+
 /**
  * Strip a string of special characters other than "-"
  * @example
