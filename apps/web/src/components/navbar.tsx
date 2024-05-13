@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -44,7 +44,14 @@ export default function Navbar() {
                   <Profile session={session.data} />
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent className="w-[200px]">
+                <DropdownMenuContent>
+                  <Link href="/user/settings">
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4 hover:cursor-pointer" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut
                       className="mr-2 h-4 w-4 hover:cursor-pointer"
