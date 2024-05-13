@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { Button } from "~/components/ui/button";
 import { getOwnOrganizations } from "~/server/actions/organization";
 
 export default async function Dashboard() {
