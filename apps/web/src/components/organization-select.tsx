@@ -19,6 +19,7 @@ import {
 import {
   type InsertOrganization,
   insertOrganizationSchema,
+  type Organization,
 } from "~/lib/validators/organization";
 import {
   createOrganization,
@@ -44,10 +45,6 @@ import {
 import { Input } from "./ui/input";
 import { useToast } from "./ui/use-toast";
 
-
-
-
-
 export default function OrganizationSelect() {
   const pathname = usePathname();
   const organizationFromPathname = decodeURIComponent(
@@ -63,7 +60,11 @@ export default function OrganizationSelect() {
     refetch();
   }, [pathname]);
 
-  const { data: organizations, refetch, isLoading } = useQuery({
+  const {
+    data: organizations,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["organizations"],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
@@ -73,7 +74,7 @@ export default function OrganizationSelect() {
       }
 
       return organizations;
-    }
+    },
   });
 
   function selectOrganization(orgName: string) {
@@ -88,29 +89,32 @@ export default function OrganizationSelect() {
   });
 
   const { mutate: createOrganizationMutation } = useMutation<
-    InsertOrganization | undefined,
+    Organization | null,
     Error,
     InsertOrganization
   >({
     mutationKey: ["create", "organization"],
-    mutationFn: async (insertData) => createOrganization(insertData),
-    onSuccess: (data) => {
-      if (!!data) {
+    mutationFn: async (insertData) => {
+      const [newOrg, err] = await createOrganization(insertData);
+
+      if (err !== null) {
+        toast({
+          title: "Error",
+          description: err,
+        });
+      } else {
         toast({
           title: "Success",
           description: "Organization created successfully",
         });
-        router.push(`/dashboard/${data.name}/overview`);
+
+        router.push(`/dashboard/${newOrg.name}/overview`);
         setIsModalOpen(false);
         refetch();
       }
+
+      return newOrg;
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-      });
-    }
   });
 
   const onSubmit: SubmitHandler<InsertOrganization> = (data) => {
@@ -121,10 +125,10 @@ export default function OrganizationSelect() {
     console.error(error);
   };
 
-  return !isLoading && (
-    <>
-      {
-        organizations && organizations.length > 0 ? (
+  return (
+    !isLoading && (
+      <>
+        {organizations && organizations.length > 0 ? (
           <Select
             value={organizationFromPathname}
             onValueChange={(newValue) => {
@@ -147,7 +151,6 @@ export default function OrganizationSelect() {
                   </SelectItem>
                 ))}
                 <div
-
                   className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                   onClick={() => {
                     setIsModalOpen(true);
@@ -158,60 +161,58 @@ export default function OrganizationSelect() {
               </SelectGroup>
             </SelectContent>
           </Select>
-        )
-          : (
-            <Button
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            ><span className="mr-3">Create organization</span><Plus size={16} />
-            </Button>
-          )
-      }
+        ) : (
+          <Button
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+          >
+            <span className="mr-3">Create organization</span>
+            <Plus size={16} />
+          </Button>
+        )}
 
+        <Dialog
+          open={isModalOpen}
+          onOpenChange={(open) => {
+            setIsModalOpen(open);
+          }}
+        >
+          <DialogContent className="sm:max-w-[425px]">
+            <Form {...form}>
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={form.handleSubmit(onSubmit, onError)}
+              >
+                <DialogHeader>
+                  <DialogTitle>New Organization</DialogTitle>
+                </DialogHeader>
 
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="mt-4 flex flex-col gap-2">
+                      <FormLabel htmlFor="name">Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Your new orgnization name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-
-      <Dialog
-        open={isModalOpen}
-        onOpenChange={(open) => {
-          setIsModalOpen(open);
-        }}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <Form {...form}>
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-            >
-              <DialogHeader>
-                <DialogTitle>New Organization</DialogTitle>
-              </DialogHeader>
-
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="mt-4 flex flex-col gap-2">
-                    <FormLabel htmlFor="name">Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Your new orgnization name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DialogFooter>
-                <Button type="submit">Create</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </>
+                <DialogFooter>
+                  <Button type="submit">Create</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </>
+    )
   );
 }
