@@ -1,6 +1,5 @@
-import { eq, relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
   bigserial,
   boolean,
   date,
@@ -12,7 +11,6 @@ import {
   primaryKey,
   text,
   timestamp,
-  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
@@ -142,6 +140,7 @@ export const usersToOrganizations = createTable(
     organizationId: bigserial("organizationId", { mode: "number" })
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
+    role: roleEnum("role").notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.memberId, t.role, t.organizationId] }),
@@ -184,7 +183,7 @@ export const privacyStatus = pgEnum("privacyStatus", [
 
 export const projects = createTable("project", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  projectName: varchar("projectName", { length: 256 }).notNull(),
+  name: varchar("name", { length: 256 }),
   projectDescription: varchar("projectDescription", { length: 512 }),
   title: varchar("title", { length: 256 }),
   description: varchar("description", { length: 512 }),
@@ -196,6 +195,7 @@ export const projects = createTable("project", {
   publicStatsViewable: boolean("publicStatsViewable"),
   publishAt: date("publishAt", { mode: "string" }),
   selfDeclaredMadeForKids: boolean("selfDeclaredMadeForKids"),
+
   videoEntryId: bigserial("videoEntryId", { mode: "number" }),
   organizationId: bigserial("organizationId", { mode: "number" }).notNull(),
 });
@@ -205,6 +205,7 @@ export const projectsRelations = relations(projects, ({ one }) => ({
     fields: [projects.videoEntryId],
     references: [videoEntries.id],
   }),
+
   organization: one(organizations, {
     fields: [projects.organizationId],
     references: [organizations.id],
