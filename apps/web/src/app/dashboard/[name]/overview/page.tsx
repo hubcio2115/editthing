@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { type PropsWithChildren, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -12,6 +13,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
 import projectMockData from "~/lib/mock/organizationOverview";
+import { getOwnOrganizations } from "~/server/actions/organization";
 
 type DashboardOverviewProps = {
   params: {
@@ -26,6 +28,7 @@ export default function DashboardOverviewPage({
     queryKey: ["organizations", params.name],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
+
       if (err !== null) {
         console.error(err);
       }
@@ -61,38 +64,37 @@ export default function DashboardOverviewPage({
               </div>
               <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
             </div>
-            <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
+
+            <Toggle
+              variant="outline"
+              onClick={() => {
+                setListDisplay(!listDisplay);
+              }}
+              className="mr-2"
+            >
+              <StretchHorizontal />
+            </Toggle>
+
+            <Link href={`/dashboard/${params.name}/create-project`}>
+              <Button variant="outline">Add video</Button>
+            </Link>
           </div>
-
-          <Toggle
-            variant="outline"
-            onClick={() => {
-              setListDisplay(!listDisplay);
-            }}
-            className="mr-2"
-          >
-            <StretchHorizontal />
-          </Toggle>
-
-          <Link href={`/dashboard/${params.name}/create-project`}>
-            <Button variant="outline">Add video</Button>
-          </Link>
         </div>
+
+        {listDisplay ? (
+          <div className="my-5 flex flex-col justify-center gap-4">
+            {projectMockData?.map((video, index) => (
+              <VideoSmallCard key={index} video={video} />
+            ))}
+          </div>
+        ) : (
+          <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
+            {projectMockData?.map((video, index) => (
+              <VideoCard key={index} video={video} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {listDisplay ? (
-        <div className="my-5 flex flex-col justify-center gap-4">
-          {projectMockData?.map((video, index) => (
-            <VideoSmallCard key={index} video={video} />
-          ))}
-        </div>
-      ) : (
-        <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
-          {projectMockData?.map((video, index) => (
-            <VideoCard key={index} video={video} />
-          ))}
-        </div>
-      )}
-    </div>
+    )
   );
 }
