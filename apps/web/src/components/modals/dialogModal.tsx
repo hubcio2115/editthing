@@ -1,5 +1,3 @@
-import { type FunctionComponent } from "react";
-
 import {
   Dialog,
   DialogContent,
