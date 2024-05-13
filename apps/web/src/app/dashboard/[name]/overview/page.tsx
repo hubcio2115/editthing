@@ -3,8 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { type PropsWithChildren, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import VideoCard from "~/components/dashboard/videoCard";
 import VideoSmallCard from "~/components/dashboard/videoSmallCard";
@@ -42,13 +42,12 @@ export default function DashboardOverviewPage({
   const router = useRouter();
 
   const [listDisplay, setListDisplay] = useState(false);
+  const isCanBeRendered =
+    !isLoading && !organizations?.map((org) => org.name).includes(params.name);
 
   useEffect(() => {
     console.log(organizations);
-    if (
-      !isLoading &&
-      !organizations?.map((org) => org.name).includes(params.name)
-    ) {
+    if (isCanBeRendered) {
       router.push("/dashboard");
     }
   }, [organizations, router]);
@@ -58,10 +57,10 @@ export default function DashboardOverviewPage({
     organizations!.map((org) => org.name).includes(params.name) &&
     params.name && (
       <div className="mx-auto flex flex-col items-center md:px-2">
-        <div className="flex w-full max-w-[920px] flex-col justify-center gap-4 ">
+        <div className="flex w-full max-w-[920px] flex-col justify-center gap-4">
           <div className="flex">
             <div className="flex flex-1">
-              <div className="rounded-lg  rounded-r-none border border-r-0">
+              <div className="rounded-lg rounded-r-none border border-r-0">
                 <SearchIcon className="m-2 h-5 w-6" />
               </div>
               <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
