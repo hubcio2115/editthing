@@ -42,11 +42,8 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/use-toast";
-
-
-
-
 
 export default function OrganizationSelect() {
   const pathname = usePathname();
@@ -63,7 +60,11 @@ export default function OrganizationSelect() {
     refetch();
   }, [pathname]);
 
-  const { data: organizations, refetch, isLoading } = useQuery({
+  const {
+    data: organizations,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["organizations"],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
@@ -73,12 +74,8 @@ export default function OrganizationSelect() {
       }
 
       return organizations;
-    }
+    },
   });
-
-  function selectOrganization(orgName: string) {
-    router.push(`/dashboard/${orgName}/overview`);
-  }
 
   const form = useForm<InsertOrganization>({
     resolver: zodResolver(insertOrganizationSchema),
@@ -110,7 +107,7 @@ export default function OrganizationSelect() {
         title: "Error",
         description: error.message,
       });
-    }
+    },
   });
 
   const onSubmit: SubmitHandler<InsertOrganization> = (data) => {
@@ -121,56 +118,53 @@ export default function OrganizationSelect() {
     console.error(error);
   };
 
-  return !isLoading && (
+  return isLoading ? (
+    <Skeleton className="h-[40px] w-[180px] bg-slate-200"></Skeleton>
+  ) : (
     <>
-      {
-        organizations && organizations.length > 0 ? (
-          <Select
-            value={organizationFromPathname}
-            onValueChange={(newValue) => {
-              selectOrganization(newValue);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={organizationFromPathname} />
-            </SelectTrigger>
+      {organizations && organizations?.length > 0 ? (
+        <Select
+          value={organizationFromPathname}
+          onValueChange={(newValue) => {
+            router.push(`/dashboard/${newValue}/overview`);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={organizationFromPathname} />
+          </SelectTrigger>
 
-            <SelectContent>
-              <SelectGroup>
-                {organizations?.map((org) => (
-                  <SelectItem
-                    value={org.name}
-                    key={org.id}
-                    className="hover:cursor-pointer"
-                  >
-                    {org.name}
-                  </SelectItem>
-                ))}
-                <div
-
-                  className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                  onClick={() => {
-                    setIsModalOpen(true);
-                  }}
+          <SelectContent>
+            <SelectGroup>
+              {organizations?.map((org) => (
+                <SelectItem
+                  value={org.name}
+                  key={org.id}
+                  className="hover:cursor-pointer"
                 >
-                  Add new <Plus size={16} />
-                </div>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )
-          : (
-            <Button
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            ><span className="mr-3">Create organization</span><Plus size={16} />
-            </Button>
-          )
-      }
-
-
-
+                  {org.name}
+                </SelectItem>
+              ))}
+              <div
+                className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              >
+                Add new <Plus size={16} />
+              </div>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      ) : (
+        <Button
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          <span className="mr-3">Create organization</span>
+          <Plus size={16} />
+        </Button>
+      )}
 
       <Dialog
         open={isModalOpen}
