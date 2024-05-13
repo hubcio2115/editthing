@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1714930243468,
-      "tag": "0000_equal_unus",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1715031809881,
-      "tag": "0001_square_snowbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1715213794953,
-      "tag": "0002_cuddly_harry_osborn",
+      "when": 1715624665318,
+      "tag": "0000_rainy_rocket_raccoon",
       "breakpoints": true
     }
   ]

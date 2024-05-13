@@ -16,6 +16,12 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "status" AS ENUM('created', 'ready', 'errored');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_account" (
 	"userId" varchar(255) NOT NULL,
 	"type" varchar(255) NOT NULL,
@@ -34,22 +40,13 @@ CREATE TABLE IF NOT EXISTS "editthing_app_account" (
 CREATE TABLE IF NOT EXISTS "editthing_app_organization" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"name" varchar(128) NOT NULL,
-	"ownerId" varchar(255) NOT NULL,
 	"defaultOrg" boolean DEFAULT false NOT NULL,
 	CONSTRAINT "editthing_app_organization_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "editthing_app_post" (
-	"id" bigserial PRIMARY KEY NOT NULL,
-	"name" varchar(256),
-	"createdById" varchar(255) NOT NULL,
-	"created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt" timestamp
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_project" (
 	"id" bigserial PRIMARY KEY NOT NULL,
-	"projectName" varchar(256) NOT NULL,
+	"name" varchar(256),
 	"projectDescription" varchar(512),
 	"title" varchar(256),
 	"description" varchar(512),
@@ -61,8 +58,8 @@ CREATE TABLE IF NOT EXISTS "editthing_app_project" (
 	"publicStatsViewable" boolean,
 	"publishAt" date,
 	"selfDeclaredMadeForKids" boolean,
-	"videoEntryId" bigint,
-	"organizationId" bigint NOT NULL
+	"videoEntryId" bigserial NOT NULL,
+	"organizationId" bigserial NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_session" (
@@ -81,8 +78,8 @@ CREATE TABLE IF NOT EXISTS "editthing_app_user" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_usersToOrganizations" (
 	"memberId" varchar(255) NOT NULL,
+	"organizationId" bigserial NOT NULL,
 	"role" "role" NOT NULL,
-	"organizationId" bigint NOT NULL,
 	CONSTRAINT "editthing_app_usersToOrganizations_memberId_role_organizationId_pk" PRIMARY KEY("memberId","role","organizationId")
 );
 --> statement-breakpoint
@@ -103,11 +100,15 @@ CREATE TABLE IF NOT EXISTS "editthing_app_videoEntry" (
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "account_userId_idx" ON "editthing_app_account" ("userId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "createdById_idx" ON "editthing_app_post" ("createdById");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "name_idx" ON "editthing_app_post" ("name");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "session_userId_idx" ON "editthing_app_session" ("userId");--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "editthing_app_organization" ADD CONSTRAINT "editthing_app_organization_ownerId_editthing_app_user_id_fk" FOREIGN KEY ("ownerId") REFERENCES "editthing_app_user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "editthing_app_project" ADD CONSTRAINT "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk" FOREIGN KEY ("videoEntryId") REFERENCES "editthing_app_videoEntry"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "editthing_app_project" ADD CONSTRAINT "editthing_app_project_organizationId_editthing_app_organization_id_fk" FOREIGN KEY ("organizationId") REFERENCES "editthing_app_organization"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -119,7 +120,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "editthing_app_usersToOrganizations" ADD CONSTRAINT "editthing_app_usersToOrganizations_organizationId_editthing_app_organization_id_fk" FOREIGN KEY ("organizationId") REFERENCES "editthing_app_organization"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "editthing_app_usersToOrganizations" ADD CONSTRAINT "editthing_app_usersToOrganizations_organizationId_editthing_app_organization_id_fk" FOREIGN KEY ("organizationId") REFERENCES "editthing_app_organization"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
