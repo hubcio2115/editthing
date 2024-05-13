@@ -1,12 +1,14 @@
 "use server";
 
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
+import type { Result } from "~/lib/utils";
 import type {
   InsertOrganization,
   Organization,
-  organizationWithMembers,
+  OrganizationWithMembers,
 } from "~/lib/validators/organization";
+import { createOrganization as createOrganizationInner } from "~/server/api/utils/organizations";
 import {
   organizationWithMembersView,
   projects as projectsTable,
@@ -15,7 +17,6 @@ import {
 
 import { getServerAuthSession } from "../auth";
 import { db } from "../db";
-import { createOrganization as innerCreateOrganization } from "../db/organizations";
 import { organizations, usersToOrganizations } from "../db/schema";
 
 export async function getOwnOrganizations(): Promise<
@@ -46,11 +47,11 @@ export async function getOrgViewWithMembers() {
 
 export async function getOwnOrganizationByName(
   name: Organization["name"],
-): Promise<[organizationWithMembers, null] | [null, Error]> {
+): Promise<Result<OrganizationWithMembers>> {
   const session = await getServerAuthSession();
 
   if (!session) {
-    [null, new Error("You must be signed in to perform this action")];
+    return [null, "You must be signed in to perform this action"];
   }
 
   const organization = (
@@ -63,7 +64,7 @@ export async function getOwnOrganizationByName(
           eq(organizationWithMembersView.name, name),
         ),
       )
-  )[0];
+  )[0]!;
 
   return [organization, null];
 }
@@ -78,19 +79,17 @@ export async function getOrganizationProjects(id: Organization["id"]) {
 }
 
 export async function getOrganizations(): Promise<
-  | [
-      {
-        orgId: number | null;
-        orgName: string | null;
-      }[],
-      null,
-    ]
-  | [null, Error]
+  Result<
+    {
+      orgId: Organization["id"] | null;
+      orgName: Organization["name"] | null;
+    }[]
+  >
 > {
   const session = await getServerAuthSession();
 
   if (!session) {
-    return [null, new Error("You must be signed in to perform this action")];
+    return [null, "You must be signed in to perform this action."];
   }
 
   return [
@@ -109,29 +108,17 @@ export async function getOrganizations(): Promise<
   ];
 }
 
-export async function createOrganization({ name }: InsertOrganization) {
+export async function createOrganization({
+  name,
+}: InsertOrganization): Promise<Result<Organization>> {
   const session = await getServerAuthSession();
+
   try {
-    const newOrg = (
-      await db
-        .insert(organizations)
-        .values({ name })
-        .returning({ id: organizations.id, name: organizations.name })
-        .execute()
-    )[0]!;
+    const newOrg = await createOrganizationInner(db, name, session?.user.id!, true);
 
-    await db
-      .insert(usersToOrganizations)
-      .values({
-        memberId: session!.user.id,
-        organizationId: newOrg.id,
-        role: "owner",
-      })
-      .execute();
-
-    return newOrg;
+    return [newOrg, null];
   } catch (e) {
-    throw new Error("Organization name already exists");
+    return [null, (e as Error).message];
   }
 }
 
@@ -141,7 +128,7 @@ export async function updateOrganizationName({
 }: {
   oldName: string;
   name: string;
-}): Promise<null | Error> {
+}): Promise<Result<null>> {
   const session = await getServerAuthSession();
 
   const owner = (
@@ -157,9 +144,10 @@ export async function updateOrganizationName({
   )[0]!;
 
   if (owner.memberId !== session!.user.id) {
-    throw new Error(
+    return [
+      null,
       "You must be the owner of the organization to perform this action",
-    );
+    ];
   }
 
   await db
@@ -167,12 +155,12 @@ export async function updateOrganizationName({
     .set({ name })
     .where(and(eq(organizations.name, oldName)));
 
-  return null;
+  return [null, null];
 }
 
 export async function deleteOrganization(
   name: Organization["name"],
-): Promise<null | Error> {
+): Promise<Result<null>> {
   const session = await getServerAuthSession();
 
   const orgWithMember = (
@@ -188,9 +176,10 @@ export async function deleteOrganization(
   )[0]!;
 
   if (orgWithMember.memberId !== session!.user.id) {
-    throw new Error(
+    return [
+      null,
       "You must be the owner of the organization to perform this action",
-    );
+    ];
   }
 
   const currentUserOrganizations = await db
@@ -200,7 +189,7 @@ export async function deleteOrganization(
     .execute();
 
   if (currentUserOrganizations.length < 2) {
-    throw new Error("You must be a member of at least one organization.");
+    return [null, "You must be a member of at least one organization."];
   }
 
   await db
@@ -209,7 +198,7 @@ export async function deleteOrganization(
 
   await db.delete(organizations).where(eq(organizations.name, name));
 
-  return null;
+  return [null, null];
 }
 
 export async function getMembersOfOrganization(id: Organization["id"]) {
@@ -241,8 +230,8 @@ export async function addMemberToOrganization({
     .values({ organizationId, memberId, role })
     .execute();
 }
+
 /**
- *
  * @throws {Error} returning an error instead of throwing an error ends up with the client not being able to recieve it
  */
 export async function addMemberToOrganizationByUserEmail({
