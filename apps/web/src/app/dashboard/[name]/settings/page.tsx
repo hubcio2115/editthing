@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2Icon, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useToast } from "~/components/ui/use-toast";
 import {
   type UpdateOrganizationName,
@@ -71,11 +72,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     },
   });
 
-  const {
-    data: userData,
-    refetch: refetchUsers,
-    isFetched: usersLoaded,
-  } = useQuery({
+  const { data: userData } = useQuery({
     queryKey: ["members", organization?.id],
     queryFn: () => getMembersOfOrganization(organization!.id),
     enabled: isFetched && !!organization?.id,
@@ -98,7 +95,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
         title: "Success",
         description: `Organization name updated to ${name}`,
       });
-      router.push(`/dashboard/${name}/settings/general`);
+      router.push(`/dashboard/${name}/settings`);
     },
   });
 
@@ -235,7 +232,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     </div>
   ) : (
     <div className="flex justify-center">
-      <Loader2Icon size={"64px"} className="animate-spin" />
+      <Skeleton className="w-full h-[25vw] bg-slate-100" />
     </div>
   );
 }
