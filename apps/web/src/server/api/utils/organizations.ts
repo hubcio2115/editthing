@@ -3,9 +3,8 @@ import type { User } from "next-auth";
 import "server-only";
 
 import type { Organization } from "~/lib/validators/organization";
-
-import { type DbConnection } from ".";
-import { organizations } from "./schema";
+import { type DbConnection } from "~/server/db/index";
+import { organizations, usersToOrganizations } from "~/server/db/schema";
 
 export async function getOrganizationByName(
   db: DbConnection,
@@ -18,6 +17,20 @@ export async function createOrganization(
   db: DbConnection,
   name: Organization["name"],
   ownerId: User["id"],
+  isDefault = false,
 ) {
-  return db.insert(organizations).values({ name, owner: ownerId }).returning();
+  const newOrganization = (
+    await db
+      .insert(organizations)
+      .values({ name, defaultOrg: isDefault })
+      .returning()
+  )[0]!;
+
+  await db.insert(usersToOrganizations).values({
+    organizationId: newOrganization.id,
+    memberId: ownerId,
+    role: "owner",
+  });
+
+  return newOrganization;
 }
