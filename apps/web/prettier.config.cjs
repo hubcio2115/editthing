@@ -1,4 +1,4 @@
-/** @type {import('prettier-plugin-tailwindcss').options & import('@softonus/prettier-plugin-whitespace-remover') & import('@trivago/prettier-plugin-sort-imports').PrettierConfig} */
+/** @type {import('prettier-plugin-tailwindcss').options & import('@trivago/prettier-plugin-sort-imports').PrettierConfig} */
 module.exports = {
   plugins: [
     "@trivago/prettier-plugin-sort-imports",
