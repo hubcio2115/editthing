@@ -194,24 +194,26 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   });
 
   const onSubmit: SubmitHandler<Invite> = async (data) => {
-    await addMemberToOrganizationByUserEmail({
-      email: data.email,
-      organizationId: organization!.id,
-      role: "user",
-    })
-      .then(() => {
-        refetchUsers();
-        toast({
-          title: "Success",
-          description: `User ${data.email} was added successfully`,
-        });
-      })
-      .catch((error) => {
+    try {
+      await addMemberToOrganizationByUserEmail({
+        email: data.email,
+        organizationId: organization!.id,
+        role: "user",
+      });
+
+      refetchUsers();
+      toast({
+        title: "Success",
+        description: `User ${data.email} was added successfully`,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
         toast({
           title: "Error",
-          description: ` ${error.message}!`,
+          description: `${error.message} !`,
         });
-      });
+      }
+    }
 
     setIsModalOpen(false);
   };
