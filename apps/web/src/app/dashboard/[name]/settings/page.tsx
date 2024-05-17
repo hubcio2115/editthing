@@ -57,13 +57,11 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     queryFn: async () => {
       const [organization, err] = await getOwnOrganizationByName(params.name);
 
-      console.log(organization, err);
-
       if (err !== null) {
-        console.error(err);
-      }
-
-      if (organization == undefined) {
+        toast({
+          title: "Error",
+          description: `Failed to fetch organization: ${err.message}`,
+        });
         router.push("/dashboard");
         return null;
       }
