@@ -11,6 +11,7 @@ import VideoSmallCard from "~/components/dashboard/videoSmallCard";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Toggle } from "~/components/ui/toggle";
+import { useToast } from "~/components/ui/use-toast";
 import projectMockData from "~/lib/mock/organizationOverview";
 import { getOwnOrganizations } from "~/server/actions/organization";
 
@@ -23,15 +24,19 @@ type DashboardOverviewProps = {
 export default function DashboardOverviewPage({
   params,
 }: DashboardOverviewProps) {
+  const { toast } = useToast();
+
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations", params.name],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
-      if (err !== null) {
-        console.error(err);
-      }
 
-      if (organizations === null) {
+      if (err !== null) {
+        toast({
+          title: "Error",
+          description: `Failed to fetch organizations: ${err.message}`,
+        });
+        router.push("/dashboard");
         return [];
       }
 
