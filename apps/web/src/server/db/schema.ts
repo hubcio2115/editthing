@@ -8,6 +8,7 @@ import {
   integer,
   pgEnum,
   pgTableCreator,
+  pgView,
   primaryKey,
   text,
   timestamp,
@@ -135,35 +136,31 @@ export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
 
 export const organizations = createTable("organization", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  name: varchar("name", { length: 128 }).notNull(),
-  owner: varchar("ownerId", { length: 255 })
-    .notNull()
-    .references(() => users.id),
+  name: varchar("name", { length: 128 }).notNull().unique(),
+  defaultOrg: boolean("defaultOrg").notNull().default(false),
 });
 
-export const organizationsRelations = relations(
-  organizations,
-  ({ one, many }) => ({
-    owner: one(users, {
-      fields: [organizations.owner],
-      references: [users.id],
-    }),
-    usersToOrganizations: many(usersToOrganizations),
-    projects: many(projects),
-  }),
-);
+export const organizationsRelations = relations(organizations, ({ many }) => ({
+  usersToOrganizations: many(usersToOrganizations),
+  projects: many(projects),
+}));
+
+export const roleEnum = pgEnum("role", ["admin", "user", "owner"]);
 
 export const usersToOrganizations = createTable(
   "usersToOrganizations",
   {
     memberId: varchar("memberId", { length: 255 })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: roleEnum("role").notNull(),
     organizationId: bigint("organizationId", { mode: "number" })
       .notNull()
-      .references(() => organizations.id),
+      .references(() => organizations.id, { onDelete: "cascade" }),
   },
-  (t) => ({ pk: primaryKey({ columns: [t.memberId, t.organizationId] }) }),
+  (t) => ({
+    pk: primaryKey({ columns: [t.memberId, t.role, t.organizationId] }),
+  }),
 );
 
 export const usersToOrganizationsRelations = relations(
@@ -179,6 +176,19 @@ export const usersToOrganizationsRelations = relations(
     }),
   }),
 );
+
+export const organizationWithMembersView = pgView(
+  "organization_with_members_view",
+  {
+    id: bigserial("id", { mode: "number" }).notNull(),
+    name: varchar("name", { length: 128 }).notNull(),
+    defaultOrg: boolean("default_org").notNull(),
+    memberId: varchar("member_id", { length: 255 }).notNull(),
+    memberName: varchar("member_name", { length: 255 }).notNull(),
+    memberEmail: varchar("member_email", { length: 255 }).notNull(),
+    memberRole: roleEnum("member_role").notNull(),
+  },
+).existing();
 
 export const licenseEnum = pgEnum("license", ["youtube", "creativeCommon"]);
 export const privacyStatus = pgEnum("privacyStatus", [

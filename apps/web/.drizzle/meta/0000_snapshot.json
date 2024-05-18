@@ -1,5 +1,5 @@
 {
-  "id": "fa7d381f-19c2-461c-bb0b-a4b4f273c2af",
+  "id": "786a1fa5-6c4e-4695-904c-9846b8f80c72",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -117,6 +117,13 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
+        },
+        "defaultOrg": {
+          "name": "defaultOrg",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -136,7 +143,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "editthing_app_organization_name_unique": {
+          "name": "editthing_app_organization_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      }
     },
     "editthing_app_post": {
       "name": "editthing_app_post",
@@ -290,34 +305,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk": {
-          "name": "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk",
-          "tableFrom": "editthing_app_project",
-          "tableTo": "editthing_app_videoEntry",
-          "columnsFrom": [
-            "videoEntryId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "editthing_app_project_organizationId_editthing_app_organization_id_fk": {
-          "name": "editthing_app_project_organizationId_editthing_app_organization_id_fk",
-          "tableFrom": "editthing_app_project",
-          "tableTo": "editthing_app_organization",
-          "columnsFrom": [
-            "organizationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -408,6 +396,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "primaryKey": false,
+          "notNull": true
+        },
         "organizationId": {
           "name": "organizationId",
           "type": "bigint",
@@ -445,10 +439,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "editthing_app_usersToOrganizations_memberId_organizationId_pk": {
-          "name": "editthing_app_usersToOrganizations_memberId_organizationId_pk",
+        "editthing_app_usersToOrganizations_memberId_role_organizationId_pk": {
+          "name": "editthing_app_usersToOrganizations_memberId_role_organizationId_pk",
           "columns": [
             "memberId",
+            "role",
             "organizationId"
           ]
         }
@@ -524,6 +519,12 @@
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -532,7 +533,31 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "license": {
+      "name": "license",
+      "values": {
+        "youtube": "youtube",
+        "creativeCommon": "creativeCommon"
+      }
+    },
+    "privacyStatus": {
+      "name": "privacyStatus",
+      "values": {
+        "public": "public",
+        "unlisted": "unlisted",
+        "private": "private"
+      }
+    },
+    "role": {
+      "name": "role",
+      "values": {
+        "admin": "admin",
+        "user": "user",
+        "owner": "owner"
+      }
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},

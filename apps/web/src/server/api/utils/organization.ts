@@ -14,13 +14,9 @@ export async function getOrganizationByName(db: DbConnection, name: string) {
     .where(eq(organizations.name, name));
 }
 
-export async function createOrganization(
-  db: DbConnection,
-  newOrgName: string,
-  userId: string,
-) {
+export async function createOrganization(db: DbConnection, newOrgName: string) {
   return db
     .insert(organizations)
-    .values({ name: newOrgName, owner: userId })
+    .values({ name: newOrgName, defaultOrg: true })
     .returning();
 }

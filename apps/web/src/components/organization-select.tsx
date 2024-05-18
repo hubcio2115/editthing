@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { SubmitErrorHandler, SubmitHandler } from "react-hook-form";
 
@@ -42,31 +42,42 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-
-type OrganizationForm = Omit<InsertOrganization, "owner">;
+import { Skeleton } from "./ui/skeleton";
+import { useToast } from "./ui/use-toast";
 
 export default function OrganizationSelect() {
   const pathname = usePathname();
-
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
     pathname.split("/").at(2),
   );
-
   const router = useRouter();
+  const { toast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: organizations, refetch } = useQuery({
+  useEffect(() => {
+    refetch();
+  }, [pathname]);
+
+  const {
+    data: organizations,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["organizations"],
-    queryFn: () => getOwnOrganizations(),
+    queryFn: async () => {
+      const [organizations, err] = await getOwnOrganizations();
+
+      if (err !== null) {
+        console.error(err);
+      }
+
+      return organizations;
+    },
   });
 
-  function selectOrganization(orgId: string) {
-    router.push(`/dashboard/${orgId}/`);
-  }
-
-  const form = useForm<OrganizationForm>({
+  const form = useForm<InsertOrganization>({
     resolver: zodResolver(insertOrganizationSchema),
     defaultValues: {
       name: "",
@@ -82,55 +93,78 @@ export default function OrganizationSelect() {
     mutationFn: async (insertData) => createOrganization(insertData),
     onSuccess: (data) => {
       if (!!data) {
+        toast({
+          title: "Success",
+          description: "Organization created successfully",
+        });
         router.push(`/dashboard/${data.name}/overview`);
         setIsModalOpen(false);
         refetch();
       }
     },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+    },
   });
 
-  const onSubmit: SubmitHandler<OrganizationForm> = (data) => {
+  const onSubmit: SubmitHandler<InsertOrganization> = (data) => {
     createOrganizationMutation({ name: data.name });
   };
 
-  const onError: SubmitErrorHandler<OrganizationForm> = (error) => {
+  const onError: SubmitErrorHandler<InsertOrganization> = (error) => {
     console.error(error);
   };
 
-  return (
+  return isLoading ? (
+    <Skeleton className="h-[40px] w-[180px] bg-slate-200"></Skeleton>
+  ) : (
     <>
-      <Select
-        value={organizationFromPathname}
-        onValueChange={(newValue) => {
-          selectOrganization(newValue);
-        }}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={organizationFromPathname} />
-        </SelectTrigger>
+      {organizations && organizations?.length > 0 ? (
+        <Select
+          value={organizationFromPathname}
+          onValueChange={(newValue) => {
+            router.push(`/dashboard/${newValue}/overview`);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={organizationFromPathname} />
+          </SelectTrigger>
 
-        <SelectContent>
-          <SelectGroup>
-            {organizations?.map((org) => (
-              <SelectItem
-                value={org.name}
-                key={org.id}
-                className="hover:cursor-pointer"
+          <SelectContent>
+            <SelectGroup>
+              {organizations?.map((org) => (
+                <SelectItem
+                  value={org.name}
+                  key={org.id}
+                  className="hover:cursor-pointer"
+                >
+                  {org.name}
+                </SelectItem>
+              ))}
+              <div
+                className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
               >
-                {org.name}
-              </SelectItem>
-            ))}
-            <div
-              className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            >
-              Add new <Plus size={16} />
-            </div>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+                Add new <Plus size={16} />
+              </div>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      ) : (
+        <Button
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          <span className="mr-3">Create organization</span>
+          <Plus size={16} />
+        </Button>
+      )}
 
       <Dialog
         open={isModalOpen}
