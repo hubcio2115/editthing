@@ -3,12 +3,11 @@
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
     "verbatimModuleSyntax": true,
+    "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     }
   },
   "include": [
@@ -20,7 +19,5 @@
     "**/*.mjs",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

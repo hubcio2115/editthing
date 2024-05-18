@@ -1,6 +1,6 @@
 {
-  "id": "dce344be-446e-4c85-bffc-2f8ab1dc8947",
-  "prevId": "aa8d3546-1e18-4860-a7b0-7595361326fa",
+  "id": "62662ef0-999c-40b8-b57e-6923b0291fe7",
+  "prevId": "76f1d349-5a3f-4580-9d67-e78500765525",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -112,31 +112,26 @@
           "primaryKey": false,
           "notNull": true
         },
-        "ownerId": {
-          "name": "ownerId",
-          "type": "varchar(255)",
+        "defaultOrg": {
+          "name": "defaultOrg",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "editthing_app_organization_ownerId_editthing_app_user_id_fk": {
-          "name": "editthing_app_organization_ownerId_editthing_app_user_id_fk",
-          "tableFrom": "editthing_app_organization",
-          "tableTo": "editthing_app_user",
-          "columnsFrom": [
-            "ownerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "editthing_app_organization_name_unique": {
+          "name": "editthing_app_organization_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      }
     },
     "editthing_app_post": {
       "name": "editthing_app_post",
@@ -381,6 +376,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "primaryKey": false,
+          "notNull": true
+        },
         "organizationId": {
           "name": "organizationId",
           "type": "bigint",
@@ -400,7 +401,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "editthing_app_usersToOrganizations_organizationId_editthing_app_organization_id_fk": {
@@ -413,15 +414,16 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "editthing_app_usersToOrganizations_memberId_organizationId_pk": {
-          "name": "editthing_app_usersToOrganizations_memberId_organizationId_pk",
+        "editthing_app_usersToOrganizations_memberId_role_organizationId_pk": {
+          "name": "editthing_app_usersToOrganizations_memberId_role_organizationId_pk",
           "columns": [
             "memberId",
+            "role",
             "organizationId"
           ]
         }
@@ -525,6 +527,14 @@
         "public": "public",
         "unlisted": "unlisted",
         "private": "private"
+      }
+    },
+    "role": {
+      "name": "role",
+      "values": {
+        "admin": "admin",
+        "user": "user",
+        "owner": "owner"
       }
     }
   },

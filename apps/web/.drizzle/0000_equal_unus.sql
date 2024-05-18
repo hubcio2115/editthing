@@ -1,3 +1,21 @@
+DO $$ BEGIN
+ CREATE TYPE "license" AS ENUM('youtube', 'creativeCommon');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "privacyStatus" AS ENUM('public', 'unlisted', 'private');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "role" AS ENUM('admin', 'user', 'owner');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_account" (
 	"userId" varchar(255) NOT NULL,
 	"type" varchar(255) NOT NULL,
@@ -16,7 +34,9 @@ CREATE TABLE IF NOT EXISTS "editthing_app_account" (
 CREATE TABLE IF NOT EXISTS "editthing_app_organization" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"name" varchar(128) NOT NULL,
-	"ownerId" varchar(255) NOT NULL
+	"ownerId" varchar(255) NOT NULL,
+	"defaultOrg" boolean DEFAULT false NOT NULL,
+	CONSTRAINT "editthing_app_organization_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_post" (
@@ -61,8 +81,9 @@ CREATE TABLE IF NOT EXISTS "editthing_app_user" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_usersToOrganizations" (
 	"memberId" varchar(255) NOT NULL,
+	"role" "role" NOT NULL,
 	"organizationId" bigint NOT NULL,
-	CONSTRAINT "editthing_app_usersToOrganizations_memberId_organizationId_pk" PRIMARY KEY("memberId","organizationId")
+	CONSTRAINT "editthing_app_usersToOrganizations_memberId_role_organizationId_pk" PRIMARY KEY("memberId","role","organizationId")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "editthing_app_verificationToken" (
@@ -77,7 +98,8 @@ CREATE TABLE IF NOT EXISTS "editthing_app_videoEntry" (
 	"uploadId" varchar(256) NOT NULL,
 	"assetId" varchar(255),
 	"url" varchar(256),
-	"playbackId" varchar(256)
+	"playbackId" varchar(256),
+	"userId" varchar(255)
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "account_userId_idx" ON "editthing_app_account" ("userId");--> statement-breakpoint
@@ -86,18 +108,6 @@ CREATE INDEX IF NOT EXISTS "name_idx" ON "editthing_app_post" ("name");--> state
 CREATE INDEX IF NOT EXISTS "session_userId_idx" ON "editthing_app_session" ("userId");--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "editthing_app_organization" ADD CONSTRAINT "editthing_app_organization_ownerId_editthing_app_user_id_fk" FOREIGN KEY ("ownerId") REFERENCES "editthing_app_user"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "editthing_app_project" ADD CONSTRAINT "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk" FOREIGN KEY ("videoEntryId") REFERENCES "editthing_app_videoEntry"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "editthing_app_project" ADD CONSTRAINT "editthing_app_project_organizationId_editthing_app_organization_id_fk" FOREIGN KEY ("organizationId") REFERENCES "editthing_app_organization"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
