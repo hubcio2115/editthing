@@ -54,6 +54,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@softonus/prettier-plugin-whitespace-remover": "^1.0.1",
     "@testing-library/react": "^14.3.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/eslint": "^8.56.10",

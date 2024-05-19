@@ -1,4 +1,4 @@
-import { type FunctionComponent, useState } from "react";
+import { useState } from "react";
 
 import {
   AlertDialog,
@@ -9,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 
 import { Input } from "../ui/input";
@@ -24,7 +23,7 @@ type AlertModalProps = {
   onConfirm: () => void;
 };
 
-export const AlertModal: FunctionComponent<AlertModalProps> = ({
+export default function AlertModal({
   isOpen,
   onOpenChange,
   title,
@@ -32,10 +31,10 @@ export const AlertModal: FunctionComponent<AlertModalProps> = ({
   unlockString,
   onCancel,
   onConfirm,
-}) => {
+}: AlertModalProps) {
   const [inputValue, setInputValue] = useState("");
 
-  const isActionDisabled: boolean =
+  const isActionDisabled =
     unlockString !== undefined && unlockString !== inputValue;
 
   return (
@@ -74,4 +73,4 @@ export const AlertModal: FunctionComponent<AlertModalProps> = ({
       </AlertDialogContent>
     </AlertDialog>
   );
-};
+}
