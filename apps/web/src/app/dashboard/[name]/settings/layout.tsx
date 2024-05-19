@@ -17,15 +17,15 @@ export default function Settings({ params, children }: SettingsProps) {
 
   return (
     <div className="mx-auto w-full flex-1 px-6 py-8 sm:p-12">
-      <div className=" mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl">
         <div className="flex h-full flex-col lg:flex-row">
           <nav className="mr-2 w-full shrink-0 lg:w-1/5">
             <div className="mb-4 mt-1 flex flex-row pr-2 lg:flex-col">
-              <Link href={`/dashboard/${params.name}/settings/general`}>
+              <Link href={`/dashboard/${params.name}/settings`}>
                 <div
                   className={cn(
                     "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
-                    pathname.split("/").at(-1) === "general"
+                    pathname.split("/").at(-1) === "settings"
                       ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
                       : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
                   )}

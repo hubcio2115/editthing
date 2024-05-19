@@ -13,11 +13,10 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { AlertModal } from "~/components/modals/alertModal";
+import AlertModal from "~/components/modals/alertModal";
 import DialogModal from "~/components/modals/dialogModal";
 import { Button } from "~/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -32,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useToast } from "~/components/ui/use-toast";
 import { type Invite, inviteSchema } from "~/lib/validators/invite";
 import { type OrgMemberRole, roleEnum } from "~/lib/validators/organization";
@@ -93,6 +93,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const currentUserRole = userData?.find(
     (user) => user.user?.id === session.data?.user.id,
   )?.usersToOrganizations.role;
+
   const usersInOrganization = userData?.map(
     ({ usersToOrganizations }) => usersToOrganizations.memberId,
   );
@@ -164,7 +165,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
     }
   }
 
-  const handleLeave = async () => {
+  async function handleLeave() {
     try {
       await removeMemberFromOrganization({
         memberId: session.data!.user.id,
@@ -183,7 +184,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         });
       }
     }
-  };
+  }
 
   const form = useForm<Invite>({
     resolver: zodResolver(inviteSchema),
@@ -193,24 +194,26 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   });
 
   const onSubmit: SubmitHandler<Invite> = async (data) => {
-    await addMemberToOrganizationByUserEmail({
-      email: data.email,
-      organizationId: organization!.id,
-      role: "user",
-    })
-      .then(() => {
-        refetchUsers();
-        toast({
-          title: "Success",
-          description: `User ${data.email} was added successfully`,
-        });
-      })
-      .catch((error) => {
+    try {
+      await addMemberToOrganizationByUserEmail({
+        email: data.email,
+        organizationId: organization!.id,
+        role: "user",
+      });
+
+      refetchUsers();
+      toast({
+        title: "Success",
+        description: `User ${data.email} was added successfully`,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
         toast({
           title: "Error",
-          description: ` ${error.message}!`,
+          description: `${error.message} !`,
         });
-      });
+      }
+    }
 
     setIsModalOpen(false);
   };
@@ -225,153 +228,146 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
 
   return (
     <>
-      {usersLoaded && (
-        <>
-          <div className="flex w-full flex-col gap-10">
-            <div className="flex justify-between">
-              <div>
-                <h2 className="font-selibold text-xl">Members</h2>
-                <p className="text-gray-600">
-                  All members and administrators with access to the{" "}
-                  <span className="font-semibold">{params.name}</span>{" "}
-                  organization.
-                </p>
-              </div>
-              <div className="flex items-center">
-                <Button
-                  onClick={() => {
-                    setIsModalOpen(true);
-                  }}
-                  disabled={currentUserRole === "user"}
-                >
-                  invite member
-                </Button>
-              </div>
-            </div>
-            {userData && (
-              <div className="grid w-full grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
-                <div className="col-span-full grid grid-cols-4 rounded-md border bg-gray-100 p-2 sm:grid-cols-5 lg:grid-cols-8">
-                  <div className="col-span-2 sm:col-span-3 lg:col-span-6">
-                    Member
-                  </div>
-                  <div className="col-span-2 whitespace-nowrap text-left">
-                    Role
-                  </div>
-                </div>
-
-                {userData?.map(({ user, usersToOrganizations }) => (
-                  <div
-                    key={user?.id}
-                    className="col-span-full grid grid-cols-4 border-b py-2 last:border-none sm:grid-cols-5 lg:grid-cols-8"
-                  >
-                    <div className="col-span-2 flex items-center pl-2 sm:col-span-3 lg:col-span-6">
-                      {user?.name}
-                    </div>
-                    <div className="col-span-1 flex items-center">
-                      <Select
-                        value={usersToOrganizations.role}
-                        disabled={
-                          currentUserRole === "user" ||
-                          usersToOrganizations.role === "owner" ||
-                          (currentUserRole === "owner" &&
-                            usersInOrganization!.length < 2)
-                        }
-                        onValueChange={(newValue: "user" | "owner" | "admin") =>
-                          handleRoleChange(newValue, user!.id)
-                        }
-                      >
-                        <SelectTrigger className="w-[90px]">
-                          <SelectValue
-                            placeholder={usersToOrganizations.role}
-                          />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem
-                              key={roleEnum.Values.owner}
-                              disabled={currentUserRole === "admin"}
-                              value={roleEnum.Values.owner}
-                            >
-                              {roleEnum.Values.owner}
-                            </SelectItem>
-                            <SelectItem
-                              key={roleEnum.Values.admin}
-                              value={roleEnum.Values.admin}
-                            >
-                              {roleEnum.Values.admin}
-                            </SelectItem>
-                            <SelectItem
-                              key={roleEnum.Values.user}
-                              value={roleEnum.Values.user}
-                            >
-                              {roleEnum.Values.user}
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="col-span-1 flex justify-center">
-                      {session.data?.user.id === user?.id ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            handleLeave();
-                          }}
-                        >
-                          Leave
-                        </Button>
-                      ) : currentUserRole === "owner" ||
-                        (currentUserRole === "admin" &&
-                          usersToOrganizations.role !== "owner") ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleRemoveMember(user!.id)}
-                        >
-                          Remove
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+      <div className="flex w-full flex-col gap-10">
+        <div className="flex justify-between">
+          <div>
+            <h2 className="font-selibold text-xl">Members</h2>
+            <p className="text-gray-600">
+              All members and administrators with access to the{" "}
+              <span className="font-semibold">{params.name}</span> organization.
+            </p>
           </div>
-          <FormProvider {...formMethods}>
-            <DialogModal
-              isOpen={isModalOpen}
-              onOpenChange={(open: boolean) => setIsModalOpen(open)}
-              title="Invite member"
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              footerText="Send invitation"
+          <div className="flex items-center">
+            <Button
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+              disabled={currentUserRole === "user" || !usersLoaded}
             >
-              <FormField
-                name="email"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="mt-4 flex flex-col gap-2">
-                    <FormLabel htmlFor="name">Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter email address" {...field} />
-                    </FormControl>
+              invite member
+            </Button>
+          </div>
+        </div>
+        {userData ? (
+          <div className="grid w-full grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
+            <div className="col-span-full grid grid-cols-4 rounded-md border bg-gray-100 p-2 sm:grid-cols-5 lg:grid-cols-8">
+              <div className="col-span-2 sm:col-span-3 lg:col-span-6">
+                Member
+              </div>
+              <div className="col-span-2 whitespace-nowrap text-left">Role</div>
+            </div>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </DialogModal>
-          </FormProvider>
+            {userData?.map(({ user, usersToOrganizations }) => (
+              <div
+                key={user?.id}
+                className="col-span-full grid grid-cols-4 border-b py-2 last:border-none sm:grid-cols-5 lg:grid-cols-8"
+              >
+                <div className="col-span-2 flex items-center pl-2 sm:col-span-3 lg:col-span-6">
+                  {user?.name}
+                </div>
+                <div className="col-span-1 flex items-center">
+                  <Select
+                    value={usersToOrganizations.role}
+                    disabled={
+                      currentUserRole === "user" ||
+                      usersToOrganizations.role === "owner" ||
+                      (currentUserRole === "owner" &&
+                        usersInOrganization!.length < 2)
+                    }
+                    onValueChange={(newValue: OrgMemberRole) =>
+                      handleRoleChange(newValue, user!.id)
+                    }
+                  >
+                    <SelectTrigger className="w-[90px]">
+                      <SelectValue placeholder={usersToOrganizations.role} />
+                    </SelectTrigger>
 
-          <AlertModal
-            isOpen={isAlertOpen}
-            onOpenChange={(open) => setIsAlertOpen(open)}
-            title="Are you absolutely sure?"
-            description="You will transter the ownership of the organization to the selected user. Your role will be changed to admin."
-            onCancel={() => setIsAlertOpen(false)}
-            onConfirm={handleAlertAccepted}
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem
+                          key={roleEnum.Values.owner}
+                          disabled={currentUserRole === "admin"}
+                          value={roleEnum.Values.owner}
+                        >
+                          {roleEnum.Values.owner}
+                        </SelectItem>
+                        <SelectItem
+                          key={roleEnum.Values.admin}
+                          value={roleEnum.Values.admin}
+                        >
+                          {roleEnum.Values.admin}
+                        </SelectItem>
+                        <SelectItem
+                          key={roleEnum.Values.user}
+                          value={roleEnum.Values.user}
+                        >
+                          {roleEnum.Values.user}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-1 flex justify-center">
+                  {session.data?.user.id === user?.id ? (
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        handleLeave();
+                      }}
+                    >
+                      Leave
+                    </Button>
+                  ) : currentUserRole === "owner" ||
+                    (currentUserRole === "admin" &&
+                      usersToOrganizations.role !== "owner") ? (
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleRemoveMember(user!.id)}
+                    >
+                      Remove
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Skeleton className="w-full h-[60vh] lg:h-[65vh] bg-slate-200"></Skeleton>
+        )}
+      </div>
+      <FormProvider {...formMethods}>
+        <DialogModal
+          isOpen={isModalOpen}
+          onOpenChange={(open: boolean) => setIsModalOpen(open)}
+          title="Invite member"
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          footerText="Send invitation"
+        >
+          <FormField
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="mt-4 flex flex-col gap-2">
+                <FormLabel htmlFor="name">Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter email address" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </>
-      )}
+        </DialogModal>
+      </FormProvider>
+
+      <AlertModal
+        isOpen={isAlertOpen}
+        onOpenChange={(open: boolean) => setIsAlertOpen(open)}
+        title="Are you absolutely sure?"
+        description="You will transter the ownership of the organization to the selected user. Your role will be changed to admin."
+        onCancel={() => setIsAlertOpen(false)}
+        onConfirm={handleAlertAccepted}
+      />
     </>
   );
 }
