@@ -66,11 +66,6 @@ export default function OrganizationSelect() {
     refetch,
     isLoading,
   } = useQuery({
-  const {
-    data: organizations,
-    refetch,
-    isLoading,
-  } = useQuery({
     queryKey: ["organizations"],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
@@ -80,7 +75,6 @@ export default function OrganizationSelect() {
       }
 
       return organizations;
-    },
     },
   });
 
@@ -176,47 +170,46 @@ export default function OrganizationSelect() {
         </Button>
       )}
 
-        <Dialog
-          open={isModalOpen}
-          onOpenChange={(open) => {
-            setIsModalOpen(open);
-          }}
-        >
-          <DialogContent className="sm:max-w-[425px]">
-            <Form {...form}>
-              <form
-                className="flex flex-col gap-4"
-                onSubmit={form.handleSubmit(onSubmit, onError)}
-              >
-                <DialogHeader>
-                  <DialogTitle>New Organization</DialogTitle>
-                </DialogHeader>
+      <Dialog
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          setIsModalOpen(open);
+        }}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <Form {...form}>
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+            >
+              <DialogHeader>
+                <DialogTitle>New Organization</DialogTitle>
+              </DialogHeader>
 
-                <FormField
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="mt-4 flex flex-col gap-2">
-                      <FormLabel htmlFor="name">Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Your new orgnization name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                name="name"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="mt-4 flex flex-col gap-2">
+                    <FormLabel htmlFor="name">Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Your new orgnization name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <DialogFooter>
-                  <Button type="submit">Create</Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </>
-    )
+              <DialogFooter>
+                <Button type="submit">Create</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
