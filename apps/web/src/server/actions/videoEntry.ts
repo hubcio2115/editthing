@@ -4,7 +4,7 @@ import type { Result } from "~/lib/utils";
 
 import { db } from "../db";
 import { videoEntries } from "../db/schema";
-import type { InsertVideoEntry, VideoEntry } from "../db/videoEntry";
+import type { InsertVideoEntry, VideoEntry } from "~/lib/validators/videoEntry";
 
 export async function createVideoEntry(
   entry: InsertVideoEntry,

@@ -10,7 +10,7 @@ import type { Organization } from "~/lib/validators/organization";
 import type { InsertProject, Project } from "~/lib/validators/project";
 import { createProject, deleteProjectById } from "~/server/actions/project";
 import { createVideoEntry } from "~/server/actions/videoEntry";
-import type { InsertVideoEntry, VideoEntry } from "~/server/db/videoEntry";
+import type { InsertVideoEntry, VideoEntry } from "~/lib/validators/videoEntry";
 
 type VideUploadFormProps = {
   upload: Upload;
