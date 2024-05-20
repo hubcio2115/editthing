@@ -23,14 +23,15 @@ export async function POST(req: NextRequest) {
         await db
           .update(videoEntries)
           .set({
-            assetId: event.data.id,
+            assetId: event.object.id,
             playbackId: event.data.playback_ids?.at(0)?.id,
           })
           .where(eq(videoEntries.uploadId, event.data.upload_id ?? ""));
         break;
 
       case "video.asset.master.ready":
-        await db.update(videoEntries)
+        await db
+          .update(videoEntries)
           .set({ downloadUrl: event.data.master?.url })
           .where(eq(videoEntries.assetId, event.data.id));
         break;
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     return Response.json({ message: "Event received" }, { status: 200 });
   } catch (err) {
-    console.error("Error: Missing mux signature", err);
+    console.error("Error: Missing mux signature.", err);
     return new Response((err as Error).message, { status: 401 });
   }
 }
