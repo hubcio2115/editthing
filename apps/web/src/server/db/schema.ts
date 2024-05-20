@@ -103,7 +103,7 @@ export const verificationTokens = createTable(
 export const statusEnum = pgEnum("status", ["created", "ready", "errored"]);
 
 export const videoEntries = createTable("videoEntry", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
   assetId: varchar("assetId", { length: 255 }),
   downloadUrl: varchar("url", { length: 256 }),
@@ -119,7 +119,7 @@ export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
 }));
 
 export const organizations = createTable("organization", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   name: varchar("name", { length: 128 }).notNull().unique(),
   defaultOrg: boolean("defaultOrg").notNull().default(false),
 });
@@ -182,7 +182,7 @@ export const privacyStatus = pgEnum("privacyStatus", [
 ]);
 
 export const projects = createTable("project", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   name: varchar("name", { length: 256 }),
   projectDescription: varchar("projectDescription", { length: 512 }),
   title: varchar("title", { length: 256 }),
