@@ -3,21 +3,15 @@
 import Mux from "@mux/mux-node";
 import type { APIError } from "@mux/mux-node/error.mjs";
 import type { Upload } from "@mux/mux-node/resources/video/uploads.mjs";
-import type { User } from "next-auth";
 
 import { env } from "~/env.mjs";
 import type { Result } from "~/lib/utils";
-
-import { db } from "../db";
-import { videoEntries } from "../db/schema";
 
 const mux = new Mux({
   webhookSecret: env.MUX_WEBHOOK_SECRET,
 });
 
-export async function createEndpointForMuxUpload(
-  userId: User["id"],
-): Promise<Result<Upload>> {
+export async function createEndpointForMuxUpload(): Promise<Result<Upload>> {
   try {
     const upload = await mux.video.uploads.create({
       cors_origin: env.MUX_URL,
@@ -25,11 +19,6 @@ export async function createEndpointForMuxUpload(
         playback_policy: ["public"],
       },
       test: env.NODE_ENV === "development",
-    });
-
-    await db.insert(videoEntries).values({
-      uploadId: upload.id,
-      userId,
     });
 
     return [upload, null];
