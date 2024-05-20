@@ -1,7 +1,6 @@
 import VideUploadForm from "~/components/create-project/create-project-form";
 import { createEndpointForMuxUpload } from "~/server/actions/mux";
 import { getOwnOrganizationByName } from "~/server/actions/organization";
-import { getServerAuthSession } from "~/server/auth";
 
 type CreateProjectPageProps = {
   params: {
@@ -12,11 +11,7 @@ type CreateProjectPageProps = {
 export default async function CreateProjectPage({
   params,
 }: CreateProjectPageProps) {
-  const session = await getServerAuthSession();
-
-  const [upload, uploadErr] = await createEndpointForMuxUpload(
-    session!.user.id,
-  );
+  const [upload, uploadErr] = await createEndpointForMuxUpload();
   if (uploadErr !== null) {
     throw new Error(uploadErr);
   }
