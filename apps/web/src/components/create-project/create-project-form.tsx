@@ -11,6 +11,7 @@ import type { InsertProject, Project } from "~/lib/validators/project";
 import { createProject, deleteProjectById } from "~/server/actions/project";
 import { createVideoEntry } from "~/server/actions/videoEntry";
 import type { InsertVideoEntry, VideoEntry } from "~/lib/validators/videoEntry";
+import { useToast } from "../ui/use-toast";
 
 type VideUploadFormProps = {
   upload: Upload;
@@ -20,6 +21,7 @@ type VideUploadFormProps = {
 export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
   const session = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   const { data: newProject, mutate: createProjectMutation } = useMutation<
     Project | null,
@@ -32,13 +34,16 @@ export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
 
       if (err !== null) {
         console.error(err);
+
+        toast({
+          title: "Error",
+          description: `Failed to create a project: ${err}`,
+        });
       }
 
       return newProject;
     },
   });
-  
-  console.log(newProject);
 
   const { mutate: createVideoEntryMutation } = useMutation<
     VideoEntry | null,
@@ -51,6 +56,11 @@ export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
 
       if (err !== null) {
         console.error(err);
+
+        toast({
+          title: "Error",
+          description: `Failed to create a project: ${err}`,
+        });
       } else {
         createProjectMutation({
           organizationId: org.id,
@@ -73,6 +83,11 @@ export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
 
       if (err !== null) {
         console.error(err);
+
+        toast({
+          title: "Error",
+          description: `Failed to delete a project: ${err}`,
+        });
       }
 
       return deletedProject;
@@ -94,8 +109,16 @@ export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
       attempts?: number | undefined;
     }>,
   ) {
-    deleteProjectMutation(newProject!.id);
+    if (newProject) {
+      deleteProjectMutation(newProject.id);
+    }
+
     console.error(err.detail.message);
+
+    toast({
+      title: "Error",
+      description: `An upload failed: ${err.detail.message}`,
+    });
   }
 
   function onSuccess(_: CustomEvent<null | undefined>) {
