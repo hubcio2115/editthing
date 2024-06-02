@@ -60,7 +60,7 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
       if (err !== null) {
         toast({
           title: "Error",
-          description: `Failed to fetch organization: ${err.message}`,
+          description: `Failed to fetch organization: ${err}`,
         });
         router.push("/dashboard");
         return null;

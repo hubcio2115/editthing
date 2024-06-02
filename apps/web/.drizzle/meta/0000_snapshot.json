@@ -1,5 +1,5 @@
 {
-  "id": "786a1fa5-6c4e-4695-904c-9846b8f80c72",
+  "id": "78f3074f-26ec-4e5d-a5a4-2e88311c2efe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -112,12 +112,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "ownerId": {
-          "name": "ownerId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "defaultOrg": {
           "name": "defaultOrg",
           "type": "boolean",
@@ -127,21 +121,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "editthing_app_organization_ownerId_editthing_app_user_id_fk": {
-          "name": "editthing_app_organization_ownerId_editthing_app_user_id_fk",
-          "tableFrom": "editthing_app_organization",
-          "tableTo": "editthing_app_user",
-          "columnsFrom": [
-            "ownerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "editthing_app_organization_name_unique": {
@@ -153,8 +133,8 @@
         }
       }
     },
-    "editthing_app_post": {
-      "name": "editthing_app_post",
+    "editthing_app_project": {
+      "name": "editthing_app_project",
       "schema": "",
       "columns": {
         "id": {
@@ -168,62 +148,6 @@
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
-        },
-        "createdById": {
-          "name": "createdById",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "createdById_idx": {
-          "name": "createdById_idx",
-          "columns": [
-            "createdById"
-          ],
-          "isUnique": false
-        },
-        "name_idx": {
-          "name": "name_idx",
-          "columns": [
-            "name"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "editthing_app_project": {
-      "name": "editthing_app_project",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigserial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "projectName": {
-          "name": "projectName",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": true
         },
         "projectDescription": {
           "name": "projectDescription",
@@ -293,19 +217,46 @@
         },
         "videoEntryId": {
           "name": "videoEntryId",
-          "type": "bigint",
+          "type": "bigserial",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "organizationId": {
           "name": "organizationId",
-          "type": "bigint",
+          "type": "bigserial",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk": {
+          "name": "editthing_app_project_videoEntryId_editthing_app_videoEntry_id_fk",
+          "tableFrom": "editthing_app_project",
+          "tableTo": "editthing_app_videoEntry",
+          "columnsFrom": [
+            "videoEntryId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "editthing_app_project_organizationId_editthing_app_organization_id_fk": {
+          "name": "editthing_app_project_organizationId_editthing_app_organization_id_fk",
+          "tableFrom": "editthing_app_project",
+          "tableTo": "editthing_app_organization",
+          "columnsFrom": [
+            "organizationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -396,15 +347,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "role",
+        "organizationId": {
+          "name": "organizationId",
+          "type": "bigserial",
           "primaryKey": false,
           "notNull": true
         },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "bigint",
+        "role": {
+          "name": "role",
+          "type": "role",
           "primaryKey": false,
           "notNull": true
         }
@@ -434,7 +385,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -555,6 +506,14 @@
         "admin": "admin",
         "user": "user",
         "owner": "owner"
+      }
+    },
+    "status": {
+      "name": "status",
+      "values": {
+        "created": "created",
+        "ready": "ready",
+        "errored": "errored"
       }
     }
   },

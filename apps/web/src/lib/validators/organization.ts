@@ -1,4 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import type { User } from "next-auth";
 import { z } from "zod";
 
 import { roleEnum as role } from "~/server/db/schema";
@@ -37,16 +38,14 @@ export type UpdateOrganizationName = z.infer<
 
 export const roleEnum = z.enum(role.enumValues);
 
-export type organizationWithMembers =
-  | {
-      id: number;
-      name: string;
-      defaultOrg: boolean;
-      memberId: string;
-      memberName: string;
-      memberEmail: string;
-      memberRole: z.infer<typeof roleEnum>;
-    }
-  | undefined;
-
 export type OrgMemberRole = z.infer<typeof roleEnum>;
+
+type OrgMember = {
+  [K in keyof User as `member${Capitalize<keyof Omit<User, "image">>}`]: NonNullable<
+    User[K]
+  >;
+};
+
+export interface OrganizationWithMembers extends Organization, OrgMember {
+  memberRole: OrgMemberRole;
+}

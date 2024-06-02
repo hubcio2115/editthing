@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getOwnOrganizations } from "~/server/actions/organization";
 
-export default async function Dashboard() {
+export default async function DashboardPage() {
   const [organizations, err] = await getOwnOrganizations();
 
   if (err !== null) {
