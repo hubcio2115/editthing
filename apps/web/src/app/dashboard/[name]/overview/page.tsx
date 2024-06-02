@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { SearchIcon } from "lucide-react";
 import { StretchHorizontal } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,6 +31,7 @@ export default function DashboardOverviewPage({
     queryKey: ["organizations", params.name],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizations();
+
 
       if (err !== null) {
         toast({
@@ -81,7 +83,9 @@ export default function DashboardOverviewPage({
               <StretchHorizontal />
             </Toggle>
 
-            <Button variant="outline">Add video</Button>
+            <Link href={`/dashboard/${params.name}/create-project`}>
+              <Button variant="outline">Add video</Button>
+            </Link>
           </div>
         </div>
 

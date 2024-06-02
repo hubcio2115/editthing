@@ -1,6 +1,5 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
   bigserial,
   boolean,
   date,
@@ -23,23 +22,6 @@ import type { AdapterAccount } from "next-auth/adapters";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator((name) => `editthing_app_${name}`);
-
-export const posts = createTable(
-  "post",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt"),
-  },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
-);
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -118,8 +100,10 @@ export const verificationTokens = createTable(
   }),
 );
 
+export const statusEnum = pgEnum("status", ["created", "ready", "errored"]);
+
 export const videoEntries = createTable("videoEntry", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   uploadId: varchar("uploadId", { length: 256 }).notNull(),
   assetId: varchar("assetId", { length: 255 }),
   downloadUrl: varchar("url", { length: 256 }),
@@ -135,7 +119,7 @@ export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
 }));
 
 export const organizations = createTable("organization", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   name: varchar("name", { length: 128 }).notNull().unique(),
   defaultOrg: boolean("defaultOrg").notNull().default(false),
 });
@@ -152,11 +136,11 @@ export const usersToOrganizations = createTable(
   {
     memberId: varchar("memberId", { length: 255 })
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    role: roleEnum("role").notNull(),
-    organizationId: bigint("organizationId", { mode: "number" })
+      .references(() => users.id),
+    organizationId: bigserial("organizationId", { mode: "number" })
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
+    role: roleEnum("role").notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.memberId, t.role, t.organizationId] }),
@@ -198,8 +182,8 @@ export const privacyStatus = pgEnum("privacyStatus", [
 ]);
 
 export const projects = createTable("project", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  projectName: varchar("projectName", { length: 256 }).notNull(),
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
+  name: varchar("name", { length: 256 }),
   projectDescription: varchar("projectDescription", { length: 512 }),
   title: varchar("title", { length: 256 }),
   description: varchar("description", { length: 512 }),
@@ -211,8 +195,9 @@ export const projects = createTable("project", {
   publicStatsViewable: boolean("publicStatsViewable"),
   publishAt: date("publishAt", { mode: "string" }),
   selfDeclaredMadeForKids: boolean("selfDeclaredMadeForKids"),
-  videoEntryId: bigint("videoEntryId", { mode: "number" }),
-  organizationId: bigint("organizationId", { mode: "number" }).notNull(),
+
+  videoEntryId: bigserial("videoEntryId", { mode: "number" }),
+  organizationId: bigserial("organizationId", { mode: "number" }).notNull(),
 });
 
 export const projectsRelations = relations(projects, ({ one }) => ({
@@ -220,6 +205,7 @@ export const projectsRelations = relations(projects, ({ one }) => ({
     fields: [projects.videoEntryId],
     references: [videoEntries.id],
   }),
+
   organization: one(organizations, {
     fields: [projects.organizationId],
     references: [organizations.id],

@@ -12,7 +12,7 @@ import { generateSeedForOrgName, stripSpecialCharacters } from "~/lib/utils";
 import {
   createOrganization,
   getOrganizationByName,
-} from "~/server/api/utils/organization";
+} from "~/server/api/utils/organizations";
 import { db } from "~/server/db";
 import { createTable } from "~/server/db/schema";
 
@@ -112,7 +112,12 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      const newOrganization = (await createOrganization(db, newOrgName))[0];
+      const newOrganization = await createOrganization(
+        db,
+        newOrgName,
+        user.id,
+        true,
+      );
 
       if (!newOrganization) {
         throw new Error("Couldn't create new organization.");

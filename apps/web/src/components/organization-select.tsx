@@ -19,6 +19,7 @@ import {
 import {
   type InsertOrganization,
   insertOrganizationSchema,
+  type Organization,
 } from "~/lib/validators/organization";
 import {
   createOrganization,
@@ -85,28 +86,31 @@ export default function OrganizationSelect() {
   });
 
   const { mutate: createOrganizationMutation } = useMutation<
-    InsertOrganization | undefined,
+    Organization | null,
     Error,
     InsertOrganization
   >({
     mutationKey: ["create", "organization"],
-    mutationFn: async (insertData) => createOrganization(insertData),
-    onSuccess: (data) => {
-      if (!!data) {
+    mutationFn: async (insertData) => {
+      const [newOrg, err] = await createOrganization(insertData);
+
+      if (err !== null) {
+        toast({
+          title: "Error",
+          description: err,
+        });
+      } else {
         toast({
           title: "Success",
           description: "Organization created successfully",
         });
-        router.push(`/dashboard/${data.name}/overview`);
+
+        router.push(`/dashboard/${newOrg.name}/overview`);
         setIsModalOpen(false);
         refetch();
       }
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-      });
+
+      return newOrg;
     },
   });
 
