@@ -62,11 +62,36 @@ export async function getProjectById(
   }
 }
 
+export async function updateVideoEntry(
+  id: Project["id"],
+  videoEntry: InsertVideoEntry,
+): Promise<Result<Project>> {
+  try {
+    const [newVideoEntry, [project, err]] = await Promise.all([
+      db.insert(videoEntries).values(videoEntry).returning(),
+      getProjectById(id),
+    ]);
+
+    if (err !== null) {
+      return [null, err];
+    }
+
+    await db
+      .delete(videoEntries)
+      .where(eq(videoEntries.id, project.videoEntryId));
+
+    await db
+      .update(projectTable)
+      .set({ videoEntryId: newVideoEntry[0]?.id })
     .where(eq(projectTable.id, id));
 
-  return project;
-}
+    project.videoEntryId = newVideoEntry[0]!.id;
 
+    return [project, null];
+  } catch (e) {
+    return [null, (e as Error).message];
+}
+}
 export async function deleteProjectById(
   id: Project["id"],
 ): Promise<Result<Project>> {
