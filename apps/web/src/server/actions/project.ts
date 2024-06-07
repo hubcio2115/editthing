@@ -22,10 +22,24 @@ export async function createProject(
   }
 }
 
-export async function getProjectById(id: Project["id"]) {
-  const project = await db
-    .select()
-    .from(projectTable)
+export async function updateProjectById(
+  id: Project["id"],
+  newData: InsertProject,
+): Promise<Result<Project>> {
+  try {
+    const newProject = (
+      await db.update(projectTable).set(newData).returning()
+    )[0];
+
+    if (!newProject) {
+      return [null, "Project was't found"];
+    }
+
+    return [newProject, null];
+  } catch (e) {
+    return [null, (e as Error).message];
+  }
+}
     .where(eq(projectTable.id, id));
 
   return project;
