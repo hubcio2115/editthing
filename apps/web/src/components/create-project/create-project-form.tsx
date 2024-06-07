@@ -81,13 +81,22 @@ export default function VideUploadForm({ upload, org }: VideUploadFormProps) {
     mutationFn: async (id) => {
       const [deletedProject, err] = await deleteProjectById(id);
 
-      if (err !== null) {
-        console.error(err);
+      if (!deletedProject) {
+        toast({
+          title: "Not Found",
+          description: "Couldn't find the project.",
+        });
 
+        throw new Error(`Couldn't find the project.`);
+      }
+
+      if (err !== null) {
         toast({
           title: "Error",
           description: `Failed to delete a project: ${err}`,
         });
+
+        throw new Error(err);
       }
 
       return deletedProject;
