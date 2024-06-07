@@ -1,5 +1,5 @@
 /** @type {import('prettier-plugin-tailwindcss').options & import('@trivago/prettier-plugin-sort-imports').PrettierConfig} */
-module.exports = {
+export default {
   plugins: [
     "@trivago/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss",
