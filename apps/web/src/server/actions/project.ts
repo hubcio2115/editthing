@@ -40,6 +40,28 @@ export async function updateProjectById(
     return [null, (e as Error).message];
   }
 }
+
+/**
+ * Returns an `Error` if a project is not found
+ */
+export async function getProjectById(
+  id: Project["id"],
+): Promise<Result<Project>> {
+  try {
+    const project = await db.query.projects.findFirst({
+      where: eq(projectTable.id, id),
+    });
+
+    if (!project) {
+      return [null, "Project not found."];
+    }
+
+    return [project, null];
+  } catch (e) {
+    return [null, (e as Error).message];
+  }
+}
+
     .where(eq(projectTable.id, id));
 
   return project;
