@@ -24,6 +24,10 @@ const config = {
       permanent: true,
     },
   ],
+
+  experimental: {
+    reactCompiler: true,
+  },
 };
 
 export default config;
