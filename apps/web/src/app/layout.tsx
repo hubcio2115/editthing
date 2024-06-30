@@ -5,7 +5,7 @@ import { Toaster } from "~/components/ui/toaster";
 import { ReactQueryProvider } from "~/providers/react-query-provider";
 import { SessionProvider } from "~/providers/session-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
-import { getServerAuthSession } from "~/server/auth";
+import { auth } from "~/server/auth";
 import "~/styles/globals.css";
 
 export const metadata = {
@@ -15,7 +15,7 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
