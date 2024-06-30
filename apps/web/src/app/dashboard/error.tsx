@@ -1,24 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
 
-export default function Error({
+export default function ErrorPage({
   error,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
+  console.error(error);
 
   return (
     <div>
       <h2>Something went wrong! :(</h2>
-      <button onClick={() => router.push("/")}>Go back to homepage</button>
+
+      <pre>{JSON.stringify(error)}</pre>
+
+      <Link href="/">
+        <Button>Go back to homepage</Button>
+      </Link>
     </div>
   );
 }

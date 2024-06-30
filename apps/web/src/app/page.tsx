@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 import Navbar from "~/components/navbar";
-import PrincingPlans from "~/components/pricing-plans";
+import PricingPlans from "~/components/pricing-plans";
 
 const features = [
   {
@@ -36,7 +36,7 @@ const features = [
   },
 ] as const;
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex flex-col items-center justify-between border-b border-slate-200 bg-slate-100 p-2">
@@ -144,7 +144,7 @@ export default function Home() {
         </div>
       </div>
 
-      <PrincingPlans />
+      <PricingPlans />
 
       <div className="py-24 text-gray-500">
         <p className="text-center">
