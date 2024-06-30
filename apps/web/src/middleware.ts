@@ -1,14 +1,5 @@
-import { withAuth } from "next-auth/middleware";
+import { auth } from "./server/auth";
 
-export default withAuth({
-  callbacks: {
-    authorized: ({ req }) => {
-      const token = req.cookies.get("next-auth.session-token")?.value;
+export default auth;
 
-      if (token) return true;
-      return false;
-    },
-  },
-});
-
-export const config = { matcher: ["/dashboard"] };
+export const config = { matcher: ["/dashboard", "/api/projects/"] };

@@ -1,20 +1,14 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import {
-  type DefaultSession,
-  type NextAuthOptions,
-  getServerSession,
-} from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
+import Google from "next-auth/providers/google";
+import { db } from "./db";
+import { createTable } from "./db/schema";
 import type { Adapter } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
-
-import { env } from "~/env.mjs";
 import { generateSeedForOrgName, stripSpecialCharacters } from "~/lib/utils";
 import {
   createOrganization,
   getOrganizationByName,
-} from "~/server/api/utils/organizations";
-import { db } from "~/server/db";
-import { createTable } from "~/server/db/schema";
+} from "./api/utils/organizations";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -42,7 +36,7 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authOptions: NextAuthOptions = {
+export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -52,14 +46,11 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
+
   adapter: DrizzleAdapter(db, createTable) as Adapter,
-  providers: [
-    // Sign in with Google Oauth provider
-    GoogleProvider({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
+
+  providers: [Google],
+
   events: {
     async createUser({ user }) {
       const userName = user.name;
@@ -124,11 +115,4 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-};
-
-/**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
- * @see https://next-auth.js.org/configuration/nextjs
- */
-export const getServerAuthSession = () => getServerSession(authOptions);
+});

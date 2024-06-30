@@ -17,14 +17,14 @@ import {
   users,
 } from "~/server/db/schema";
 
-import { getServerAuthSession } from "../auth";
+import { auth } from "../auth";
 import { db } from "../db";
 import { organizations, usersToOrganizations } from "../db/schema";
 
 export async function getOwnOrganizations(): Promise<
   [{ id: number; name: string }[], null] | [null, Error]
 > {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     return [null, new Error("You must be signed in to perform this action")];
@@ -50,7 +50,7 @@ export async function getOrgViewWithMembers() {
 export async function getOwnOrganizationByName(
   name: Organization["name"],
 ): Promise<Result<OrganizationWithMembers>> {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     return [null, "You must be signed in to perform this action"];
@@ -88,7 +88,7 @@ export async function getOrganizations(): Promise<
     }[]
   >
 > {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   if (!session) {
     return [null, "You must be signed in to perform this action."];
@@ -113,7 +113,7 @@ export async function getOrganizations(): Promise<
 export async function createOrganization({
   name,
 }: InsertOrganization): Promise<Result<Organization>> {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   try {
     const newOrg = await createOrganizationInner(db, name, session?.user.id!, true);
@@ -131,7 +131,7 @@ export async function updateOrganizationName({
   oldName: Organization["name"];
   name: Organization["name"];
 }): Promise<Result<null>> {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   const owner = (
     await db
@@ -163,7 +163,7 @@ export async function updateOrganizationName({
 export async function deleteOrganization(
   name: Organization["name"],
 ): Promise<Result<null>> {
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   const orgWithMember = (
     await db
@@ -287,7 +287,7 @@ export async function updateMemberRole({
   memberId: User["id"];
   role: OrgMemberRole;
 }): Promise<null | Error> {
-  const session = await getServerAuthSession();
+  const session = await auth();
   const currentOwner = (
     await db
       .select()
