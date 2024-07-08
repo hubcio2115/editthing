@@ -30,6 +30,7 @@ export const env = createEnv({
 
     AUTH_GOOGLE_ID: z.string().min(1),
     AUTH_GOOGLE_SECRET: z.string().min(1),
+    YOUTUBE_DATA_API_KEY: z.string().min(1),
 
     MUX_TOKEN_ID: z.string().min(1),
     MUX_TOKEN_SECRET: z.string().min(1),
@@ -48,8 +49,22 @@ export const env = createEnv({
   // },
 
   // For Next.js >= 13.4.4, you only need to destructure client variables:
-  experimental__runtimeEnv: {
+  runtimeEnv: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NODE_ENV: process.env.NODE_ENV,
+
+    POSTGRES_URL: process.env.POSTGRES_URL,
+
+    AUTH_SECRET: process.env.AUTH_SECRET,
+    AUTH_URL: process.env.AUTH_URL,
+
+    AUTH_GOOGLE_ID: process.env.AUTH_GOOGL_ID,
+    AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
+    YOUTUBE_DATA_API_KEY: process.env.YOUTUBE_DATA_API_KEY,
+
+    MUX_TOKEN_ID: process.env.MUX_TOKEN_ID,
+    MUX_TOKEN_SECRET: process.env.MUX_TOKEN_SECRET,
+    MUX_WEBHOOK_SECRET: process.env.MUX_WEBHOOK_SECRET,
   },
 
   /**

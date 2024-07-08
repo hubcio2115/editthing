@@ -22,25 +22,24 @@ import { db } from "../db";
 import { organizations, usersToOrganizations } from "../db/schema";
 
 export async function getOwnOrganizations(): Promise<
-  [{ id: number; name: string }[], null] | [null, Error]
+  Result<Pick<Organization, "id" | "name" | "defaultOrg">[]>
 > {
   const session = await auth();
 
   if (!session) {
-    return [null, new Error("You must be signed in to perform this action")];
+    return [null, "You must be signed in to perform this action"];
   }
 
-  return [
-    await db
-      .select({
-        id: organizationWithMembersView.id,
-        name: organizationWithMembersView.name,
-        defaultOrg: organizationWithMembersView.defaultOrg,
-      })
-      .from(organizationWithMembersView)
-      .where(eq(organizationWithMembersView.memberId, session.user.id)),
-    null,
-  ];
+  const organizations = await db
+    .select({
+      id: organizationWithMembersView.id,
+      name: organizationWithMembersView.name,
+      defaultOrg: organizationWithMembersView.defaultOrg,
+    })
+    .from(organizationWithMembersView)
+    .where(eq(organizationWithMembersView.memberId, session.user.id));
+
+  return [organizations, null];
 }
 
 export async function getOrgViewWithMembers() {
@@ -66,9 +65,11 @@ export async function getOwnOrganizationByName(
           eq(organizationWithMembersView.name, name),
         ),
       )
-  )[0]!;
+  ).at(0);
 
-  return [organization, null];
+  return organization !== undefined
+    ? [organization, null]
+    : [null, "Not found"];
 }
 
 export async function getOrganizationProjects(id: Organization["id"]) {
@@ -116,7 +117,12 @@ export async function createOrganization({
   const session = await auth();
 
   try {
-    const newOrg = await createOrganizationInner(db, name, session?.user.id!, true);
+    const newOrg = await createOrganizationInner(
+      db,
+      name,
+      session?.user.id!,
+      true,
+    );
 
     return [newOrg, null];
   } catch (e) {
@@ -232,7 +238,6 @@ export async function addMemberToOrganization({
     .values({ organizationId, memberId, role })
     .execute();
 }
-
 
 /**
  * @throws {Error} returning an error instead of throwing an error ends up with the client not being able to recieve it
