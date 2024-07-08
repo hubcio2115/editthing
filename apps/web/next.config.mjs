@@ -3,7 +3,7 @@
  * for Docker builds.
  */
 import { fileURLToPath } from "url";
-import { createJiti } from "jiti";
+import createJiti from "jiti";
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
 jiti('./app/env');
