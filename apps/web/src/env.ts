@@ -31,10 +31,6 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string().min(1),
     AUTH_GOOGLE_SECRET: z.string().min(1),
     YOUTUBE_DATA_API_KEY: z.string().min(1),
-
-    MUX_TOKEN_ID: z.string().min(1),
-    MUX_TOKEN_SECRET: z.string().min(1),
-    MUX_WEBHOOK_SECRET: z.string().min(1),
   },
 
   client: {
