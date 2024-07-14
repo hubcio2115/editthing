@@ -23,7 +23,7 @@ export default async function DashboardPage() {
         </h2>
         <p className="text-center">
           An organization is where you create projects and add team members. You
-          can add multiple organiations in your account for different
+          can add multiple organizations in your account for different
           collaboration projects.{" "}
         </p>
       </div>
