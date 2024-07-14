@@ -1,20 +1,15 @@
 "use client";
 
-import { SearchIcon, StretchHorizontal } from "lucide-react";
 import Link from "next/link";
-import { Input } from "~/components/ui/input";
-import { Toggle } from "~/components/ui/toggle";
-import { Button } from "~/components/ui/button";
 import ProjectSmallCard from "./project-small-card";
 import ProjectCard from "./project-card";
 import type { Organization } from "~/lib/validators/organization";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import { z } from "zod";
 import { projectSchema } from "~/lib/validators/project";
-import { cn } from "~/lib/utils";
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 function EmptyProjectsInfo() {
   return (
@@ -69,64 +64,23 @@ export default function ProjectGrid({ organization }: ProjectGridProps) {
     },
   });
 
-  const [listDisplayType, setListDisplayType] = useState<"grid" | "list">(
-    "grid",
-  );
+  const searchParams = useSearchParams();
 
-  return (
-    <div className="mx-auto flex flex-col flex-1 items-center md:px-2">
-      <div className="flex w-full max-w-[920px] flex-col justify-center gap-4">
-        <div className="flex">
-          <div className="flex flex-1">
-            <div className="rounded-lg rounded-r-none border border-r-0">
-              <SearchIcon className="m-2 h-5 w-6" />
-            </div>
-            <Input className="mr-2 rounded-l-none border-l-0 focus:outline-none" />
-          </div>
+  const listDisplayType = searchParams.get("listType");
 
-          <Toggle
-            variant="outline"
-            onClick={() => {
-              setListDisplayType((prev) => {
-                switch (prev) {
-                  case "grid":
-                    return "list";
-                  case "list":
-                    return "grid";
-                }
-              });
-            }}
-            className="mr-2"
-          >
-            <StretchHorizontal />
-          </Toggle>
-
-          <Link href={`/dashboard/${organization.name}/create-project`}>
-            <Button variant="outline">Add video</Button>
-          </Link>
-        </div>
-      </div>
-
-      {projects.length === 0 ? (
-        <EmptyProjectsInfo />
-      ) : (
-        <div
-          className={cn(
-            "my-5",
-            listDisplayType === "list"
-              ? "flex flex-col justify-center gap-4"
-              : "grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3",
-          )}
-        >
-          {projects.map((project) =>
-            listDisplayType === "list" ? (
-              <ProjectSmallCard key={project.id} project={project} />
-            ) : (
-              <ProjectCard key={project.id} project={project} />
-            ),
-          )}
-        </div>
-      )}
+  return projects.length === 0 ? (
+    <EmptyProjectsInfo />
+  ) : listDisplayType === null || searchParams.get("listType") === "list" ? (
+    <div className="my-5 flex flex-col justify-center gap-4">
+      {projects.map((project) => (
+        <ProjectSmallCard key={project.id} project={project} />
+      ))}
+    </div>
+  ) : (
+    <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} />
+      ))}
     </div>
   );
 }
