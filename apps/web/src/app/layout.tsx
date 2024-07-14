@@ -28,7 +28,8 @@ export default async function RootLayout({ children }: PropsWithChildren) {
               enableSystem
               disableTransitionOnChange
             >
-              <main>{children}</main>
+              {children}
+
               <Toaster />
             </ThemeProvider>
           </SessionProvider>
