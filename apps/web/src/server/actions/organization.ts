@@ -211,7 +211,11 @@ export async function deleteOrganization(
 
 export async function getMembersOfOrganization(id: Organization["id"]) {
   const members = await db
-    .select()
+    .select({
+      user: users,
+      organization: organizations,
+      usersToOrganizations: usersToOrganizations,
+    })
     .from(usersToOrganizations)
     .leftJoin(users, eq(users.id, usersToOrganizations.memberId))
     .leftJoin(
