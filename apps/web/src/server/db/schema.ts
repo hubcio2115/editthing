@@ -174,6 +174,9 @@ export const privacyStatus = pgEnum("privacyStatus", [
 
 export const projects = createTable("projects", {
   id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
+  createdAt: timestamp("created_at", { mode: "date" })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
   title: varchar("title", { length: 255 }),
   description: varchar("description", { length: 512 }),
   categoryId: varchar("category_id", { length: 128 }),
