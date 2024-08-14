@@ -44,7 +44,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Skeleton } from "./ui/skeleton";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "./ui/toaster/use-toast";
 
 export default function OrganizationSelect() {
   const pathname = usePathname();
@@ -123,7 +123,7 @@ export default function OrganizationSelect() {
   };
 
   return isLoading ? (
-    <Skeleton className="h-[40px] w-[180px] bg-slate-200"></Skeleton>
+    <Skeleton className="h-[40px] w-[180px] bg-slate-200" />
   ) : (
     <>
       {organizations && organizations?.length > 0 ? (
@@ -148,6 +148,7 @@ export default function OrganizationSelect() {
                   {org.name}
                 </SelectItem>
               ))}
+
               <div
                 className="text-slate relative m-auto flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm font-light text-slate-400 outline-none hover:cursor-pointer focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                 onClick={() => {
@@ -166,6 +167,7 @@ export default function OrganizationSelect() {
           }}
         >
           <span className="mr-3">Create organization</span>
+
           <Plus size={16} />
         </Button>
       )}

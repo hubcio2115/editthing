@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useToast } from "~/components/ui/use-toast";
+import { useToast } from "~/components/ui/toaster";
 import { type Invite, inviteSchema } from "~/lib/validators/invite";
 import { type OrgMemberRole, roleEnum } from "~/lib/validators/organization";
 import {
