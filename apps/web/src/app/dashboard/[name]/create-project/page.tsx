@@ -1,25 +1,13 @@
-import VideUploadForm from "~/components/create-project/create-project-form";
-import { createEndpointForMuxUpload } from "~/server/actions/mux";
-import { getOwnOrganizationByName } from "~/server/actions/organization";
+"use client";
 
-type CreateProjectPageProps = {
-  params: {
-    name: string;
-  };
-};
+import ProjectForm from "~/components/create-project/project-form";
 
-export default async function CreateProjectPage({
-  params,
-}: CreateProjectPageProps) {
-  const [upload, uploadErr] = await createEndpointForMuxUpload();
-  if (uploadErr !== null) {
-    throw new Error(uploadErr);
-  }
+export default async function CreateProjectPage() {
+  function onSuccess() {}
 
-  const [org, err] = await getOwnOrganizationByName(params.name);
-  if (err !== null) {
-    throw new Error(err);
-  }
-
-  return <VideUploadForm upload={upload} org={org} />;
+  return (
+    <div className="container flex max-w-[800px] flex-1 flex-col items-center pb-11">
+      <ProjectForm onSuccess={onSuccess} />
+    </div>
+  );
 }
