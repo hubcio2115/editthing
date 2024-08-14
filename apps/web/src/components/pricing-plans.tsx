@@ -82,7 +82,7 @@ export default function PrincingPlans() {
         </p>
       </div>
 
-      <div className="container grid grid-cols-3 gap-10">
+      <div className="container grid grid-cols-1 lg:grid-cols-3 gap-10">
         {plans.map(({ title, description, price, features }) => (
           <Card key={title} className="h-[400px] rounded-3xl">
             <CardHeader>
