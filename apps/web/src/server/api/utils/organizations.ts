@@ -1,10 +1,14 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { User } from "next-auth";
 import "server-only";
 
 import type { Organization } from "~/lib/validators/organization";
-import { type DbConnection } from "~/server/db/index";
-import { organizations, usersToOrganizations } from "~/server/db/schema";
+import { db, type DbConnection } from "~/server/db/index";
+import {
+  accounts,
+  organizations,
+  usersToOrganizations,
+} from "~/server/db/schema";
 
 export async function getOrganizationByName(
   db: DbConnection,
@@ -59,6 +63,33 @@ export async function isUserInOrganization(
     );
 
   return userInOrg.length > 0;
+}
+
+export async function getOwnerId(
+  organization: Organization["name"] | Organization["id"],
+) {
+  return (
+    await db
+      .select({
+        id: usersToOrganizations.memberId,
+      })
+      .from(usersToOrganizations)
+      .leftJoin(
+        organizations,
+        eq(organizations.id, usersToOrganizations.organizationId),
+      )
+      .where(
+        and(
+          eq(
+            typeof organization === "number"
+              ? organizations.id
+              : organizations.name,
+            organization,
+          ),
+          eq(usersToOrganizations.role, "owner"),
+        ),
+      )
+  ).at(0);
 }
 
 export async function getOwnerAccount(ownerId: NonNullable<User["id"]>) {
