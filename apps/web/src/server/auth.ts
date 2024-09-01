@@ -57,7 +57,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }) as Adapter,
 
-  providers: [Google],
+  providers: [
+    Google({
+      authorization: {
+        params: {
+          scope: [
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/youtube.readonly",
+            "https://www.googleapis.com/auth/youtube.force-ssl",
+          ].join(" "),
+          access_type: "offline",
+        },
+      },
+    }),
+  ],
 
   events: {
     async createUser({ user }) {
