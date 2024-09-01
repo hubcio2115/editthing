@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import createJiti from "jiti";
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
-jiti("./src/env");
+jiti("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
 const config = {
