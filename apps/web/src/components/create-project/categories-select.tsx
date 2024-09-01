@@ -17,6 +17,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import type { ControllerRenderProps } from "react-hook-form";
 import { Button } from "../ui/button";
+import ky from "ky";
 
 export default function CategoriesSelect({
   value,
@@ -26,24 +27,20 @@ export default function CategoriesSelect({
   const { data: categories } = useSuspenseQuery({
     queryKey: ["youtubeVideoCategories"],
     queryFn: async () => {
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_API_URL}/api/youtube/categories`,
-      );
+      const data = await ky
+        .get<
+          youtube_v3.Schema$VideoCategory[]
+        >(`${env.NEXT_PUBLIC_API_URL}/api/youtube/categories`)
+        .json();
 
-      if (res.ok) {
-        const data = await res.json();
-
-        return (data as youtube_v3.Schema$VideoCategory[]).filter(
-          (category) => category.snippet?.assignable,
-        );
-      }
-
-      const err = (await res.json()) as { message: string };
-      throw new Error(err.message);
+      return data.filter((category) => category.snippet?.assignable);
     },
   });
 
   const [open, setOpen] = useState(false);
+
+  const displayedValue = categories.find((category) => category.id === value)
+    ?.snippet?.title;
 
   return (
     <Popover
@@ -59,16 +56,26 @@ export default function CategoriesSelect({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value
-            ? categories.find((category) => category.snippet?.title === value)
-                ?.snippet?.title
-            : "Select a category..."}
+          {displayedValue ?? "Select a category..."}
+
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent>
-        <Command>
+        <Command
+          filter={(value, search) => {
+            const category = categories.find(
+              (category) => category.id === value,
+            );
+
+            return category?.snippet?.title
+              ?.toLowerCase()
+              .includes(search.toLowerCase())
+              ? 1
+              : 0;
+          }}
+        >
           <CommandInput placeholder="Search a category..." />
 
           <CommandList>
@@ -78,7 +85,7 @@ export default function CategoriesSelect({
               {categories.map((category) => (
                 <CommandItem
                   key={category.id}
-                  value={category.snippet?.title!}
+                  value={category.id!}
                   onSelect={(newValue) => {
                     onChange(newValue === value ? "" : newValue);
                     setOpen(false);
@@ -87,9 +94,7 @@ export default function CategoriesSelect({
                   <Check
                     className={cn(
                       "mr-2 size-4",
-                      value === category.snippet?.title
-                        ? "opacity-100"
-                        : "opacity-0",
+                      value === category.id ? "opacity-100" : "opacity-0",
                     )}
                   />
 
