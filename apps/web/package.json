@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "echo $POSTGRES_URL && next build",
     "db:push": "dotenv drizzle-kit push",
     "db:migrate": "bun ./src/server/db/migrate.ts",
     "studio": "dotenv drizzle-kit studio",
