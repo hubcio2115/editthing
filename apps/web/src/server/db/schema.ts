@@ -177,19 +177,22 @@ export const projects = createTable("projects", {
   createdAt: timestamp("created_at", { mode: "date" })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  title: varchar("title", { length: 255 }),
-  description: varchar("description", { length: 512 }),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: varchar("description", { length: 5000 }).notNull(),
   categoryId: varchar("category_id", { length: 128 }),
-  defaultLanguage: varchar("default_language", { length: 128 }),
-  embeddable: boolean("embeddable"),
-  license: licenseEnum("license"),
-  privacyStatus: privacyStatus("privacy_status"),
-  publicStatsViewable: boolean("public_stats_viewable"),
+  defaultLanguage: varchar("default_language", { length: 128 }).notNull(),
+  embeddable: boolean("embeddable").notNull().default(true),
+  license: licenseEnum("license").notNull().default("youtube"),
+  privacyStatus: privacyStatus("privacy_status").notNull().default("private"),
+  publicStatsViewable: boolean("public_stats_viewable").notNull().default(true),
   publishAt: date("publishAt", { mode: "string" }),
-  selfDeclaredMadeForKids: boolean("self_declared_made_for_kids"),
-  notifySubscribers: boolean("notify_subscribers"),
+  selfDeclaredMadeForKids: boolean("self_declared_made_for_kids")
+    .notNull()
+    .default(false),
+  notifySubscribers: boolean("notify_subscribers").notNull().default(true),
   tags: varchar("tags", { length: 500 }),
 
+  channelId: varchar("channel_id", { length: 128 }).notNull(),
   organizationId: bigserial("organization_id", { mode: "number" })
     .references(() => organizations.id, {
       onDelete: "cascade",
