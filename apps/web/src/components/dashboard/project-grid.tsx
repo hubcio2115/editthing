@@ -10,6 +10,7 @@ import { projectSchema } from "~/lib/validators/project";
 import { env } from "~/env";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import ky from "ky";
 
 function EmptyProjectsInfo() {
   return (
@@ -43,24 +44,19 @@ export default function ProjectGrid({ organization }: ProjectGridProps) {
   const { data: projects } = useSuspenseQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_API_URL}/api/organizations/${organization.name}/projects`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await ky
+        .get(
+          `${env.NEXT_PUBLIC_API_URL}/api/organizations/${organization.name}/projects`,
+        )
+        .json();
 
-      if (res.ok) {
-        const data = z.array(projectSchema).safeParse(await res.json());
+      const data = z.array(projectSchema).safeParse(res);
 
-        if (data.error) {
-          throw data.error;
-        }
-
-        return data.data;
+      if (data.error) {
+        throw data.error;
       }
 
-      return [];
+      return data.data;
     },
   });
 
