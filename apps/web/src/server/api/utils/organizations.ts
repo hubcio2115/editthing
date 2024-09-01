@@ -34,3 +34,35 @@ export async function createOrganization(
 
   return newOrganization;
 }
+
+export async function isUserInOrganization(
+  userId: NonNullable<User["id"]>,
+  organization: Organization["name"] | Organization["id"],
+): Promise<boolean> {
+  const userInOrg = await db
+    .select()
+    .from(usersToOrganizations)
+    .leftJoin(
+      organizations,
+      eq(organizations.id, usersToOrganizations.organizationId),
+    )
+    .where(
+      and(
+        eq(usersToOrganizations.memberId, userId),
+        eq(
+          typeof organization === "number"
+            ? organizations.id
+            : organizations.name,
+          organization,
+        ),
+      ),
+    );
+
+  return userInOrg.length > 0;
+}
+
+export async function getOwnerAccount(ownerId: NonNullable<User["id"]>) {
+  return (
+    await db.select().from(accounts).where(eq(accounts.userId, ownerId))
+  ).at(0);
+}
