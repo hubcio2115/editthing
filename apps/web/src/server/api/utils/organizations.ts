@@ -17,6 +17,25 @@ export async function getOrganizationByName(
   return db.select().from(organizations).where(eq(organizations.name, name));
 }
 
+export async function getDefaultUserOrganization(
+  userId: NonNullable<User["id"]>,
+) {
+  return db
+    .select()
+    .from(usersToOrganizations)
+    .leftJoin(
+      organizations,
+      eq(organizations.id, usersToOrganizations.organizationId),
+    )
+    .where(
+      and(
+        eq(usersToOrganizations.memberId, userId),
+        eq(usersToOrganizations.role, "owner"),
+        eq(organizations.defaultOrg, true),
+      ),
+    );
+}
+
 export async function createOrganization(
   db: DbConnection,
   name: Organization["name"],
