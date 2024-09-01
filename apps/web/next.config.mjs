@@ -15,9 +15,9 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "i.ytimg.com",
+        hostname: "yt3.ggpht.com",
         port: "",
-        pathname: "/vi/**",
+        pathname: "/ytc/**",
       },
     ],
   },
