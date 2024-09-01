@@ -45,6 +45,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         id: user.id,
       },
     }),
+    authorized: async ({ auth }) => {
+      return !!auth?.user;
+    },
   },
 
   adapter: DrizzleAdapter(db, {
