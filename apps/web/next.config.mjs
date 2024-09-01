@@ -21,13 +21,6 @@ const config = {
       },
     ],
   },
-  redirects: async () => [
-    {
-      source: "/dashboard/:name",
-      destination: "/dashboard/:name/overview",
-      permanent: true,
-    },
-  ],
 };
 
 export default config;
