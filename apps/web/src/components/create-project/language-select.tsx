@@ -17,6 +17,7 @@ import {
   CommandList,
 } from "../ui/command";
 import { cn } from "~/lib/utils";
+import ky from "ky";
 
 export default function LanguagesSelect({
   value,
@@ -25,27 +26,18 @@ export default function LanguagesSelect({
 }: PropsWithChildren<Omit<ControllerRenderProps, "ref">>) {
   const { data: languages } = useSuspenseQuery({
     queryKey: ["youtubeLanguages"],
-    queryFn: async () => {
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_API_URL}/api/youtube/languages`,
-      );
-
-      if (res.ok) {
-        const data = await res.json();
-
-        return data as youtube_v3.Schema$I18nLanguage[];
-      }
-
-      const err = (await res.json()) as { message: string };
-      throw new Error(err.message);
-    },
+    queryFn: async () =>
+      ky
+        .get<
+          youtube_v3.Schema$I18nLanguage[]
+        >(`${env.NEXT_PUBLIC_API_URL}/api/youtube/languages`)
+        .json(),
   });
 
   const [open, setOpen] = useState(false);
 
-  const displayedValue = languages.find(
-    (language) => language.snippet?.name === value,
-  )?.snippet?.name;
+  const displayedValue = languages.find((language) => language.id === value)
+    ?.snippet?.name;
 
   return (
     <Popover
@@ -78,7 +70,7 @@ export default function LanguagesSelect({
               {languages.map((language) => (
                 <CommandItem
                   key={language.id}
-                  value={language.snippet?.name!}
+                  value={language.id!}
                   onSelect={(newValue) => {
                     onChange(newValue === value ? "" : newValue);
                     setOpen(false);
@@ -87,9 +79,7 @@ export default function LanguagesSelect({
                   <Check
                     className={cn(
                       "mr-2 size-4",
-                      value === language.snippet?.name
-                        ? "opacity-100"
-                        : "opacity-0",
+                      value === language.id ? "opacity-100" : "opacity-0",
                     )}
                   />
 
