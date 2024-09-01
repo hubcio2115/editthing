@@ -3,8 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  insertProjectSchema,
+  FILE_INPUT_ACCEPTED_FORMATS,
+  projectFormSchema,
   type InsertProject,
+  type TProjectForm,
 } from "~/lib/validators/project";
 import {
   Form,
@@ -17,7 +19,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import CategoriesSelect from "./categories-select";
 import InputSkeleton from "../ui/skeletons/input-skeleton";
 import LanguagesSelect from "./language-select";
@@ -27,7 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { Info } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -39,8 +41,9 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Checkbox } from "../ui/checkbox";
-import { z } from "zod";
 import { cn } from "~/lib/utils";
+import ChannelsSelect from "./channel-select";
+import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
 
 const defaultValues: InsertProject = {
   license: "youtube",
@@ -54,83 +57,88 @@ const defaultValues: InsertProject = {
   publicStatsViewable: true,
   selfDeclaredMadeForKids: false,
   notifySubscribers: true,
+  channelId: "",
 };
 
-interface TProjectForm extends InsertProject {
-  video: File;
-  thumbnail: File;
-}
-
-const ACCEPTED_THUMBNAIL_FORMATS = [
-  ".jfif",
-  ".pjpeg",
-  ".jpeg",
-  ".pjp",
-  ".jpg",
-  ".png",
-];
-
-/** 2MB */
-const MAX_THUMBNAIL_SIZE = 200_000;
-
-const ACCEPTED_VIDEO_FORMATS = [".mp4", ".mpeg", ".webm"];
-
-const FILE_INPUT_ACCEPTED_FORMATS = ACCEPTED_VIDEO_FORMATS.map((format) => {
-  return `video/${format.substring(1)}`;
-}).join(", ");
-
 interface ProjectFormProps {
-  onSuccess: (data: InsertProject) => void;
+  mutation: UseCreateProjectMutationResult;
 }
 
-export default function ProjectForm({ onSuccess }: ProjectFormProps) {
+export default function ProjectForm({ mutation }: ProjectFormProps) {
   const form = useForm<TProjectForm>({
-    resolver: zodResolver(
-      insertProjectSchema.and(
-        z.object({
-          video: z
-            .any()
-            .refine(
-              (files) => ACCEPTED_VIDEO_FORMATS.includes(files?.at(0)?.type),
-              `${ACCEPTED_VIDEO_FORMATS.join(", ")} files are accepted.`,
-            ),
-          thumbnail: z
-            .any()
-            .refine(
-              (files) => files?.at(0)?.size <= MAX_THUMBNAIL_SIZE,
-              "Max file size is 2MB.",
-            )
-            .refine((files) => {
-              console.log(files);
-              return (
-                ACCEPTED_THUMBNAIL_FORMATS.includes(files?.at(0)?.type),
-                `${ACCEPTED_THUMBNAIL_FORMATS.join(", ")} files are accepted.`
-              );
-            }),
-        }),
-      ),
-    ),
+    resolver: zodResolver(projectFormSchema),
     defaultValues,
   });
 
   const [showMore, setShowMore] = useState(false);
 
   const video = form.watch("video");
+  const channel = form.watch("channelId");
+
+  const [showWholeForm, setShowWholeForm] = useState(false);
+
+  useEffect(() => {
+    if (video && channel) {
+      setShowWholeForm(true);
+    }
+  }, [video, channel]);
+
+  function onSuccess(data: TProjectForm) {
+    const formData = new FormData();
+
+    formData.append("license", data.license!);
+    formData.append("title", data.title!);
+    formData.append("description", data.description!);
+    formData.append("categoryId", data.categoryId!);
+    formData.append("defaultLanguage", data.defaultLanguage!);
+    formData.append("tags", data.tags!);
+    formData.append("embeddable", `${data.embeddable!}`);
+    formData.append("privacyStatus", data.privacyStatus!);
+    formData.append("publicStatsViewable", `${data.publicStatsViewable!}`);
+    formData.append(
+      "selfDeclaredMadeForKids",
+      `${data.selfDeclaredMadeForKids!}`,
+    );
+    formData.append("notifySubscribers", `${data.notifySubscribers!}`);
+    formData.append("channelId", data.channelId);
+    formData.append("video", data.video);
+
+    mutation.mutate(formData);
+  }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSuccess)}
-        className={cn(
-          "flex flex-col gap-8",
-          !video && "justify-center items-center flex-1",
-        )}
+        onSubmit={form.handleSubmit(onSuccess, (err) => {
+          console.error(err);
+        })}
+        className={cn("flex flex-col gap-8 w-full", {
+          "justify-center items-center flex-1": !showWholeForm,
+        })}
       >
+        <FormField
+          control={form.control}
+          name="channelId"
+          render={({ field: { ref: _ref, ...field } }) => (
+            <FormItem className="w-full">
+              <FormLabel className="font-bold text-lg">Category:</FormLabel>
+
+              <FormControl>
+                <Suspense fallback={<InputSkeleton />}>
+                  <ChannelsSelect {...field} />
+                </Suspense>
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="video"
           render={({ field: { value, ...field } }) => (
-            <FormItem>
+            <FormItem className="w-full">
               <FormLabel htmlFor="video">Video</FormLabel>
 
               <FormControl>
@@ -142,7 +150,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                   accept={FILE_INPUT_ACCEPTED_FORMATS}
                   onChange={(e) => {
                     e.target.files &&
-                      form.setValue("video", e.target.files.item(0)!);
+                      form.setValue("video", e.target.files[0]!);
                   }}
                 />
               </FormControl>
@@ -152,7 +160,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
           )}
         />
 
-        {video ? (
+        {showWholeForm ? (
           <>
             <h1 className="text-2xl font-bold">Details</h1>
 
@@ -338,6 +346,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
             />
 
             <Button
+              type="button"
               onClick={() => {
                 setShowMore((prev) => !prev);
               }}
@@ -516,6 +525,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                         <FormLabel className="inline-flex items-center gap-1 justify-center">
                           <FormControl>
                             <Checkbox
+                              disabled
                               checked={value ?? false}
                               onCheckedChange={onChange}
                             />
@@ -529,6 +539,9 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
 
                               <TooltipContent>
                                 Allow others to embed your video in their sites.
+                                <br />
+                                This is required for us to be able to show this
+                                video in a project view.
                                 <br />
                                 <a
                                   href=""
@@ -568,7 +581,16 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
               <p>Paid promotion, tags and more</p>
             )}
 
-            <Button className="max-w-max self-end">Create project</Button>
+            <Button
+              className="max-w-max self-end"
+              type="submit"
+              disabled={mutation.isPending}
+            >
+              Create project
+              {mutation.isPending ? (
+                <Loader2 className="size-4 animate-spin ml-2" />
+              ) : null}
+            </Button>
           </>
         ) : null}
       </form>

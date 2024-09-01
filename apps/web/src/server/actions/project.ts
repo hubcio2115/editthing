@@ -8,20 +8,118 @@ import type { InsertProject, Project } from "~/lib/validators/project";
 import { db } from "../db";
 import { projects as projectTable } from "../db/schema";
 import { auth } from "../auth";
-import { getOwnOrganizations } from "./organization";
+import { getOwnOrganizationByName, getOwnOrganizations } from "./organization";
+import {
+  getOwnerAccount,
+  getOwnerId,
+  isUserInOrganization,
+} from "../api/utils/organizations";
+import { youtube, youtube_v3 } from "@googleapis/youtube";
+import { env } from "~/env";
+import { Readable } from "stream";
+import { OAuth2Client } from "google-auth-library";
 
 export async function createProject(
-  newProject: InsertProject,
+  formData: FormData,
 ): Promise<Result<Project>> {
-  try {
-    const project = (
-      await db.insert(projectTable).values(newProject).returning()
-    )[0];
+  const session = await auth();
+  const organizationName = formData.get("organizationName") as string;
 
-    return [project!, null];
-  } catch (err) {
-    return [null, (err as Error).message];
+  const [organization, err] = await getOwnOrganizationByName(organizationName);
+
+  if (err !== null) {
+    return [null, "ORGANIZATION_NOT_FOUND"];
   }
+
+  const isUserAuthorized =
+    session && (await isUserInOrganization(session.user.id, organizationName));
+  if (!isUserAuthorized) {
+    return [null, "UNAUTHORIZED"];
+  }
+
+  const owner = await getOwnerId(organizationName);
+  if (!owner) {
+    return [null, "OWNER_NOT_FOUND"];
+  }
+
+  const ownerAccount = (await getOwnerAccount(owner.id))!;
+
+  // Create a new OAuth2Client for authorization
+  const youtubeClient = youtube("v3");
+
+  const oauth2Client = new OAuth2Client({
+    clientSecret: env.AUTH_GOOGLE_SECRET,
+    clientId: env.AUTH_GOOGLE_ID,
+
+    credentials: {
+      access_token: ownerAccount?.access_token,
+      refresh_token: ownerAccount?.refresh_token,
+    },
+  });
+  const project: InsertProject = {
+    categoryId: formData.get("categoryId") as string,
+    channelId: formData.get("channelId") as string,
+    defaultLanguage: formData.get("defaultLanguage") as string,
+    description: formData.get("description") as string,
+    embeddable: formData.get("embeddable") === "true",
+    license: formData.get("license") as Project["license"],
+    notifySubscribers: formData.get("notifySubscribers") === "true",
+    privacyStatus: formData.get("privacyStatus") as Project["privacyStatus"],
+    publicStatsViewable: formData.get("publicStatsViewable") === "true",
+
+    selfDeclaredMadeForKids: formData.get("selfDeclaredMadeForKids") === "true",
+    tags: formData.get("tags") as string,
+    title: formData.get("title") as string,
+    organizationId: organization.id,
+
+    videoId: null,
+    publishAt: null,
+  };
+
+  const videoFile = formData.get("video") as File;
+
+  try {
+    var video = (await youtubeClient.videos
+      .insert({
+        part: ["snippet", "status", "id"],
+        auth: oauth2Client,
+        media: {
+          // @ts-expect-error ReadableStream<Uint8Array> is assignable to ReadableStream<any>
+          body: Readable.fromWeb(videoFile.stream()),
+          mimeType: "video/*",
+        },
+        requestBody: {
+          snippet: {
+            title: project.title,
+            description: project.description,
+            tags: project.tags?.split(","),
+            categoryId: project.categoryId,
+            defaultLanguage: project.defaultLanguage,
+            channelId: project.channelId,
+          },
+          status: {
+            license: project.license,
+            embeddable: project.embeddable,
+            privacyStatus: project.privacyStatus,
+
+            publicStatsViewable: project.publicStatsViewable,
+            selfDeclaredMadeForKids: project.selfDeclaredMadeForKids,
+          },
+        },
+      })
+      .then((res) => res.data)) as youtube_v3.Schema$Video;
+  } catch (e) {
+    return [null, (e as Error).message];
+  }
+
+  project.videoId = video.id;
+  project.publishAt = video.status?.publishAt;
+
+  const newProject = (
+    await db.insert(projectTable).values(project).returning()
+  ).at(0)!;
+
+  return [newProject, null];
 }
 
 export async function getProjectById(
