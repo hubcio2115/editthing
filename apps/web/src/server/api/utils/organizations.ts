@@ -20,7 +20,7 @@ export async function getOrganizationByName(
 export async function createOrganization(
   db: DbConnection,
   name: Organization["name"],
-  ownerId: User["id"],
+  ownerId: NonNullable<User["id"]>,
   isDefault = false,
 ) {
   const newOrganization = (
