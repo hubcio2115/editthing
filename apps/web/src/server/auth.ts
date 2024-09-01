@@ -114,7 +114,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       const newOrganization = await createOrganization(
         db,
         newOrgName,
-        user.id,
+        user.id!,
         true,
       );
 
