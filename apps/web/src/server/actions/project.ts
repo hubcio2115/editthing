@@ -30,7 +30,7 @@ export async function getProjectById(
   const session = await auth();
 
   if (!session) {
-    throw new Error("Unauthorized");
+    return [null, "UNAUTHORIZED"];
   }
 
   const [organizations, err] = await getOwnOrganizations();
