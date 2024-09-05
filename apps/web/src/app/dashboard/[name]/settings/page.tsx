@@ -24,7 +24,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useToast } from "~/components/ui/use-toast";
+import { useToast } from "~/components/ui/toaster";
 import {
   type UpdateOrganizationName,
   updateOrganizationNameSchema,

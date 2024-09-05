@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { getProjectById } from "~/server/actions/project";
+
 type ProjectPageProps = {
   params: {
     name: string;
@@ -5,13 +8,21 @@ type ProjectPageProps = {
   };
 };
 
-export default function ProjectPage({
-  params: { name, id },
-}: ProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const [project, err] = await getProjectById(+params.id);
+
+  if (err !== null) {
+    throw new Error(err);
+  }
+
+  if (project === null) {
+    return redirect("/404");
+  }
+
   return (
     <div>
       <p>
-        {id}: {name}
+        {project.id}: {project.title}
       </p>
     </div>
   );

@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import createJiti from "jiti";
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
-jiti('./src/env');
+jiti("./src/env.ts");
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -15,19 +15,12 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "i.ytimg.com",
+        hostname: "yt3.ggpht.com",
         port: "",
-        pathname: "/vi/**",
+        pathname: "/ytc/**",
       },
     ],
   },
-  redirects: async () => [
-    {
-      source: "/dashboard/:name",
-      destination: "/dashboard/:name/overview",
-      permanent: true,
-    },
-  ],
 };
 
 export default config;

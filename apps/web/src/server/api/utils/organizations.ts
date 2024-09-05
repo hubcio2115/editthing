@@ -1,10 +1,14 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { User } from "next-auth";
 import "server-only";
 
 import type { Organization } from "~/lib/validators/organization";
-import { type DbConnection } from "~/server/db/index";
-import { organizations, usersToOrganizations } from "~/server/db/schema";
+import { db, type DbConnection } from "~/server/db/index";
+import {
+  accounts,
+  organizations,
+  usersToOrganizations,
+} from "~/server/db/schema";
 
 export async function getOrganizationByName(
   db: DbConnection,
@@ -13,10 +17,29 @@ export async function getOrganizationByName(
   return db.select().from(organizations).where(eq(organizations.name, name));
 }
 
+export async function getDefaultUserOrganization(
+  userId: NonNullable<User["id"]>,
+) {
+  return db
+    .select()
+    .from(usersToOrganizations)
+    .leftJoin(
+      organizations,
+      eq(organizations.id, usersToOrganizations.organizationId),
+    )
+    .where(
+      and(
+        eq(usersToOrganizations.memberId, userId),
+        eq(usersToOrganizations.role, "owner"),
+        eq(organizations.defaultOrg, true),
+      ),
+    );
+}
+
 export async function createOrganization(
   db: DbConnection,
   name: Organization["name"],
-  ownerId: User["id"],
+  ownerId: NonNullable<User["id"]>,
   isDefault = false,
 ) {
   const newOrganization = (
@@ -33,4 +56,63 @@ export async function createOrganization(
   });
 
   return newOrganization;
+}
+
+export async function isUserInOrganization(
+  userId: NonNullable<User["id"]>,
+  organization: Organization["name"] | Organization["id"],
+): Promise<boolean> {
+  const userInOrg = await db
+    .select()
+    .from(usersToOrganizations)
+    .leftJoin(
+      organizations,
+      eq(organizations.id, usersToOrganizations.organizationId),
+    )
+    .where(
+      and(
+        eq(usersToOrganizations.memberId, userId),
+        eq(
+          typeof organization === "number"
+            ? organizations.id
+            : organizations.name,
+          organization,
+        ),
+      ),
+    );
+
+  return userInOrg.length > 0;
+}
+
+export async function getOwnerId(
+  organization: Organization["name"] | Organization["id"],
+) {
+  return (
+    await db
+      .select({
+        id: usersToOrganizations.memberId,
+      })
+      .from(usersToOrganizations)
+      .leftJoin(
+        organizations,
+        eq(organizations.id, usersToOrganizations.organizationId),
+      )
+      .where(
+        and(
+          eq(
+            typeof organization === "number"
+              ? organizations.id
+              : organizations.name,
+            organization,
+          ),
+          eq(usersToOrganizations.role, "owner"),
+        ),
+      )
+  ).at(0);
+}
+
+export async function getOwnerAccount(ownerId: NonNullable<User["id"]>) {
+  return (
+    await db.select().from(accounts).where(eq(accounts.userId, ownerId))
+  ).at(0);
 }

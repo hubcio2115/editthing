@@ -23,11 +23,11 @@ import type { AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `editthing_app_${name}`);
 
-export const users = createTable("user", {
+export const users = createTable("users", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
+  emailVerified: timestamp("email_verified", {
     mode: "date",
     precision: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
@@ -36,20 +36,22 @@ export const users = createTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  videoEntries: many(videoEntries),
-  organizations: many(organizations),
   usersToOrganizations: many(usersToOrganizations),
 }));
 
 export const accounts = createTable(
-  "account",
+  "accounts",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" })
+      .notNull(),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
     provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    providerAccountId: varchar("provider_account_id", {
+      length: 255,
+    }).notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
     expires_at: integer("expires_at"),
@@ -62,7 +64,7 @@ export const accounts = createTable(
     compoundKey: primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-    userIdIdx: index("account_userId_idx").on(account.userId),
+    userIdIdx: index("account_user_id_idx").on(account.userId),
   }),
 );
 
@@ -71,16 +73,18 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 }));
 
 export const sessions = createTable(
-  "session",
+  "sessions",
   {
-    sessionToken: varchar("sessionToken", { length: 255 })
+    sessionToken: varchar("session_token", { length: 255 })
       .notNull()
       .primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
+    userId: varchar("user_id", { length: 255 })
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" })
+      .notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (session) => ({
-    userIdIdx: index("session_userId_idx").on(session.userId),
+    userIdIdx: index("session_user_id_idx").on(session.userId),
   }),
 );
 
@@ -89,7 +93,7 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 }));
 
 export const verificationTokens = createTable(
-  "verificationToken",
+  "verification_tokens",
   {
     identifier: varchar("identifier", { length: 255 }).notNull(),
     token: varchar("token", { length: 255 }).notNull(),
@@ -102,26 +106,10 @@ export const verificationTokens = createTable(
 
 export const statusEnum = pgEnum("status", ["created", "ready", "errored"]);
 
-export const videoEntries = createTable("videoEntry", {
-  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
-  uploadId: varchar("uploadId", { length: 256 }).notNull(),
-  assetId: varchar("assetId", { length: 255 }),
-  downloadUrl: varchar("url", { length: 256 }),
-  playbackId: varchar("playbackId", { length: 256 }),
-  userId: varchar("userId", { length: 255 }),
-});
-
-export const videoEntriesRelations = relations(videoEntries, ({ one }) => ({
-  user: one(users, {
-    fields: [videoEntries.userId],
-    references: [users.id],
-  }),
-}));
-
-export const organizations = createTable("organization", {
+export const organizations = createTable("organizations", {
   id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
   name: varchar("name", { length: 128 }).notNull().unique(),
-  defaultOrg: boolean("defaultOrg").notNull().default(false),
+  defaultOrg: boolean("default_org").notNull().default(false),
 });
 
 export const organizationsRelations = relations(organizations, ({ many }) => ({
@@ -132,14 +120,17 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
 export const roleEnum = pgEnum("role", ["admin", "user", "owner"]);
 
 export const usersToOrganizations = createTable(
-  "usersToOrganizations",
+  "users_to_organizations",
   {
-    memberId: varchar("memberId", { length: 255 })
+    memberId: varchar("member_id", { length: 255 })
       .notNull()
-      .references(() => users.id),
-    organizationId: bigserial("organizationId", { mode: "number" })
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    organizationId: bigserial("organization_id", { mode: "number" })
       .notNull()
-      .references(() => organizations.id, { onDelete: "cascade" }),
+      .references(() => organizations.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
     role: roleEnum("role").notNull(),
   },
   (t) => ({
@@ -181,29 +172,37 @@ export const privacyStatus = pgEnum("privacyStatus", [
   "private",
 ]);
 
-export const projects = createTable("project", {
+export const projects = createTable("projects", {
   id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
-  title: varchar("title", { length: 256 }),
-  description: varchar("description", { length: 512 }),
-  categoryId: varchar("categoryId", { length: 128 }),
-  defaultLanguage: varchar("defaultLanguage", { length: 128 }),
-  embeddable: boolean("embeddable"),
-  license: licenseEnum("license"),
-  privacyStatus: privacyStatus("privacyStatus"),
-  publicStatsViewable: boolean("publicStatsViewable"),
+  createdAt: timestamp("created_at", { mode: "date" })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: varchar("description", { length: 5000 }).notNull(),
+  categoryId: varchar("category_id", { length: 128 }),
+  defaultLanguage: varchar("default_language", { length: 128 }).notNull(),
+  embeddable: boolean("embeddable").notNull().default(true),
+  license: licenseEnum("license").notNull().default("youtube"),
+  privacyStatus: privacyStatus("privacy_status").notNull().default("private"),
+  publicStatsViewable: boolean("public_stats_viewable").notNull().default(true),
   publishAt: date("publishAt", { mode: "string" }),
-  selfDeclaredMadeForKids: boolean("selfDeclaredMadeForKids"),
+  selfDeclaredMadeForKids: boolean("self_declared_made_for_kids")
+    .notNull()
+    .default(false),
+  notifySubscribers: boolean("notify_subscribers").notNull().default(true),
+  tags: varchar("tags", { length: 500 }),
 
-  videoEntryId: bigserial("videoEntryId", { mode: "number" }),
-  organizationId: bigserial("organizationId", { mode: "number" }).notNull(),
+  channelId: varchar("channel_id", { length: 128 }).notNull(),
+  organizationId: bigserial("organization_id", { mode: "number" })
+    .references(() => organizations.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
+  videoId: varchar("video_id", { length: 15 }),
 });
 
 export const projectsRelations = relations(projects, ({ one }) => ({
-  videoEntry: one(videoEntries, {
-    fields: [projects.videoEntryId],
-    references: [videoEntries.id],
-  }),
-
   organization: one(organizations, {
     fields: [projects.organizationId],
     references: [organizations.id],

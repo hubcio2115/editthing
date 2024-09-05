@@ -1,5 +1,9 @@
 import { auth } from "./server/auth";
 
-export default auth;
+export { auth as middleware };
 
-export const config = { matcher: ["/dashboard", "/api/projects/"] };
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+  ],
+};
