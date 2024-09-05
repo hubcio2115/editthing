@@ -2,7 +2,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth, { type DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import { db } from "./db";
-import { createTable } from "./db/schema";
+import { accounts, sessions, users, verificationTokens } from "./db/schema";
 import type { Adapter } from "next-auth/adapters";
 import { generateSeedForOrgName, stripSpecialCharacters } from "~/lib/utils";
 import {
@@ -45,11 +45,34 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         id: user.id,
       },
     }),
+    authorized: async ({ auth }) => {
+      return !!auth?.user;
+    },
   },
 
-  adapter: DrizzleAdapter(db, createTable) as Adapter,
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }) as Adapter,
 
-  providers: [Google],
+  providers: [
+    Google({
+      authorization: {
+        params: {
+          scope: [
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/youtube.readonly",
+            "https://www.googleapis.com/auth/youtube.force-ssl",
+          ].join(" "),
+          access_type: "offline",
+        },
+      },
+    }),
+  ],
 
   events: {
     async createUser({ user }) {
@@ -106,7 +129,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       const newOrganization = await createOrganization(
         db,
         newOrgName,
-        user.id,
+        user.id!,
         true,
       );
 

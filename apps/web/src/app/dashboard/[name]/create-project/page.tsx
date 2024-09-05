@@ -1,25 +1,28 @@
-import VideUploadForm from "~/components/create-project/create-project-form";
-import { createEndpointForMuxUpload } from "~/server/actions/mux";
-import { getOwnOrganizationByName } from "~/server/actions/organization";
+"use client";
 
-type CreateProjectPageProps = {
-  params: {
-    name: string;
-  };
-};
+import { useRouter } from "next/navigation";
+import ProjectForm from "~/components/create-project/project-form";
+import { useCreateProjectMutation } from "~/lib/mutations/useCreateProjectMutation";
 
-export default async function CreateProjectPage({
-  params,
-}: CreateProjectPageProps) {
-  const [upload, uploadErr] = await createEndpointForMuxUpload();
-  if (uploadErr !== null) {
-    throw new Error(uploadErr);
-  }
+interface CreateProjectPageProps {
+  params: { name: string };
+}
 
-  const [org, err] = await getOwnOrganizationByName(params.name);
-  if (err !== null) {
-    throw new Error(err);
-  }
+export default function CreateProjectPage({ params }: CreateProjectPageProps) {
+  const router = useRouter();
 
-  return <VideUploadForm upload={upload} org={org} />;
+  const mutation = useCreateProjectMutation(params.name, {
+    onSuccess: (project) => {
+      router.push(`/dashboard/${params.name}/project/${project.id}`);
+    },
+    onError: (err) => {
+      console.error(err);
+    },
+  });
+
+  return (
+    <div className="container flex max-w-[800px] flex-1 flex-col items-center pb-11">
+      <ProjectForm mutation={mutation} />
+    </div>
+  );
 }

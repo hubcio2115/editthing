@@ -2,10 +2,10 @@ import { expect, test } from "vitest";
 
 import { stripSpecialCharacters } from "../utils";
 
-test('stripSpecialCharacters for "xx__Pu$$yD€$stroy€r__xx" return "xxPyDstroyrxx"', () => {
-  const testingValue = stripSpecialCharacters("xx__Pu$$yD€$stroy€r__xx");
+test('stripSpecialCharacters for "xx__GnörlöckD€$stroy€r__xx" return "xxGnrlckDstroyrxx"', () => {
+  const testingValue = stripSpecialCharacters("xx__GnörlöckD€$stroy€r__xx");
 
-  expect(testingValue).toBe("xxPuyDstroyrxx");
+  expect(testingValue).toBe("xxGnrlckDstroyrxx");
 });
 
 test('stripSpecialCharacters for "hubcio2115" leaves it alone', () => {

@@ -44,7 +44,9 @@ export default function Navbar() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-[200px]">
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem
+                  onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
+                >
                   <LogOut
                     className="mr-2 h-4 w-4 hover:cursor-pointer"
                     color="red"
@@ -63,7 +65,12 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <Button variant="ghost" onClick={() => signIn()}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              signIn();
+            }}
+          >
             Sign in
           </Button>
         )}

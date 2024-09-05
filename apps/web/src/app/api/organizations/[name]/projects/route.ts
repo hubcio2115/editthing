@@ -6,7 +6,7 @@ import {
 } from "~/server/actions/organization";
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: { name: string } },
 ) {
   const [organization, err] = await getOwnOrganizationByName(params.name);
