@@ -53,7 +53,7 @@ const defaultValues: InsertProject = {
   defaultLanguage: "none",
   tags: "",
   embeddable: true,
-  privacyStatus: "private",
+  privacyStatus: "unlisted",
   publicStatsViewable: true,
   selfDeclaredMadeForKids: false,
   notifySubscribers: true,
