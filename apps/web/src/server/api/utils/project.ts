@@ -83,3 +83,24 @@ export async function getOwnerChannels(
     return [null, (e as Error).message];
   }
 }
+
+export async function getChannel(
+  channelId: string,
+): Promise<Result<youtube_v3.Schema$Channel>> {
+  try {
+    const channel = await youtubeClient.channels
+      .list({
+        part: ["snippet"],
+        id: [channelId],
+        key: env.YOUTUBE_DATA_API_KEY,
+      })
+      .then((res) => res.data);
+
+    // @ts-expect-error Types from google libraries are awful
+    return [channel.items[0], null];
+  } catch (e) {
+    console.error(e);
+    return [null, (e as Error).message];
+  }
+}
+
