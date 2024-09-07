@@ -86,6 +86,9 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.5.4)(zod@3.23.8)
+      '@tailwindcss/container-queries':
+        specifier: ^0.1.1
+        version: 0.1.1(tailwindcss@3.4.10)
       '@tanstack/react-query':
         specifier: ^5.51.23
         version: 5.51.23(react@18.3.1)
@@ -95,6 +98,9 @@ importers:
       '@total-typescript/ts-reset':
         specifier: ^0.5.1
         version: 0.5.1
+      '@uidotdev/usehooks':
+        specifier: ^2.4.1
+        version: 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@vercel/postgres':
         specifier: ^0.9.0
         version: 0.9.0
@@ -1789,6 +1795,11 @@ packages:
       typescript:
         optional: true
 
+  '@tailwindcss/container-queries@0.1.1':
+    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
+    peerDependencies:
+      tailwindcss: '>=3.2.0'
+
   '@tanstack/query-core@5.51.21':
     resolution: {integrity: sha512-POQxm42IUp6n89kKWF4IZi18v3fxQWFRolvBA6phNVmA8psdfB1MvDnGacCJdS+EOX12w/CyHM62z//rHmYmvw==}
 
@@ -2030,6 +2041,13 @@ packages:
   '@typescript-eslint/visitor-keys@7.18.0':
     resolution: {integrity: sha512-cDF0/Gf81QpY3xYyJKDV14Zwdmid5+uuENhjH2EqFaF0ni+yAyq/LzMaIJdhNJXZI7uLzwIlA+V7oWoyn6Curg==}
     engines: {node: ^18.18.0 || >=20.0.0}
+
+  '@uidotdev/usehooks@2.4.1':
+    resolution: {integrity: sha512-1I+RwWyS+kdv3Mv0Vmc+p0dPYH0DTRAo04HLyXReYBL9AeseDWUJyi4THuksBJcu9F0Pih69Ak150VDnqbVnXg==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
@@ -6036,6 +6054,10 @@ snapshots:
     optionalDependencies:
       typescript: 5.5.4
 
+  '@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.10)':
+    dependencies:
+      tailwindcss: 3.4.10
+
   '@tanstack/query-core@5.51.21': {}
 
   '@tanstack/query-devtools@5.51.16': {}
@@ -6354,6 +6376,11 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.18.0
       eslint-visitor-keys: 3.4.3
+
+  '@uidotdev/usehooks@2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@ungap/structured-clone@1.2.0': {}
 
