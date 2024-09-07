@@ -1,20 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import ProjectSmallCard from "./project-small-card";
 import ProjectCard from "./project-card";
 import type { Organization } from "~/lib/validators/organization";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { z } from "zod";
-import { projectSchema } from "~/lib/validators/project";
-import { env } from "~/env";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import ky from "ky";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useProjectsPaginatedQuery } from "~/lib/queries/useProjectsQuery";
+import ProjectsSkeleton from "./project-grid-skeleton";
 
 function EmptyProjectsInfo() {
   return (
-    <div className="my-auto text-center">
+    <div className="my-auto text-center col-span-full row-span-full">
       <Image
         src="/img/suprised_pikachu.png"
         alt="suprised pikachu"
@@ -41,42 +37,41 @@ interface ProjectGridProps {
 }
 
 export default function ProjectGrid({ organization }: ProjectGridProps) {
-  const { data: projects } = useSuspenseQuery({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const res = await ky
-        .get(
-          `${env.NEXT_PUBLIC_API_URL}/api/organizations/${organization.name}/projects`,
-        )
-        .json();
-
-      const data = z.array(projectSchema).safeParse(res);
-
-      if (data.error) {
-        throw data.error;
-      }
-
-      return data.data;
-    },
-  });
-
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const listDisplayType = searchParams.get("listType");
+  const page = searchParams.get("page");
+  if (page === null || isNaN(parseInt(page))) {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
 
-  return projects.length === 0 ? (
-    <EmptyProjectsInfo />
-  ) : listDisplayType === null || searchParams.get("listType") === "list" ? (
-    <div className="my-5 flex flex-col justify-center gap-4">
-      {projects.map((project) => (
-        <ProjectSmallCard key={project.id} project={project} />
-      ))}
-    </div>
-  ) : (
-    <div className="my-5 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:w-[1300px] 2xl:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
-      ))}
-    </div>
+    router.push(pathname + "?" + params.toString());
+  }
+
+  const query = searchParams.get("q");
+  if (query === null) {
+    const params = new URLSearchParams(searchParams);
+    params.set("q", "");
+
+    router.push(pathname + "?" + params.toString());
+  }
+
+  const { data } = useProjectsPaginatedQuery(
+    organization.name,
+    page ? +page : 0,
+    query ?? "",
   );
+
+  if (!data?.projects) {
+    return <ProjectsSkeleton />;
+  }
+
+  if (data.projects?.length === 0) {
+    return <EmptyProjectsInfo />;
+  }
+
+  return data.projects.map((project) => (
+    <ProjectCard key={project.id} project={project} />
+  ));
 }
