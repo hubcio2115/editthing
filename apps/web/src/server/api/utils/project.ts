@@ -104,3 +104,45 @@ export async function getChannel(
   }
 }
 
+export async function getVideo(
+  organizationName: Organization["name"],
+  videoId: string,
+): Promise<Result<youtube_v3.Schema$Channel>> {
+  // Get owner of the organization
+  const owner = await getOwnerId(organizationName);
+  if (!owner) {
+    return [null, "NOT_FOUND"];
+  }
+
+  const ownerAccount = (await getOwnerAccount(owner.id))!;
+
+  // Create a new OAuth2Client for authorization
+  const oauth2Client = new OAuth2Client({
+    clientSecret: env.AUTH_GOOGLE_SECRET,
+    clientId: env.AUTH_GOOGLE_ID,
+
+    credentials: {
+      access_token: ownerAccount?.access_token,
+      refresh_token: ownerAccount?.refresh_token,
+    },
+  });
+
+  try {
+    const channel = await youtubeClient.videos
+      // @ts-expect-error Types from google libraries are awful
+      .list({
+        part: ["snippet"],
+        id: [videoId],
+        key: env.YOUTUBE_DATA_API_KEY,
+        auth: oauth2Client,
+        mine: true,
+      })
+      .then((res) => res.data);
+
+    // @ts-expect-error Types from google libraries are awful
+    return [channel.items[0], null];
+  } catch (e) {
+    console.error(e);
+    return [null, (e as Error).message];
+  }
+}
