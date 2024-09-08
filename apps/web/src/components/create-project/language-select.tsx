@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, type PropsWithChildren } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { env } from "~/env";
-import type { youtube_v3 } from "@googleapis/youtube";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import type { ControllerRenderProps } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -17,22 +14,14 @@ import {
   CommandList,
 } from "../ui/command";
 import { cn } from "~/lib/utils";
-import ky from "ky";
+import { useLanguagesSuspenseQuery } from "~/lib/queries/useLanguagesQuery";
 
 export default function LanguagesSelect({
   value,
   onChange,
   disabled,
 }: PropsWithChildren<Omit<ControllerRenderProps, "ref">>) {
-  const { data: languages } = useSuspenseQuery({
-    queryKey: ["youtubeLanguages"],
-    queryFn: async () =>
-      ky
-        .get<
-          youtube_v3.Schema$I18nLanguage[]
-        >(`${env.NEXT_PUBLIC_API_URL}/api/youtube/languages`)
-        .json(),
-  });
+  const { data: languages } = useLanguagesSuspenseQuery();
 
   const [open, setOpen] = useState(false);
 
