@@ -12,6 +12,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const [project, err] = await getProjectById(+params.id);
 
   if (err !== null) {
+    if (err === "UNAUTHORIZED") {
+      return redirect("/404");
+    }
+
     throw new Error(err);
   }
 
