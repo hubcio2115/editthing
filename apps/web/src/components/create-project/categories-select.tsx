@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { env } from "~/env";
-import type { youtube_v3 } from "@googleapis/youtube";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   Command,
@@ -17,25 +14,14 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 import type { ControllerRenderProps } from "react-hook-form";
 import { Button } from "../ui/button";
-import ky from "ky";
+import { useCategoriesSuspenseQuery } from "~/lib/queries/useCategoriesQuery";
 
 export default function CategoriesSelect({
   value,
   onChange,
   disabled,
 }: Omit<ControllerRenderProps, "ref">) {
-  const { data: categories } = useSuspenseQuery({
-    queryKey: ["youtubeVideoCategories"],
-    queryFn: async () => {
-      const data = await ky
-        .get<
-          youtube_v3.Schema$VideoCategory[]
-        >(`${env.NEXT_PUBLIC_API_URL}/api/youtube/categories`)
-        .json();
-
-      return data.filter((category) => category.snippet?.assignable);
-    },
-  });
+  const { data: categories } = useCategoriesSuspenseQuery();
 
   const [open, setOpen] = useState(false);
 
