@@ -45,26 +45,17 @@ import { cn } from "~/lib/utils";
 import ChannelsSelect from "./channel-select";
 import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
 
-const defaultValues: InsertProject = {
-  license: "youtube",
-  title: "",
-  description: "",
-  categoryId: null,
-  defaultLanguage: "none",
-  tags: "",
-  embeddable: true,
-  privacyStatus: "unlisted",
-  publicStatsViewable: true,
-  selfDeclaredMadeForKids: false,
-  notifySubscribers: true,
-  channelId: "",
-};
-
 interface ProjectFormProps {
-  mutation: UseCreateProjectMutationResult;
+  defaultValues: InsertProject;
+  mutate: UseCreateProjectMutationResult["mutate"];
+  isPending?: UseCreateProjectMutationResult["isPending"];
 }
 
-export default function ProjectForm({ mutation }: ProjectFormProps) {
+export default function ProjectCreateForm({
+  mutate,
+  isPending = false,
+  defaultValues,
+}: ProjectFormProps) {
   const form = useForm<TProjectForm>({
     resolver: zodResolver(projectFormSchema),
     defaultValues,
@@ -103,7 +94,7 @@ export default function ProjectForm({ mutation }: ProjectFormProps) {
     formData.append("channelId", data.channelId);
     formData.append("video", data.video);
 
-    mutation.mutate(formData);
+    mutate(formData);
   }
 
   return (
@@ -121,7 +112,7 @@ export default function ProjectForm({ mutation }: ProjectFormProps) {
           name="channelId"
           render={({ field: { ref: _ref, ...field } }) => (
             <FormItem className="w-full">
-              <FormLabel className="font-bold text-lg">Category:</FormLabel>
+              <FormLabel className="font-bold text-lg">Channel:</FormLabel>
 
               <FormControl>
                 <Suspense fallback={<InputSkeleton />}>
@@ -253,7 +244,7 @@ export default function ProjectForm({ mutation }: ProjectFormProps) {
                   <FormControl>
                     <Textarea
                       {...field}
-                      className="resize-none"
+                      className="resize-none h-64"
                       value={field.value ?? ""}
                       placeholder="Tell viewers about your video (type @ to mention a channel)"
                     />
@@ -584,10 +575,10 @@ export default function ProjectForm({ mutation }: ProjectFormProps) {
             <Button
               className="max-w-max self-end"
               type="submit"
-              disabled={mutation.isPending}
+              disabled={isPending}
             >
               Create project
-              {mutation.isPending ? (
+              {isPending ? (
                 <Loader2 className="size-4 animate-spin ml-2" />
               ) : null}
             </Button>
