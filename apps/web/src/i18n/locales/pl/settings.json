@@ -1,9 +1,98 @@
 {
+  "success": "Sukces",
+  "error": "Błąd",
+
   "general": {
     "title": "Ogólne",
     "description": "Ustawienia i opcje dla organizacji <1>{{name}}</1>.",
     "name_form": {
-      "label": "Nazwa organizacji"
+      "label": "Nazwa organizacji",
+      "submit_button": "Zapisz zmiany"
+    },
+
+    "delete_section": {
+      "title": "Usuń organizację",
+      "description": "Proszę zauważyć, że usunięcie organizacji <1>{{name}}</1> jest <2>trwałe</2> i <3>nieodwracalne</3>.",
+
+      "default_org": {
+        "title": "Domyślna organizacja",
+        "description": "Domyślna organizacja <1>nie może</1> zostać usunięta."
+      },
+
+      "delete_modal": {
+        "title": "Czy jesteś absolutnie pewien?",
+        "description": "To na stałe usunie organizację oraz wszystkie jej dane. Wprowadź nazwę organizacji \"{{name}}\", aby potwierdzić."
+      }
+    },
+
+    "toast": {
+      "delete": {
+        "success": "Organizacja została pomyślnie usunięta.",
+        "error": "Nie udało się usunąć organizacji: {{error}}"
+      },
+
+      "update_name": {
+        "success": "Nazwa organizacji została zaktualizowana na {{name}}.",
+        "error": "Nie udało się zaktualizować nazwy organizacji: {{error}}"
+      }
+    }
+  },
+
+  "members": {
+    "title": "Członkowie",
+    "description": "Wszyscy członkowie i administratorzy mający dostęp do organizacji.",
+
+    "add_member_button": "Zaproś członka",
+    "member_table": {
+      "columns": {
+        "member": "Członek",
+        "role": "Rola"
+      },
+
+      "roles": {
+        "admin": "administrator",
+        "owner": "właściciel",
+        "user": "użytkownik"
+      }
+    },
+
+    "leave_section": {
+      "leave_button": "Opuść",
+      "remove_button": "Usuń",
+
+      "alert": {
+        "title": "Czy jesteś absolutnie pewien?",
+        "description": "Przeniesiesz własność organizacji na wybranego użytkownika. Twoja rola zostanie zmieniona na administratora."
+      }
+    },
+
+    "invite_modal": {
+      "title": "Zaproś członka",
+      "footer": "Wyślij zaproszenie",
+      "email_label": "E-mail",
+      "input_placeholder": "Wprowadź adres e-mail"
+    },
+
+    "toast": {
+      "update_role": {
+        "success": "Rola użytkownika została pomyślnie zaktualizowana.",
+        "error": "Nie udało się zaktualizować roli członka: {{error}}"
+      },
+
+      "remove_user": {
+        "success": "Rola członka została pomyślnie zaktualizowana.",
+        "error": "Nie udało się usunąć członka: {{error}}"
+      },
+
+      "leave_org": {
+        "success": "Opuściłeś organizację.",
+        "error": "Nie udało się opuścić organizacji: {{error}}"
+      },
+
+      "invite_member": {
+        "success": "Użytkownik z adresem {{email}} został pomyślnie dodany.",
+        "error": "Nie udało się wysłać zaproszenia: {{error}}"
+      }
     }
   }
 }

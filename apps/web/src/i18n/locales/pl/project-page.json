@@ -1,0 +1,63 @@
+{
+  "status": {
+    "label": "Status",
+    "unlisted": "Niepubliczny",
+    "closed": "Zamknięty",
+    "public": "Publiczny"
+  },
+
+  "edit": {
+    "stop_button": "Zakończ edycję",
+    "start_button": "Edytuj"
+  },
+
+  "video_player_title": "Odtwarzacz wideo YouTube",
+
+  "project_display": {
+    "subscribe": "Subskrybuj",
+    "show_more": "Pokaż więcej",
+    "show_less": "Pokaż mniej",
+    "yes": "Tak",
+    "no": "Nie",
+
+    "tags": {
+      "label": "Tagi",
+      "empty": "Brak"
+    },
+
+    "license": {
+      "label": "Licencja",
+      "youtube": "Standardowa licencja YouTube",
+      "creativeCommon": "Creative Commons - Uznanie autorstwa"
+    },
+
+    "embeddable": {
+      "label": "Możliwość osadzenia"
+    },
+
+    "language": {
+      "label": "Język"
+    },
+
+    "stats": {
+      "label": "Statystyki",
+      "public": "Publiczne",
+      "private": "Prywatne"
+    },
+
+    "made_for_kids": {
+      "label": "\"Dla dzieci\""
+    },
+
+    "notify_subscribers": {
+      "label": "Powiadom subskrybentów"
+    },
+
+    "category": {
+      "label": "Kategoria"
+    },
+
+    "close_button": "Zamknij",
+    "publish_button": "Opublikuj"
+  }
+}
