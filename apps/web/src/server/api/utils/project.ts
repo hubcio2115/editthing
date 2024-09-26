@@ -4,12 +4,13 @@ import type { Result } from "~/lib/utils";
 import type { Organization } from "~/lib/validators/organization";
 import { OAuth2Client } from "google-auth-library";
 import { getOwnerAccount, getOwnerId } from "./organizations";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 const youtubeClient = youtube("v3");
 
-export async function getYoutubeCategories(): Promise<
-  Result<youtube_v3.Schema$VideoCategory[]>
-> {
+export async function getYoutubeCategories(
+  lang: SupportedLanguages,
+): Promise<Result<youtube_v3.Schema$VideoCategory[]>> {
   try {
     const categories: youtube_v3.Schema$VideoCategoryListResponse =
       (await youtubeClient.videoCategories
@@ -17,6 +18,7 @@ export async function getYoutubeCategories(): Promise<
           part: ["snippet"],
           regionCode: "PL",
           key: env.YOUTUBE_DATA_API_KEY,
+          hl: lang,
         })
         .then((res) => res.data)) as any;
 
@@ -26,15 +28,16 @@ export async function getYoutubeCategories(): Promise<
   }
 }
 
-export async function getYoutubeSupportedLanguages(): Promise<
-  Result<youtube_v3.Schema$I18nLanguage[]>
-> {
+export async function getYoutubeSupportedLanguages(
+  lang: SupportedLanguages,
+): Promise<Result<youtube_v3.Schema$I18nLanguage[]>> {
   try {
     const languages: youtube_v3.Schema$I18nLanguageListResponse =
       (await youtubeClient.i18nLanguages
         .list({
           part: ["snippet"],
           key: env.YOUTUBE_DATA_API_KEY,
+          hl: lang,
         })
         .then((res) => res.data)) as any;
 

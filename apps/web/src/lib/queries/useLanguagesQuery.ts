@@ -6,24 +6,28 @@ import {
   type UseSuspenseQueryOptions,
 } from "@tanstack/react-query";
 import ky from "ky";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 type UseLanguagesSuspenseQueryOptions = Omit<
   UseSuspenseQueryOptions<
     youtube_v3.Schema$I18nLanguage[],
     Error,
     youtube_v3.Schema$I18nLanguage[],
-    ["youtubeLanguages"]
+    ["youtubeLanguages", SupportedLanguages]
   >,
   "queryKey" | "queryFn"
 >;
 
 export function useLanguagesSuspenseQuery(
+  lang: SupportedLanguages,
   options: UseLanguagesSuspenseQueryOptions = {},
 ) {
   return useSuspenseQuery({
-    queryKey: ["youtubeLanguages"],
+    queryKey: ["youtubeLanguages", lang],
     queryFn: async () =>
-      ky.get<youtube_v3.Schema$I18nLanguage[]>("/api/youtube/languages").json(),
+      ky
+        .get<youtube_v3.Schema$I18nLanguage[]>(`/api/youtube/languages/${lang}`)
+        .json(),
     staleTime: Number.POSITIVE_INFINITY,
     ...options,
   });
@@ -34,16 +38,21 @@ type UseLanguagesQueryOptions = Omit<
     youtube_v3.Schema$I18nLanguage[],
     Error,
     youtube_v3.Schema$I18nLanguage[],
-    ["youtubeLanguages"]
+    ["youtubeLanguages", SupportedLanguages]
   >,
   "queryKey" | "queryFn"
 >;
 
-export function useLanguagesQuery(options: UseLanguagesQueryOptions = {}) {
+export function useLanguagesQuery(
+  lang: SupportedLanguages,
+  options: UseLanguagesQueryOptions = {},
+) {
   return useQuery({
-    queryKey: ["youtubeLanguages"],
+    queryKey: ["youtubeLanguages", lang],
     queryFn: async () =>
-      ky.get<youtube_v3.Schema$I18nLanguage[]>("/api/youtube/languages").json(),
+      ky
+        .get<youtube_v3.Schema$I18nLanguage[]>(`/api/youtube/languages/${lang}`)
+        .json(),
     staleTime: Number.POSITIVE_INFINITY,
     ...options,
   });
