@@ -1,0 +1,70 @@
+{
+  "hero": {
+    "title": "Tool to streamline your video production pipeline",
+    "description": "Giving feedback, suggestions and managing your channel's access don't get easier than this. Inspired by Git a tool for iterating on software that actually works.",
+    "learn_more": "Learn more"
+  },
+  "feature_section": {
+    "subtitle": "Upload faster",
+    "title": "Everything you need to upload your new video",
+    "description": "Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.",
+    "features": [
+      {
+        "name": "Merge to upload",
+        "description": "If you know what git flow is you exactly know what this tool's about. You'll get comfortable real quick."
+      },
+      {
+        "name": "Secure",
+        "description": "You finally have a tool to manage access you your channel in a way that gives you security and doesn't restrain your flow."
+      },
+      {
+        "name": "Simple flow",
+        "description": "We didn't invent anything new, we took something that works and translated it to a new area."
+      },
+      {
+        "name": "We don't track you",
+        "description": "We store as little about you as necessary, your access keys are encrypted."
+      }
+    ]
+  },
+  "pricing_section": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "buy_plan_button": "Buy plan",
+    "pricing_plans": [
+      {
+        "title": "Small channel",
+        "description": "The essentials for running a small or an up and comming channel.",
+        "price": 50,
+        "buttonText": "Buy plan",
+        "features": [
+          "Full access to our tools",
+          "You + 2 seats",
+          "Up to 1 channel"
+        ]
+      },
+      {
+        "title": "Small network of channels",
+        "description": "Everything you need to manage small organization.",
+        "price": 250,
+        "buttonText": "Buy plan",
+        "features": [
+          "Everything in Small channel plan",
+          "You + 10 seats",
+          "Up to 3 channels"
+        ]
+      },
+      {
+        "title": "Enterprise",
+        "description": "A plan tailored to the exact needs of your company.",
+        "price": "Custom",
+        "buttonText": "Contact sales",
+        "features": [
+          "Everything in Small network of channels",
+          "You + any number of seats you'd like",
+          "You specify the number of channels"
+        ]
+      }
+    ]
+  }
+}
