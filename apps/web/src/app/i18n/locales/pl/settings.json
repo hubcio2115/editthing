@@ -1,0 +1,9 @@
+{
+  "general": {
+    "title": "Ogólne",
+    "description": "Ustawienia i opcje dla organizacji <1>{{name}}</1>.",
+    "name_form": {
+      "label": "Nazwa organizacji"
+    }
+  }
+}
