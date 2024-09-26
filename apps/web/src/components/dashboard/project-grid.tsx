@@ -4,7 +4,7 @@ import Link from "next/link";
 import ProjectCard from "./project-card";
 import type { Organization } from "~/lib/validators/organization";
 import Image from "next/image";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useProjectsPaginatedQuery } from "~/lib/queries/useProjectsQuery";
 import ProjectsSkeleton from "./project-grid-skeleton";
 
@@ -37,25 +37,10 @@ interface ProjectGridProps {
 }
 
 export default function ProjectGrid({ organization }: ProjectGridProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = searchParams.get("page");
-  if (page === null || isNaN(parseInt(page))) {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
-
-    router.push(pathname + "?" + params.toString());
-  }
-
-  const query = searchParams.get("q");
-  if (query === null) {
-    const params = new URLSearchParams(searchParams);
-    params.set("q", "");
-
-    router.push(pathname + "?" + params.toString());
-  }
+  const page = searchParams.get("page") ?? "1";
+  const query = searchParams.get("q") ?? "";
 
   const { data } = useProjectsPaginatedQuery(
     organization.name,

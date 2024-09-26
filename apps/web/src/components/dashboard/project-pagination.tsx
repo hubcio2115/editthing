@@ -24,15 +24,8 @@ export default function ProjectPagination({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = searchParams.get("page");
-  if (page === null || isNaN(parseInt(page))) {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
-
-    router.push(pathname + "?" + params.toString());
-  }
-
-  const query = searchParams.get("q");
+  const page = searchParams.get("page") ?? "1";
+  const query = searchParams.get("q") ?? "";
 
   const { data } = useProjectsPaginatedQuery(organizationName, +page!, query!);
 
