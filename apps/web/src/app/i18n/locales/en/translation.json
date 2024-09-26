@@ -1,0 +1,18 @@
+{
+  "navbar": {
+    "dashboard_button": "Go to Dashboard",
+    "logout_button": "Logout",
+    "signin_button": "Sign In",
+    "add_new_organization_button": "Add New new"
+  },
+
+  "dashnav": {
+    "overview_button": "Overview",
+    "settings_button": "Settings"
+  },
+
+  "alert_modal": {
+    "confirm_button": "Confirm",
+    "cancel_button": "Cancel"
+  }
+}
