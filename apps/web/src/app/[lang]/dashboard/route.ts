@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
 
   const url = req.nextUrl.clone();
 
-  url.pathname = org ? `/dashboard/${org.organizations?.name}/overview` : "/404";
+  url.pathname = org
+    ? `${req.nextUrl.pathname}/${org.organizations?.name}/overview`
+    : "/404";
 
   return NextResponse.redirect(url);
 }

@@ -5,13 +5,14 @@ import { Select } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
-  FormProvider,
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
+import { useTranslation } from "~/app/i18n/client";
+import type { SupportedLanguages } from "~/app/i18n/settings";
 
 import AlertModal from "~/components/modals/alertModal";
 import DialogModal from "~/components/modals/dialogModal";
@@ -20,6 +21,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  Form,
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
@@ -46,6 +48,7 @@ import {
 type SettingsMembersViewProps = {
   params: {
     name: string;
+    lang: SupportedLanguages;
   };
 };
 
@@ -55,7 +58,7 @@ type RoleInfo = {
   role: OrgMemberRole;
 };
 
-function SettingsMembersView({ params }: SettingsMembersViewProps) {
+export default function SettingsMembersPage({ params }: SettingsMembersViewProps) {
   const session = useSession();
   const formMethods = useForm();
   const router = useRouter();
@@ -63,12 +66,12 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
+  const { t, i18n } = useTranslation(params.lang, "settings", {
+    keyPrefix: "members",
+  });
+
   const newRole = useRef<RoleInfo | null>(null);
-  const {
-    data: organization,
-    refetch: refetchOrg,
-    isFetched,
-  } = useQuery({
+  const { data: organization, isFetched } = useQuery({
     queryKey: ["organization", params.name],
     queryFn: async () => {
       const [organizations, err] = await getOwnOrganizationByName(params.name);
@@ -98,10 +101,6 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
     ({ usersToOrganizations }) => usersToOrganizations.memberId,
   );
 
-  useEffect(() => {
-    refetchOrg();
-  }, [organization]);
-
   async function handleRoleChange(
     newValue: RoleInfo["role"],
     userId: RoleInfo["memberId"],
@@ -115,6 +114,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       };
       return;
     }
+
     try {
       await updateMemberRole({
         memberId: userId,
@@ -123,14 +123,14 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       });
       refetchUsers();
       toast({
-        title: "Success",
-        description: "User role was updated successfully",
+        title: i18n.t("success"),
+        description: t("toast.update_role.success", { role: newValue }),
       });
     } catch (error) {
       if (error instanceof Error) {
         toast({
-          title: "Error",
-          description: `${error.message} !`,
+          title: i18n.t("error"),
+          description: t("toast.update_role.error", { error: error.message }),
         });
       }
     }
@@ -152,14 +152,14 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         organizationId: organization!.id,
       });
       toast({
-        title: "Success",
-        description: "User was removed successfully",
+        title: i18n.t("success"),
+        description: t("toast.remove_user.success"),
       });
     } catch (error) {
       if (error instanceof Error) {
         toast({
-          title: "Error",
-          description: `${error.message} !`,
+          title: i18n.t("error"),
+          description: t("toast.remove_user.error", { error: error.message }),
         });
       }
     }
@@ -172,15 +172,15 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
         organizationId: organization!.id,
       });
       toast({
-        title: "Success",
-        description: "You have left the organization",
+        title: i18n.t("success"),
+        description: t("toast.leave_org.success"),
       });
       router.push("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         toast({
-          title: "Error",
-          description: `${error.message} !`,
+          title: i18n.t("error"),
+          description: t("toast.leave_org.error", { error: error.message }),
         });
       }
     }
@@ -202,15 +202,16 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       });
 
       refetchUsers();
+
       toast({
-        title: "Success",
-        description: `User ${data.email} was added successfully`,
+        title: i18n.t("success"),
+        description: t("toast.invite_member.success", { email: data.email }),
       });
     } catch (error) {
       if (error instanceof Error) {
         toast({
-          title: "Error",
-          description: `${error.message} !`,
+          title: i18n.t("error"),
+          description: t("toast.invite_member.error", { email: error.message }),
         });
       }
     }
@@ -220,10 +221,6 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
 
   const onError: SubmitErrorHandler<Invite> = (error) => {
     console.log(error);
-    toast({
-      title: "Error",
-      description: `Failed to send and invitation: ${error.email!.message} !`,
-    });
   };
 
   return (
@@ -231,12 +228,11 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
       <div className="flex w-full flex-col gap-10">
         <div className="flex justify-between">
           <div>
-            <h2 className="font-selibold text-xl">Members</h2>
-            <p className="text-gray-600">
-              All members and administrators with access to the{" "}
-              <span className="font-semibold">{params.name}</span> organization.
-            </p>
+            <h2 className="font-selibold text-xl">{t("title")}</h2>
+
+            <p className="text-gray-600">{t("description")}</p>
           </div>
+
           <div className="flex items-center">
             <Button
               onClick={() => {
@@ -244,7 +240,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
               }}
               disabled={currentUserRole === "user" || !usersLoaded}
             >
-              invite member
+              {t("add_member_button")}
             </Button>
           </div>
         </div>
@@ -252,9 +248,12 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
           <div className="grid w-full grid-cols-4 sm:grid-cols-5 lg:grid-cols-8">
             <div className="col-span-full grid grid-cols-4 rounded-md border bg-gray-100 p-2 sm:grid-cols-5 lg:grid-cols-8">
               <div className="col-span-2 sm:col-span-3 lg:col-span-6">
-                Member
+                {t("member_table.columns.member")}
               </div>
-              <div className="col-span-2 whitespace-nowrap text-left">Role</div>
+
+              <div className="col-span-2 whitespace-nowrap text-left">
+                {t("member_table.columns.role")}
+              </div>
             </div>
 
             {userData?.map(({ user, usersToOrganizations }) => (
@@ -265,6 +264,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                 <div className="col-span-2 flex items-center pl-2 sm:col-span-3 lg:col-span-6">
                   {user?.name}
                 </div>
+
                 <div className="col-span-1 flex items-center">
                   <Select
                     value={usersToOrganizations.role}
@@ -289,24 +289,25 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                           disabled={currentUserRole === "admin"}
                           value={roleEnum.Values.owner}
                         >
-                          {roleEnum.Values.owner}
+                          {t("member_table.roles.owner")}
                         </SelectItem>
                         <SelectItem
                           key={roleEnum.Values.admin}
                           value={roleEnum.Values.admin}
                         >
-                          {roleEnum.Values.admin}
+                          {t("member_table.roles.admin")}
                         </SelectItem>
                         <SelectItem
                           key={roleEnum.Values.user}
                           value={roleEnum.Values.user}
                         >
-                          {roleEnum.Values.user}
+                          {t("member_table.roles.user")}
                         </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div className="col-span-1 flex justify-center">
                   {session.data?.user.id === user?.id ? (
                     <Button
@@ -315,7 +316,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                         handleLeave();
                       }}
                     >
-                      Leave
+                      {t('leave_section.leave_button')}
                     </Button>
                   ) : currentUserRole === "owner" ||
                     (currentUserRole === "admin" &&
@@ -324,7 +325,7 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
                       variant="ghost"
                       onClick={() => handleRemoveMember(user!.id)}
                     >
-                      Remove
+                      {t('leave_section.remove_button')}
                     </Button>
                   ) : null}
                 </div>
@@ -332,25 +333,27 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
             ))}
           </div>
         ) : (
-          <Skeleton className="w-full h-[60vh] lg:h-[65vh] bg-slate-200"></Skeleton>
+          <Skeleton className="w-full h-[60vh] lg:h-[65vh] bg-slate-200" />
         )}
       </div>
-      <FormProvider {...formMethods}>
+
+      <Form {...formMethods}>
         <DialogModal
           isOpen={isModalOpen}
-          onOpenChange={(open: boolean) => setIsModalOpen(open)}
-          title="Invite member"
+          onOpenChange={setIsModalOpen}
+          title={t("invite_modal.title")}
           onSubmit={form.handleSubmit(onSubmit, onError)}
-          footerText="Send invitation"
+          footerText={t("invite_modal.footer")}
         >
           <FormField
             name="email"
             control={form.control}
             render={({ field }) => (
               <FormItem className="mt-4 flex flex-col gap-2">
-                <FormLabel htmlFor="name">Email</FormLabel>
+                <FormLabel htmlFor="name">{t("invite_modal.email_label")}</FormLabel>
+
                 <FormControl>
-                  <Input placeholder="Enter email address" {...field} />
+                  <Input placeholder={t("invite_modal.input_placeholder")} {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -358,18 +361,17 @@ function SettingsMembersView({ params }: SettingsMembersViewProps) {
             )}
           />
         </DialogModal>
-      </FormProvider>
+      </Form>
 
       <AlertModal
+        lang={params.lang}
         isOpen={isAlertOpen}
-        onOpenChange={(open: boolean) => setIsAlertOpen(open)}
-        title="Are you absolutely sure?"
-        description="You will transter the ownership of the organization to the selected user. Your role will be changed to admin."
+        onOpenChange={setIsAlertOpen}
+        title={t("leave_section.alert.title")}
+        description={t("leave_section.alert.description")}
         onCancel={() => setIsAlertOpen(false)}
         onConfirm={handleAlertAccepted}
       />
     </>
   );
 }
-
-export default SettingsMembersView;

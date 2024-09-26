@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import {
   FILE_INPUT_ACCEPTED_FORMATS,
   projectFormSchema,
@@ -97,12 +97,14 @@ export default function ProjectCreateForm({
     mutate(formData);
   }
 
+  function onError(errors: FieldErrors<TProjectForm>) {
+    console.error(errors);
+  }
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSuccess, (err) => {
-          console.error(err);
-        })}
+        onSubmit={form.handleSubmit(onSuccess, onError)}
         className={cn("flex flex-col gap-8 w-full", {
           "justify-center items-center flex-1": !showWholeForm,
         })}

@@ -24,10 +24,10 @@ export default function Settings({ params, children }: SettingsProps) {
               <Link href={`/dashboard/${params.name}/settings`}>
                 <div
                   className={cn(
-                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
+                    "px-2 pb-2 capitalize border-b lg:border-b-0 lg:border-l lg:pb-0",
                     pathname.split("/").at(-1) === "settings"
-                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
-                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-fuchsia-900 text-fuchsia-900"
+                      : "border-transparent hover:border-slate-300",
                   )}
                 >
                   general
@@ -36,12 +36,12 @@ export default function Settings({ params, children }: SettingsProps) {
               <Link href={`/dashboard/${params.name}/settings/members`}>
                 <div
                   className={cn(
-                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
+                    "px-2 pb-2 capitalize border-b lg:border-b-0 lg:border-l lg:pb-0",
                     ["members", "invitations"].includes(
                       pathname.split("/").at(-1)!,
                     )
-                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
-                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-fuchsia-900 text-fuchsia-900"
+                      : "border-transparent hover:border-slate-300",
                   )}
                 >
                   members
@@ -49,7 +49,8 @@ export default function Settings({ params, children }: SettingsProps) {
               </Link>
             </div>
           </nav>
-          <div className="flex-1 lg:w-1">{children}</div>
+
+          {children}
         </div>
       </div>
     </div>

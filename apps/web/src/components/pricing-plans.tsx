@@ -1,7 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { cn } from "~/lib/utils";
 
@@ -13,50 +13,62 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { useTranslation } from "~/app/i18n/client";
+import type { SupportedLanguages } from "~/app/i18n/settings";
 
-const plans = [
-  {
-    title: "Small channel",
-    description:
-      "The essentials for running a small or an up and comming channel.",
-    price: 50,
-    buttonText: "Buy plan",
-    features: ["Full access to our tools", "You + 2 seats", "Up to 1 channel"],
-  },
+interface PricingPlansProps {
+  lang: SupportedLanguages;
+}
 
-  {
-    title: "Small network of channels",
-    description: "Everything you need to manage small organization.",
-    price: 250,
-    buttonText: "Buy plan",
-    features: [
-      "Everything in Small channel plan",
-      "You + 10 seats",
-      "Up to 3 channels",
-    ],
-  },
-];
+export default function PrincingPlans({ lang }: PricingPlansProps) {
+  const { t } = useTranslation(lang, "home-page", {
+    keyPrefix: "pricing_section",
+  });
 
-const enterprisePlan = {
-  title: "Enterprise",
-  description: "A plan tailored to the exact needs of your company.",
-  price: "Custom",
-  buttonText: "Contact sales",
-  features: [
-    "Everything in Small network of channels",
-    "You + any number of seats you'd like",
-    "You specify the number of channels",
-  ],
-};
-
-export default function PrincingPlans() {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
     "monthly",
   );
 
+  const plans = useMemo(() => {
+    const plans = [];
+
+    for (let i = 0; i < 2; i++) {
+      const plan = {
+        title: t(`pricing_plans.${i}.title`),
+        description: t(`pricing_plans.${i}.description`),
+        price: t(`pricing_plans.${i}.price`),
+        buttonText: t(`pricing_plans.${i}.buttonText`),
+        features: [
+          t(`pricing_plans.${i}.features.0`),
+          t(`pricing_plans.${i}.features.1`),
+          t(`pricing_plans.${i}.features.2`),
+        ],
+      };
+
+      plans.push(plan);
+    }
+
+    return plans;
+  }, [t]);
+
+  const enterprisePlan = useMemo(
+    () => ({
+      title: t("pricing_plans.2.title"),
+      description: t("pricing_plans.2.description"),
+      price: t("pricing_plans.2.price"),
+      buttonText: t("pricing_plans.2.buttonText"),
+      features: [
+        t("pricing_plans.2.features.0"),
+        t("pricing_plans.2.features.1"),
+        t("pricing_plans.2.features.2"),
+      ],
+    }),
+    [t],
+  );
+
   return (
     <div className="py-24">
-      <div className="mx-auto mb-10 flex w-[140px] justify-between gap-1 rounded-full border border-gray-300 p-1">
+      <div className="mx-auto mb-10 flex w-max justify-between gap-1 rounded-full border border-gray-300 p-1">
         <p
           className={cn(
             "select-none rounded-full px-2 text-sm",
@@ -66,7 +78,7 @@ export default function PrincingPlans() {
           )}
           onClick={() => setBillingPeriod("monthly")}
         >
-          Monthly
+          {t("monthly")}
         </p>
 
         <p
@@ -78,7 +90,7 @@ export default function PrincingPlans() {
           )}
           onClick={() => setBillingPeriod("yearly")}
         >
-          Yearly
+          {t("yearly")}
         </p>
       </div>
 
@@ -94,7 +106,7 @@ export default function PrincingPlans() {
             <CardContent className="flex flex-col gap-4">
               <p>
                 <span className="text-4xl font-bold">
-                  ${billingPeriod === "monthly" ? price : price * 10}
+                  ${billingPeriod === "monthly" ? price : +price * 10}
                 </span>
                 <span className="text-gray-700">
                   /{billingPeriod === "monthly" ? "month" : "year"}
@@ -102,7 +114,7 @@ export default function PrincingPlans() {
               </p>
 
               <Button className="w-full bg-fuchsia-700 hover:bg-fuchsia-600">
-                Buy plan
+                {t("buy_plan_button")}
               </Button>
 
               <ul className="flex flex-col gap-1">
@@ -134,7 +146,7 @@ export default function PrincingPlans() {
             </p>
 
             <Button className="w-full" variant="secondary">
-              Buy plan
+              {enterprisePlan.buttonText}
             </Button>
 
             <ul className="flex flex-col gap-1">
