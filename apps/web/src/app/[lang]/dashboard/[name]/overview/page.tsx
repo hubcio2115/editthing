@@ -51,7 +51,7 @@ export default async function DashboardOverviewPage({
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:grid-rows-6 2xl:w-[1300px] 2xl:grid-cols-3 2xl:grid-rows-4 flex-1">
         <Suspense fallback={<ProjectsSkeleton />}>
-          <ProjectGrid organization={organization} />
+          <ProjectGrid lang={params.lang} organization={organization} />
         </Suspense>
       </div>
     </div>
