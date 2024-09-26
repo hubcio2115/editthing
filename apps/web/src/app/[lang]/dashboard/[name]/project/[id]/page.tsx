@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import ProjectView from "~/components/dashboard/project-view";
+import type { SupportedLanguages } from "~/i18n/settings";
 import { getProjectById } from "~/server/actions/project";
 import {
   getChannel,
@@ -11,6 +12,7 @@ type ProjectPageProps = {
   params: {
     name: string;
     id: string;
+    lang: SupportedLanguages;
   };
 };
 
@@ -35,12 +37,22 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return redirect("/404");
   }
 
-  const [languages, languagesErr] = await getYoutubeSupportedLanguages();
-  const [categories, categoriesErr] = await getYoutubeCategories();
+  const [languages, languagesErr] = await getYoutubeSupportedLanguages(
+    params.lang,
+  );
+  const [categories, categoriesErr] = await getYoutubeCategories(params.lang);
 
   if (languagesErr !== null || categoriesErr !== null) {
     throw new Error("Something went wrong on our end");
   }
 
-  return <ProjectView project={project} channel={channel} languages={languages} categories={categories} />;
+  return (
+    <ProjectView
+      project={project}
+      channel={channel}
+      languages={languages}
+      categories={categories}
+      lang={params.lang}
+    />
+  );
 }

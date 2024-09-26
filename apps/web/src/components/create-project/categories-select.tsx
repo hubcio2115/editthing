@@ -15,15 +15,26 @@ import { cn } from "~/lib/utils";
 import type { ControllerRenderProps } from "react-hook-form";
 import { Button } from "../ui/button";
 import { useCategoriesSuspenseQuery } from "~/lib/queries/useCategoriesQuery";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
-export default function CategoriesSelect({
+interface CategorySelectProps extends Omit<ControllerRenderProps, "ref"> {
+  lang: SupportedLanguages;
+}
+
+export default function CategorySelect({
   value,
   onChange,
   disabled,
-}: Omit<ControllerRenderProps, "ref">) {
-  const { data: categories } = useCategoriesSuspenseQuery();
+  lang,
+}: CategorySelectProps) {
+  const { data: categories } = useCategoriesSuspenseQuery(lang);
 
   const [open, setOpen] = useState(false);
+
+  const { t } = useTranslation(lang, "project-form", {
+    keyPrefix: "category_select",
+  });
 
   const displayedValue = categories.find((category) => category.id === value)
     ?.snippet?.title;
@@ -42,7 +53,7 @@ export default function CategoriesSelect({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {displayedValue ?? "Select a category..."}
+          {displayedValue ?? t("placeholder")}
 
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -62,10 +73,10 @@ export default function CategoriesSelect({
               : 0;
           }}
         >
-          <CommandInput placeholder="Search a category..." />
+          <CommandInput placeholder={t("search_placeholder")} />
 
           <CommandList>
-            <CommandEmpty>No category found.</CommandEmpty>
+            <CommandEmpty>{t("not_found")}</CommandEmpty>
 
             <CommandGroup>
               {categories.map((category) => (

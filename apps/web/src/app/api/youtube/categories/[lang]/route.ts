@@ -1,15 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import type { SupportedLanguages } from "~/i18n/settings";
 import { getYoutubeCategories } from "~/server/api/utils/project";
 import { auth } from "~/server/auth";
 
-export async function GET() {
+export async function GET(
+  _: NextRequest,
+  { params }: { params: { lang: SupportedLanguages } },
+) {
   const session = auth();
 
   if (!session) {
     return NextResponse.json({ message: "UNAUTHORIZED" }, { status: 401 });
   }
 
-  const [categories, err] = await getYoutubeCategories();
+  const [categories, err] = await getYoutubeCategories(params.lang);
 
   if (err !== null) {
     return NextResponse.json(

@@ -11,22 +11,29 @@ import { Badge } from "../ui/badge";
 import { GitPullRequestClosed, Merge } from "lucide-react";
 import { useLanguagesQuery } from "~/lib/queries/useLanguagesQuery";
 import { useCategoriesQuery } from "~/lib/queries/useCategoriesQuery";
+import type { SupportedLanguages } from "~/i18n/settings";
+import { useTranslation } from "~/i18n/client";
 
 interface ProjectDisplayProps {
   project: Project;
   channel: youtube_v3.Schema$Channel;
+  lang: SupportedLanguages;
 }
 
-function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
+function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
   const [showWholeDescription, setShowWholeDescription] = useState(false);
   const descriptionLines = project.description.split("\n");
 
-  const { data: languages } = useLanguagesQuery();
+  const { t } = useTranslation(lang, "project-page", {
+    keyPrefix: "project_display",
+  });
+
+  const { data: languages } = useLanguagesQuery(lang);
   const language = languages?.find(
     (language) => language.id === project.defaultLanguage,
   );
 
-  const { data: categories } = useCategoriesQuery();
+  const { data: categories } = useCategoriesQuery(lang);
   const category = categories?.find(
     (category) => category.id === project.categoryId,
   );
@@ -55,7 +62,7 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
           disabled
           className="rounded-full my-auto disabled:opacity-100"
         >
-          Subscribe
+          {t("subscribe")}
         </Button>
       </div>
 
@@ -70,57 +77,52 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
           className="rounded-full w-max"
           onClick={() => setShowWholeDescription((prev) => !prev)}
         >
-          {showWholeDescription ? "Show less" : "Show more"}
+          {showWholeDescription ? t("show_more") : t("show_less")}
         </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="flex gap-2 flex-col">
-          <h2 className="font-bold">Tags:</h2>
-          <p>{project.tags || "None"}</p>
+          <h2 className="font-bold">{t("tags.label")}:</h2>
+          <p>{project.tags || t("tags.empty")}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">License:</h2>
-          <p>
-            {(() => {
-              switch (project.license) {
-                case "youtube":
-                  return "Standard YouTube License";
-                case "creativeCommon":
-                  return "Creative Commons - Attribution";
-              }
-            })()}
-          </p>
+          <h2 className="font-bold">{t("license.label")}:</h2>
+          <p>{t(`license.${project.license}`)}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">Embeddable:</h2>
-          <p>{project.embeddable ? "Yes" : "No"}</p>
+          <h2 className="font-bold">{t("embeddable.label")}:</h2>
+          <p>{project.embeddable ? t("yes") : t("no")}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">Language:</h2>
+          <h2 className="font-bold">{t("language.label")}:</h2>
           <p>{language?.snippet?.name}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">Stats:</h2>
-          <p>{project.publicStatsViewable ? "Public" : "Private"}</p>
+          <h2 className="font-bold">{t("stats.label")}:</h2>
+          <p>
+            {project.publicStatsViewable
+              ? t("stats.public")
+              : t("stats.private")}
+          </p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">'Made for Kids':</h2>
-          <p>{project.selfDeclaredMadeForKids ? "Yes" : "No"}</p>
+          <h2 className="font-bold">{t("made_for_kids.label")}:</h2>
+          <p>{project.selfDeclaredMadeForKids ? t("yes") : t("no")}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">Notify Subscribers:</h2>
-          <p>{project.notifySubscribers ? "Yes" : "No"}</p>
+          <h2 className="font-bold">{t("notify_subscribers.label")}:</h2>
+          <p>{project.notifySubscribers ? t("yes") : t("no")}</p>
         </div>
 
         <div className="flex gap-2">
-          <h2 className="font-bold">Category</h2>
+          <h2 className="font-bold">{t("category.label")}</h2>
           <p>{category?.snippet?.title}</p>
         </div>
       </div>
@@ -128,12 +130,12 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
       <div className="container flex justify-end gap-4">
         <Button variant="destructive" className="gap-2">
           <GitPullRequestClosed className="size-4" />
-          Close
+          {t("close_button")}
         </Button>
 
         <Button className="gap-2">
           <Merge className="size-4" />
-          Publish
+          {t("publish_button")}
         </Button>
       </div>
     </>
@@ -145,6 +147,7 @@ interface ProjectViewProps {
   channel: youtube_v3.Schema$Channel;
   languages: youtube_v3.Schema$I18nLanguage[];
   categories: youtube_v3.Schema$VideoCategory[];
+  lang: SupportedLanguages;
 }
 
 export default function ProjectView({
@@ -152,10 +155,13 @@ export default function ProjectView({
   channel,
   languages,
   categories,
+  lang,
 }: ProjectViewProps) {
   const [isEdititng, setIsEditing] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const { t } = useTranslation(lang, "project-page");
 
   useEffect(() => {
     if (!queryClient.getQueryData(["youtubeVideoCategories"])) {
@@ -173,8 +179,8 @@ export default function ProjectView({
     <div className="mx-auto flex w-full flex-col flex-1 pb-10 gap-4 max-w-[1260px]">
       <div className="container flex justify-between">
         <div className="flex items-center gap-2">
-          <p>Status: </p>
-          <Badge variant="secondary">Unlisted</Badge>
+          <p>{t("status.label")}: </p>
+          <Badge variant="secondary">{t("status.unlisted")}</Badge>
         </div>
 
         <Button
@@ -182,14 +188,14 @@ export default function ProjectView({
           className="self-end"
           onClick={() => setIsEditing((prev) => !prev)}
         >
-          {isEdititng ? "Stop Editing" : "Edit"}
+          {isEdititng ? t("edit.stop_button") : t("edit.start_button")}
         </Button>
       </div>
 
       <iframe
         src={`https://www.youtube.com/embed/${project.videoId}`}
         className="border-none relative w-full aspect-video"
-        title="YouTube video player"
+        title={t("video_player_title")}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
@@ -197,9 +203,9 @@ export default function ProjectView({
 
       <div className="self-start flex flex-col gap-2 container">
         {isEdititng ? (
-          <ProjectForm mutate={mutate} defaultValues={project} />
+          <ProjectForm lang={lang} mutate={mutate} defaultValues={project} />
         ) : (
-          <ProjectDisplay project={project} channel={channel} />
+          <ProjectDisplay lang={lang} project={project} channel={channel} />
         )}
       </div>
     </div>
