@@ -23,8 +23,8 @@ type UseProjectsQueryOptions = Omit<
 
 export function useProjectsPaginatedQuery(
   organizationName: Organization["name"],
-  page: number,
-  query: Project["title"],
+  page: number = 1,
+  query: Project["title"] = "",
   options: UseProjectsQueryOptions = {},
 ) {
   return useQuery({
