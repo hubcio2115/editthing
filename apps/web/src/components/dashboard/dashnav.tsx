@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "~/app/i18n/client";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import { cn } from "~/lib/utils";
 

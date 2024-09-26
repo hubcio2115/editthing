@@ -1,7 +1,7 @@
 import { auth } from "./server/auth";
 import { NextResponse } from "next/server";
 import acceptLanguage from "accept-language";
-import { FALLBACK_LANG, LANGUAGES, COOKIE_NAME } from "./app/i18n/settings";
+import { FALLBACK_LANG, LANGUAGES, COOKIE_NAME } from "./i18n/settings";
 
 const authedPathsRegex = new RegExp(`^/(${LANGUAGES.join("|")})/dashboard.*`);
 

@@ -45,8 +45,8 @@ import {
 import { Input } from "./ui/input";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toaster/use-toast";
-import { useTranslation } from "~/app/i18n/client";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 interface OrganizationSelectProps {
   lang: SupportedLanguages;
 }

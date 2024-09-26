@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { type FieldErrors, useForm } from "react-hook-form";
 import { Trans } from "react-i18next";
-import { useTranslation } from "~/app/i18n/client";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import AlertModal from "~/components/modals/alertModal";
 import { Button } from "~/components/ui/button";

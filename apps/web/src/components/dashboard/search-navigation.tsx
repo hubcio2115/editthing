@@ -7,8 +7,8 @@ import { Button } from "~/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
-import type { SupportedLanguages } from "~/app/i18n/settings";
-import { useTranslation } from "~/app/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
+import { useTranslation } from "~/i18n/client";
 
 interface ProjectGridProps {
   orgName: string;

@@ -8,8 +8,8 @@ import {
 
 import Navbar from "~/components/navbar";
 import PricingPlans from "~/components/pricing-plans";
-import { translation } from "~/app/i18n";
-import type { SupportedLanguages } from "../i18n/settings";
+import { translation } from "~/i18n";
+import type { SupportedLanguages } from "../../i18n/settings";
 
 const featureIcons = [GitPullRequestArrow, Lock, RefreshCw, Fingerprint];
 

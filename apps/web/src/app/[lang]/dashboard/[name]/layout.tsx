@@ -2,7 +2,7 @@ import { type PropsWithChildren } from "react";
 
 import Dashnav from "~/components/dashboard/dashnav";
 import Navbar from "~/components/navbar";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 type DashboardLayoutProps = PropsWithChildren<{
   params: {

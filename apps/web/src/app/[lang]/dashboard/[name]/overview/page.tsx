@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import type { SupportedLanguages } from "~/i18n/settings";
 import ProjectGrid from "~/components/dashboard/project-grid";
 import ProjectsSkeleton from "~/components/dashboard/project-grid-skeleton";
 import ProjectPagination from "~/components/dashboard/project-pagination";
