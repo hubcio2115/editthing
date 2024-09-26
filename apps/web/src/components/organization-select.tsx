@@ -45,15 +45,22 @@ import {
 import { Input } from "./ui/input";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toaster/use-toast";
+import { useTranslation } from "~/app/i18n/client";
+import type { SupportedLanguages } from "~/app/i18n/settings";
+interface OrganizationSelectProps {
+  lang: SupportedLanguages;
+}
 
-export default function OrganizationSelect() {
+export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
   const pathname = usePathname();
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
-    pathname.split("/").at(2),
+    pathname.split("/").at(3),
   );
   const router = useRouter();
   const { toast } = useToast();
+
+  const { t } = useTranslation(lang, "translation", { keyPrefix: "navbar" });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 

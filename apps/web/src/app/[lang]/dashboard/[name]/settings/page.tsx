@@ -6,11 +6,10 @@ import { Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  type SubmitErrorHandler,
-  type SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { type FieldErrors, useForm } from "react-hook-form";
+import { Trans } from "react-i18next";
+import { useTranslation } from "~/app/i18n/client";
+import type { SupportedLanguages } from "~/app/i18n/settings";
 
 import AlertModal from "~/components/modals/alertModal";
 import { Button } from "~/components/ui/button";
@@ -39,10 +38,17 @@ import {
 type SettingsMembersViewProps = {
   params: {
     name: string;
+    lang: SupportedLanguages;
   };
 };
 
-function SettingsGeneral({ params }: SettingsMembersViewProps) {
+export default function SettingsGeneralPage({
+  params,
+}: SettingsMembersViewProps) {
+  const { t, i18n } = useTranslation(params.lang, "settings", {
+    keyPrefix: "general",
+  });
+
   const { toast } = useToast();
   const router = useRouter();
   const session = useSession();
@@ -52,18 +58,14 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     data: organization,
     isLoading,
     isFetched,
+    refetch,
   } = useQuery({
     queryKey: ["organization", params.name],
     queryFn: async () => {
       const [organization, err] = await getOwnOrganizationByName(params.name);
 
       if (err !== null) {
-        toast({
-          title: "Error",
-          description: `Failed to fetch organization: ${err}`,
-        });
-        router.push("/dashboard");
-        return null;
+        router.push("/404");
       }
 
       return organization;
@@ -84,16 +86,16 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     mutationFn: updateOrganizationName,
     onError: (error) => {
       toast({
-        title: "Error",
-        description: `Failed to update organization name: ${error.message}`,
+        title: i18n.t("error"),
+        description: t("toast.update.error", { error: error.message }),
       });
     },
     onSuccess: (_, { name }) => {
       toast({
-        title: "Success",
-        description: `Organization name updated to ${name}`,
+        title: i18n.t("success"),
+        description: t("toast.update.success", { name }),
       });
-      router.push(`/dashboard/${name}/settings`);
+      refetch();
     },
   });
 
@@ -101,14 +103,14 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     mutationFn: deleteOrganization,
     onError: (error) => {
       toast({
-        title: "Error",
-        description: `${error.message}`,
+        title: i18n.t("error"),
+        description: t("toast.delete.error", { error: error.message }),
       });
     },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: `Organization deleted successfully`,
+        title: i18n.t("success"),
+        description: t("toast.delete.success"),
       });
       router.push("/dashboard");
     },
@@ -122,24 +124,31 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     },
   });
 
-  const onSubmit: SubmitHandler<UpdateOrganizationName> = (data) => {
+  function onSubmit(data: UpdateOrganizationName) {
     updateOrganizationNameMutation(data);
-  };
+  }
 
-  const onError: SubmitErrorHandler<UpdateOrganizationName> = (error) => {
+  function onError(error: FieldErrors<UpdateOrganizationName>) {
     console.error(error);
-  };
+  }
 
   return organization && !isLoading ? (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="font-selibold text-xl">General</h2>
-        <p className="text-gray-600">
-          Settings and options for the{" "}
-          <span className="font-semibold">{organization?.name}</span>{" "}
+        <h2 className="font-selibold text-xl">{t("title")}</h2>
+
+        <Trans
+          t={t}
+          i18nKey="description"
+          className="text-gray-600"
+          values={{ name: organization.name }}
+        >
+          Settings and options for the
+          <span className="font-semibold" />
           organization.
-        </p>
+        </Trans>
       </div>
+
       <Form {...form}>
         <form
           className="flex flex-col gap-5"
@@ -154,16 +163,17 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
                   className="font-semibold text-gray-600"
                   htmlFor="name"
                 >
-                  Organization name
+                  {t("name_form.label")}
                 </FormLabel>
+
                 <FormControl>
                   <Input
                     className="w-fit"
-                    placeholder={params.name}
                     disabled={currentUserRole !== "owner"}
                     {...field}
                   />
                 </FormControl>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -173,24 +183,31 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
             type="submit"
             className="w-fit"
           >
-            Save changes
+            {t("name_form.submit_button")}
           </Button>
         </form>
       </Form>
 
       {!organization?.defaultOrg ? (
         <div className="flex flex-col gap-2 rounded-md border border-gray-600 p-4">
-          <p className="font-semibold text-red-600">Delete organization</p>
-          <p>
-            Please note that deleting the{" "}
-            <span className="font-semibold text-red-600">
-              {organization?.name}{" "}
-            </span>
-            organization is{" "}
-            <span className="font-semibold text-red-600">permanent</span> and{" "}
-            <span className="font-semibold text-red-600">cannot be undone</span>
-            .
+          <p className="font-semibold text-red-600">
+            {t("delete_section.title")}
           </p>
+
+          <p>
+            <Trans
+              t={t}
+              i18nKey="delete_section.description"
+              values={{ name: organization.name }}
+            >
+              Please note that deleting the
+              <span className="font-semibold text-red-600" />
+              organization is
+              <span className="font-semibold text-red-600" /> and
+              <span className="font-semibold text-red-600" />.
+            </Trans>
+          </p>
+
           <Button
             onClick={() => {
               setIsAlertOpen(true);
@@ -203,23 +220,28 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
         </div>
       ) : (
         <div className="flex flex-col gap-2 rounded-md border border-gray-600 p-4">
-          <p className="font-semibold text-gray-600">Default organization</p>
+          <p className="font-semibold text-gray-600">
+            {t("delete_section.default_org.title")}
+          </p>
+
           <p>
-            The default{" "}
-            <span className="font-semibold text-gray-600">
-              {organization?.name}{" "}
-            </span>
-            organization{" "}
-            <span className="font-semibold text-gray-600">cannot</span> be
-            deleted.
+            <Trans t={t} i18nKey="delete_section.default_org.description">
+              The default organization
+              <span className="font-semibold text-gray-600">cannot</span> be
+              deleted.
+            </Trans>
           </p>
         </div>
       )}
+
       <AlertModal
+        lang={params.lang}
         isOpen={isAlertOpen}
-        onOpenChange={(open) => setIsAlertOpen(open)}
-        title="Are you absolutely sure?"
-        description={`This will permanently delete the organization and all its data. \n Enter the name of the organization "${organization.name}" to confirm.`}
+        onOpenChange={setIsAlertOpen}
+        title={t("delete_section.delete_modal.title")}
+        description={t("delete_section.delete_modal.description", {
+          name: organization.name,
+        })}
         unlockString={organization.name}
         onCancel={() => setIsAlertOpen(false)}
         onConfirm={() => {
@@ -234,5 +256,3 @@ function SettingsGeneral({ params }: SettingsMembersViewProps) {
     </div>
   );
 }
-
-export default SettingsGeneral;
