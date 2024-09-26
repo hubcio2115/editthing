@@ -5,8 +5,14 @@
     "signin_button": "Zaloguj się",
     "add_new_organization_button": "Dodaj nową organizację"
   },
+
   "dashnav": {
     "overview_button": "Przegląd",
     "settings_button": "Ustawienia"
+  },
+
+  "alert_modal": {
+    "confirm_button": "Potwierdź",
+    "cancel_button": "Anuluj"
   }
 }
