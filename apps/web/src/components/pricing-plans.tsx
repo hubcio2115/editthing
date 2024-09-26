@@ -13,8 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { useTranslation } from "~/app/i18n/client";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 interface PricingPlansProps {
   lang: SupportedLanguages;

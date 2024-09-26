@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import type { SupportedLanguages } from "~/i18n/settings";
 import ProjectCreateForm from "~/components/create-project/project-create-form";
 import { useCreateProjectMutation } from "~/lib/mutations/useCreateProjectMutation";
 import type { InsertProject } from "~/lib/validators/project";
@@ -21,7 +22,7 @@ const defaultValues: InsertProject = {
 };
 
 interface CreateProjectPageProps {
-  params: { name: string };
+  params: { name: string; lang: SupportedLanguages };
 }
 
 export default function CreateProjectPage({ params }: CreateProjectPageProps) {
@@ -42,6 +43,7 @@ export default function CreateProjectPage({ params }: CreateProjectPageProps) {
         mutate={mutate}
         isPending={isPending}
         defaultValues={defaultValues}
+        lang={params.lang}
       />
     </div>
   );

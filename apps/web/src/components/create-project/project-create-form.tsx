@@ -44,22 +44,28 @@ import { Checkbox } from "../ui/checkbox";
 import { cn } from "~/lib/utils";
 import ChannelsSelect from "./channel-select";
 import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 interface ProjectFormProps {
   defaultValues: InsertProject;
   mutate: UseCreateProjectMutationResult["mutate"];
   isPending?: UseCreateProjectMutationResult["isPending"];
+  lang: SupportedLanguages;
 }
 
 export default function ProjectCreateForm({
   mutate,
   isPending = false,
   defaultValues,
+  lang,
 }: ProjectFormProps) {
   const form = useForm<TProjectForm>({
     resolver: zodResolver(projectFormSchema),
     defaultValues,
   });
+
+  const { t } = useTranslation(lang, "create-project", {});
 
   const [showMore, setShowMore] = useState(false);
 

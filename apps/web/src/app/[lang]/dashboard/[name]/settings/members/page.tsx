@@ -11,8 +11,8 @@ import {
   type SubmitHandler,
   useForm,
 } from "react-hook-form";
-import { useTranslation } from "~/app/i18n/client";
-import type { SupportedLanguages } from "~/app/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import AlertModal from "~/components/modals/alertModal";
 import DialogModal from "~/components/modals/dialogModal";

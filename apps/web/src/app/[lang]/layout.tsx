@@ -8,7 +8,7 @@ import { SessionProvider } from "~/providers/session-provider";
 import { ThemeProvider } from "~/providers/theme-provider";
 import { auth } from "~/server/auth";
 import "~/styles/globals.css";
-import { LANGUAGES, type SupportedLanguages } from "~/app/i18n/settings";
+import { LANGUAGES, type SupportedLanguages } from "~/i18n/settings";
 
 export async function generateStaticParams() {
   return LANGUAGES.map((lng) => ({ lng }));
