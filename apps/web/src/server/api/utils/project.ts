@@ -14,8 +14,7 @@ export async function getYoutubeCategories(): Promise<
     const categories: youtube_v3.Schema$VideoCategoryListResponse =
       (await youtubeClient.videoCategories
         .list({
-          // @ts-expect-error Types from google libraries are awful
-          part: "snippet",
+          part: ["snippet"],
           regionCode: "PL",
           key: env.YOUTUBE_DATA_API_KEY,
         })
@@ -30,14 +29,11 @@ export async function getYoutubeCategories(): Promise<
 export async function getYoutubeSupportedLanguages(): Promise<
   Result<youtube_v3.Schema$I18nLanguage[]>
 > {
-  const youtubeClient = youtube("v3");
-
   try {
     const languages: youtube_v3.Schema$I18nLanguageListResponse =
       (await youtubeClient.i18nLanguages
         .list({
-          // @ts-expect-error Types from google libraries are awful
-          part: "snippet",
+          part: ["snippet"],
           key: env.YOUTUBE_DATA_API_KEY,
         })
         .then((res) => res.data)) as any;
@@ -60,8 +56,6 @@ export async function getOwnerChannels(
   const ownerAccount = (await getOwnerAccount(owner.id))!;
 
   // Create a new OAuth2Client for authorization
-  const youtubeClient = youtube("v3");
-
   const oauth2Client = new OAuth2Client({
     clientSecret: env.AUTH_GOOGLE_SECRET,
     clientId: env.AUTH_GOOGLE_ID,
@@ -75,8 +69,7 @@ export async function getOwnerChannels(
   try {
     const channels = await youtubeClient.channels
       .list({
-        // @ts-expect-error Types from google libraries are awful
-        part: "snippet",
+        part: ["snippet"],
         auth: oauth2Client,
         mine: true,
         key: env.YOUTUBE_DATA_API_KEY,
@@ -85,6 +78,69 @@ export async function getOwnerChannels(
 
     // @ts-expect-error Types from google libraries are awful
     return [channels.items, null];
+  } catch (e) {
+    console.error(e);
+    return [null, (e as Error).message];
+  }
+}
+
+export async function getChannel(
+  channelId: string,
+): Promise<Result<youtube_v3.Schema$Channel>> {
+  try {
+    const channel = await youtubeClient.channels
+      .list({
+        part: ["snippet"],
+        id: [channelId],
+        key: env.YOUTUBE_DATA_API_KEY,
+      })
+      .then((res) => res.data);
+
+    // @ts-expect-error Types from google libraries are awful
+    return [channel.items[0], null];
+  } catch (e) {
+    console.error(e);
+    return [null, (e as Error).message];
+  }
+}
+
+export async function getVideo(
+  organizationName: Organization["name"],
+  videoId: string,
+): Promise<Result<youtube_v3.Schema$Channel>> {
+  // Get owner of the organization
+  const owner = await getOwnerId(organizationName);
+  if (!owner) {
+    return [null, "NOT_FOUND"];
+  }
+
+  const ownerAccount = (await getOwnerAccount(owner.id))!;
+
+  // Create a new OAuth2Client for authorization
+  const oauth2Client = new OAuth2Client({
+    clientSecret: env.AUTH_GOOGLE_SECRET,
+    clientId: env.AUTH_GOOGLE_ID,
+
+    credentials: {
+      access_token: ownerAccount?.access_token,
+      refresh_token: ownerAccount?.refresh_token,
+    },
+  });
+
+  try {
+    const channel = await youtubeClient.videos
+      // @ts-expect-error Types from google libraries are awful
+      .list({
+        part: ["snippet"],
+        id: [videoId],
+        key: env.YOUTUBE_DATA_API_KEY,
+        auth: oauth2Client,
+        mine: true,
+      })
+      .then((res) => res.data);
+
+    // @ts-expect-error Types from google libraries are awful
+    return [channel.items[0], null];
   } catch (e) {
     console.error(e);
     return [null, (e as Error).message];

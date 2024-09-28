@@ -6,7 +6,7 @@ import {
 } from "~/server/actions/organization";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { name: string } },
 ) {
   const [organization, err] = await getOwnOrganizationByName(params.name);
@@ -22,7 +22,23 @@ export async function GET(
     );
   }
 
-  const projects = await getOrganizationProjects(organization.id);
+  const page = req.nextUrl.searchParams.get("page");
+  if (page === null) {
+    return NextResponse.json(
+      { message: "Page query param is required." },
+      { status: 400 },
+    );
+  }
 
-  return NextResponse.json(projects);
+  const query = req.nextUrl.searchParams.get("q");
+  if (query === null) {
+    return NextResponse.json(
+      { message: "Q query param is required." },
+      { status: 400 },
+    );
+  }
+
+  const projectsResponse = await getOrganizationProjects(organization.id, +page, query);
+
+  return NextResponse.json(projectsResponse);
 }

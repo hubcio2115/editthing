@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, or } from "drizzle-orm";
+import { and, count, eq, ilike, or } from "drizzle-orm";
 
 import type { Result } from "~/lib/utils";
 import type {
@@ -72,13 +72,35 @@ export async function getOwnOrganizationByName(
     : [null, "Not found"];
 }
 
-export async function getOrganizationProjects(id: Organization["id"]) {
-  const projects = await db
-    .select()
-    .from(projectsTable)
-    .where(eq(projectsTable.organizationId, id));
+export type GetProjectsResponse = Awaited<
+  ReturnType<typeof getOrganizationProjects>
+>;
 
-  return projects;
+export async function getOrganizationProjects(
+  id: Organization["id"],
+  page: number,
+  query: string,
+) {
+  const [projects, projectCount] = await Promise.all([
+    db
+      .select()
+      .from(projectsTable)
+      .where(
+        and(
+          eq(projectsTable.organizationId, id),
+          ilike(projectsTable.title, `%${query}%`),
+        ),
+      )
+      .limit(12)
+      .offset((page - 1) * 12),
+    db.select({ count: count() }).from(projectsTable),
+  ]);
+
+  return {
+    projects,
+    total: projectCount[0]!.count,
+    hasNextPage: projectCount[0]!.count > page * 12,
+  };
 }
 
 export async function getOrganizations(): Promise<
