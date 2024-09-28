@@ -41,10 +41,13 @@ import { Checkbox } from "../ui/checkbox";
 import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
 import CategoriesSelect from "../create-project/categories-select";
 import LanguagesSelect from "../create-project/language-select";
+import type { UseEditProjectMutationResult } from "~/lib/mutations/useEditProjectMutation";
 
 interface ProjectFormProps {
   defaultValues: InsertProject;
-  mutate: UseCreateProjectMutationResult["mutate"];
+  mutate:
+    | UseCreateProjectMutationResult["mutate"]
+    | UseEditProjectMutationResult["mutate"];
   isPending?: UseCreateProjectMutationResult["isPending"];
 }
 
@@ -61,7 +64,8 @@ export default function ProjectForm({
   const [showMore, setShowMore] = useState(false);
 
   function onSuccess(data: TProjectForm) {
-    mutate(data);
+    console.log(data);
+    // mutate(data);
   }
 
   return (
