@@ -1,13 +1,12 @@
 {
   "hero": {
     "title": "Narzędzie do usprawnienia procesu produkcji wideo",
-    "description": "Dawanie opinii, sugestii i zarządzanie dostępem do Twojego kanału nigdy nie było łatwiejsze. Zainspirowane Gitem – narzędziem do iteracyjnego tworzenia oprogramowania, które faktycznie działa.",
+    "description": "Sugestii do nowych filmów i zarządzanie dostępem do Twojego kanału nigdy nie było łatwiejsze.",
     "learn_more": "Dowiedz się więcej"
   },
   "feature_section": {
     "subtitle": "Przesyłaj szybciej",
     "title": "Wszystko, czego potrzebujesz, aby przesłać nowe wideo",
-    "description": "Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.",
     "features": [
       {
         "name": "Scalanie do przesłania",
