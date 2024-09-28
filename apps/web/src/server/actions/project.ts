@@ -189,3 +189,46 @@ export async function getPaginatedProjects(
     return [null, (err as Error).message];
   }
 }
+
+export async function updateProjectStatus(
+  id: Project["id"],
+  status: Project["status"],
+): Promise<Result<Project>> {
+  const session = await auth();
+
+  if (!session) {
+    return [null, "UNAUTHORIZED"];
+  }
+
+  const organization = await db
+    .select({
+      id: organizations.id,
+    })
+    .from(organizations)
+    .leftJoin(projectTable, eq(organizations.id, projectTable.organizationId))
+    .where(eq(projectTable.id, id));
+
+  if (organization.length === 0) {
+    return [null, "PROJECT_NOT_FOUND"];
+  }
+
+  const isUserAuthorized = await isUserInOrganization(
+    session.user.id,
+    organization[0]!.id,
+  );
+
+  if (!isUserAuthorized) {
+    return [null, "UNAUTHORIZED"];
+  }
+
+  const updatedProject = (
+    await db
+      .update(projectTable)
+      .set({ status })
+      .where(eq(projectTable.id, id))
+      .returning()
+  )[0];
+
+  return [updatedProject!, null];
+}
+
