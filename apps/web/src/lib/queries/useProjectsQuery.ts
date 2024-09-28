@@ -10,6 +10,7 @@ import ky from "ky";
 import type { Organization } from "../validators/organization";
 import { env } from "~/env";
 import type { GetProjectsResponse } from "~/server/actions/organization";
+import { getProjectById } from "~/server/actions/project";
 
 type UseProjectsQueryOptions = Omit<
   UseQueryOptions<
@@ -41,9 +42,33 @@ export function useProjectsPaginatedQuery(
         )
         .json();
 
-      return res; 
+      return res;
     },
     placeholderData: keepPreviousData,
+    ...options,
+  });
+}
+
+export type UseProjectQueryOptions = Omit<
+  UseQueryOptions<Project | null, Error, Project, ["project", Project["id"]]>,
+  "queryKey" | "queryFn"
+>;
+
+export function useProjectQuery(
+  projectId: Project["id"],
+  options: UseProjectQueryOptions = {},
+) {
+  return useQuery({
+    queryKey: ["project", projectId],
+    queryFn: async () => {
+      const [project, err] = await getProjectById(projectId);
+
+      if (err !== null) {
+        throw new Error(err);
+      }
+
+      return project;
+    },
     ...options,
   });
 }
