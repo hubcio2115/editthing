@@ -18,7 +18,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import InputSkeleton from "../ui/skeletons/input-skeleton";
 import {
   Tooltip,
@@ -57,12 +57,6 @@ export default function ProjectForm({
     resolver: zodResolver(projectFormSchema),
     defaultValues,
   });
-
-  const formValues = form.watch();
-
-  useEffect(() => {
-    console.log(formValues);
-  }, [formValues]);
 
   const [showMore, setShowMore] = useState(false);
 
