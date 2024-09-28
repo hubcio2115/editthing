@@ -248,7 +248,7 @@ export default function ProjectView({
       </div>
 
       <iframe
-        src={`https://www.youtube.com/embed/${project.videoId}`}
+        src={`https://www.youtube.com/embed/${project!.videoId}`}
         className="border-none relative w-full aspect-video"
         title="YouTube video player"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
