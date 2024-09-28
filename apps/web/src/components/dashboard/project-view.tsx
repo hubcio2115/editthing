@@ -174,9 +174,19 @@ export default function ProjectView({
       <div className="container flex justify-between">
         <div className="flex items-center gap-2">
           <p>Status: </p>
-          <Badge variant="secondary">Unlisted</Badge>
+          {(() => {
+            switch (project!.status) {
+              case "public":
+                return <Badge variant="default">Public</Badge>;
+              case "unlisted":
+                return <Badge variant="secondary">Unlisted</Badge>;
+              case "closed":
+                return <Badge variant="destructive">Closed</Badge>;
+            }
+          })()}
         </div>
 
+        {project?.status === "unlisted" && (
         <Button
           variant="outline"
           className="self-end"
@@ -184,6 +194,7 @@ export default function ProjectView({
         >
           {isEdititng ? "Stop Editing" : "Edit"}
         </Button>
+        )}
       </div>
 
       <iframe
