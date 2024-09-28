@@ -35,12 +35,19 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return redirect("/404");
   }
 
-  const [languages, languagesErr] = await getYoutubeSupportedLanguages();
-  const [categories, categoriesErr] = await getYoutubeCategories();
+  const [[languages, languagesErr], [categories, categoriesErr]] =
+    await Promise.all([getYoutubeSupportedLanguages(), getYoutubeCategories()]);
 
   if (languagesErr !== null || categoriesErr !== null) {
     throw new Error("Something went wrong on our end");
   }
 
-  return <ProjectView project={project} channel={channel} languages={languages} categories={categories} />;
+  return (
+    <ProjectView
+      project={project}
+      channel={channel}
+      languages={languages}
+      categories={categories}
+    />
+  );
 }
