@@ -31,6 +31,14 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
     (category) => category.id === project.categoryId,
   );
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useProjectStatusMutation(project.id, {
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["project", project.id] });
+    },
+  });
+
   return (
     <>
       <h1 className="font-bold text-xl">{project.title}</h1>
@@ -66,12 +74,14 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
           <p>{descriptionLines[0]}</p>
         )}
 
+        {descriptionLines.length > 1 && (
         <Button
           className="rounded-full w-max"
           onClick={() => setShowWholeDescription((prev) => !prev)}
         >
           {showWholeDescription ? "Show less" : "Show more"}
         </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -126,15 +136,55 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
       </div>
 
       <div className="container flex justify-end gap-4">
-        <Button variant="destructive" className="gap-2">
+        {project.status === "unlisted" ? (
+          <>
+            <Button
+              variant="destructive"
+              className="gap-2"
+              disabled={isPending}
+              onClick={() => {
+                mutate("closed");
+              }}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin size-4" />
+              ) : (
           <GitPullRequestClosed className="size-4" />
+              )}
           Close
         </Button>
 
-        <Button className="gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="gap-2" disabled>
           <Merge className="size-4" />
           Publish
         </Button>
+                </TooltipTrigger>
+
+                <TooltipContent>
+                  We are currently unable to allow you to publish your project.
+                  This feature is locked for unauthorized applications that use
+                  YouTube API. We're currently in a process of passing a Google
+                  audit. For now you can publish your project manually form
+                  YouTube Studio.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </>
+        ) : (
+          <Button
+            className="gap-2"
+            disabled={isPending}
+            onClick={() => {
+              mutate("unlisted");
+            }}
+          >
+            {isPending && <Loader2 className="animate-spin size-4" />}
+            Reopen
+          </Button>
+        )}
       </div>
     </>
   );
