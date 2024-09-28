@@ -5,12 +5,21 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { Project } from "~/lib/validators/project";
 import { Button } from "../ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import ProjectForm from "./project-form";
 import { Badge } from "../ui/badge";
-import { GitPullRequestClosed, Merge } from "lucide-react";
+import { GitPullRequestClosed, Loader2, Merge } from "lucide-react";
 import { useLanguagesQuery } from "~/lib/queries/useLanguagesQuery";
 import { useCategoriesQuery } from "~/lib/queries/useCategoriesQuery";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { useProjectStatusMutation } from "~/lib/mutations/useProjectStatusMutation";
+import { useProjectQuery } from "~/lib/queries/useProjectsQuery";
+import { useEditProjectMutation } from "~/lib/mutations/useEditProjectMutation";
 
 interface ProjectDisplayProps {
   project: Project;
@@ -75,12 +84,12 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
         )}
 
         {descriptionLines.length > 1 && (
-        <Button
-          className="rounded-full w-max"
-          onClick={() => setShowWholeDescription((prev) => !prev)}
-        >
-          {showWholeDescription ? "Show less" : "Show more"}
-        </Button>
+          <Button
+            className="rounded-full w-max"
+            onClick={() => setShowWholeDescription((prev) => !prev)}
+          >
+            {showWholeDescription ? "Show less" : "Show more"}
+          </Button>
         )}
       </div>
 
@@ -149,18 +158,18 @@ function ProjectDisplay({ channel, project }: ProjectDisplayProps) {
               {isPending ? (
                 <Loader2 className="animate-spin size-4" />
               ) : (
-          <GitPullRequestClosed className="size-4" />
+                <GitPullRequestClosed className="size-4" />
               )}
-          Close
-        </Button>
+              Close
+            </Button>
 
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button className="gap-2" disabled>
-          <Merge className="size-4" />
-          Publish
-        </Button>
+                    <Merge className="size-4" />
+                    Publish
+                  </Button>
                 </TooltipTrigger>
 
                 <TooltipContent>
@@ -198,7 +207,7 @@ interface ProjectViewProps {
 }
 
 export default function ProjectView({
-  project,
+  project: initialProject,
   channel,
   languages,
   categories,
@@ -217,7 +226,15 @@ export default function ProjectView({
     }
   }, []);
 
-  const { mutate } = useMutation({});
+  const { data: project, refetch } = useProjectQuery(initialProject.id, {
+    initialData: initialProject,
+  });
+
+  const { mutate, isPending } = useEditProjectMutation(project!.id, {
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
   return (
     <div className="mx-auto flex w-full flex-col flex-1 pb-10 gap-4 max-w-[1260px]">
@@ -237,13 +254,13 @@ export default function ProjectView({
         </div>
 
         {project?.status === "unlisted" && (
-        <Button
-          variant="outline"
-          className="self-end"
-          onClick={() => setIsEditing((prev) => !prev)}
-        >
-          {isEdititng ? "Stop Editing" : "Edit"}
-        </Button>
+          <Button
+            variant="outline"
+            className="self-end"
+            onClick={() => setIsEditing((prev) => !prev)}
+          >
+            {isEdititng ? "Stop Editing" : "Edit"}
+          </Button>
         )}
       </div>
 
