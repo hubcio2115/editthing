@@ -131,34 +131,32 @@ export async function getProjectById(
     return [null, "UNAUTHORIZED"];
   }
 
-  const [organizations, err] = await getOwnOrganizations();
-
-  if (err !== null) {
-    return [null, err];
-  }
-
-  const organizationIds = organizations.map((org) => org.id);
-
-  const project = await db
-    .select()
-    .from(projectTable)
+  const organization = await db
+    .select({
+      id: organizations.id,
+    })
+    .from(organizations)
+    .leftJoin(projectTable, eq(organizations.id, projectTable.organizationId))
     .where(eq(projectTable.id, id));
 
-  if (project.length === 0) {
-    return [null, null];
+  if (organization.length === 0) {
+    return [null, "PROJECT_NOT_FOUND"];
   }
 
-  const projects = await db
-    .select()
-    .from(projectTable)
-    .where(inArray(projectTable.organizationId, organizationIds));
+  const isAuthorized = await isUserInOrganization(
+    session.user.id,
+    organization[0]!.id,
+  );
 
-  const userHaveAccessToProject = projects.some((p) => p.id === project[0]!.id);
-  if (!userHaveAccessToProject) {
-    return [null, null];
+  if (!isAuthorized) {
+    return [null, "UNAUTHORIZED"];
   }
 
-  return [project[0]!, null];
+  const project =
+    (await db.select().from(projectTable).where(eq(projectTable.id, id)))[0] ??
+    null;
+
+  return [project, null];
 }
 
 export async function deleteProjectById(
