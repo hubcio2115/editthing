@@ -258,9 +258,13 @@ export default function ProjectView({
 
       <div className="self-start flex flex-col gap-2 container">
         {isEdititng ? (
-          <ProjectForm mutate={mutate} defaultValues={project} />
+          <ProjectForm
+            mutate={mutate}
+            isPending={isPending}
+            defaultValues={project!}
+          />
         ) : (
-          <ProjectDisplay project={project} channel={channel} />
+          <ProjectDisplay project={project!} channel={channel} />
         )}
       </div>
     </div>
