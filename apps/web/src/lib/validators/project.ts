@@ -21,8 +21,8 @@ export const projectSchema = createSelectSchema(projects);
 export type Project = z.infer<typeof projectSchema>;
 
 export interface TProjectForm extends InsertProject {
-  video: File;
-  thumbnail: File;
+  video?: File;
+  thumbnail?: File;
 }
 
 export const ACCEPTED_THUMBNAIL_FORMATS = [
@@ -61,7 +61,7 @@ export const projectFormSchema = insertProjectSchema
         .refine(
           (file) => FILE_INPUT_ACCEPTED_FORMATS.includes(file?.type),
           `${ACCEPTED_VIDEO_FORMATS.join(", ")} files are accepted.`,
-        ),
+        ).optional(),
       title: z.string().min(3).max(100),
       // TODO: Add thumbnail support for this form
       //  thumbnail: z
