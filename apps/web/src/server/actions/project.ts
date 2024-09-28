@@ -1,14 +1,18 @@
 "use server";
 
-import { asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import type { Result } from "~/lib/utils";
 import type { InsertProject, Project } from "~/lib/validators/project";
 
 import { db } from "../db";
-import { projects as projectTable } from "../db/schema";
+import {
+  organizations,
+  projects as projectTable,
+  usersToOrganizations,
+} from "../db/schema";
 import { auth } from "../auth";
-import { getOwnOrganizationByName, getOwnOrganizations } from "./organization";
+import { getOwnOrganizationByName } from "./organization";
 import {
   getOwnerAccount,
   getOwnerId,
@@ -81,7 +85,7 @@ export async function createProject(
   try {
     var video = (await youtubeClient.videos
       .insert({
-        part: ["snippet", "status", "id"],
+        part: ["snippet"],
         auth: oauth2Client,
         media: {
           // @ts-expect-error ReadableStream<Uint8Array> is assignable to ReadableStream<any>
@@ -97,18 +101,19 @@ export async function createProject(
             defaultLanguage: project.defaultLanguage,
             channelId: project.channelId,
           },
-          status: {
-            license: project.license,
-            embeddable: project.embeddable,
-            privacyStatus: project.privacyStatus,
+          // status: {
+          //   license: project.license,
+          //   embeddable: project.embeddable,
+          //   privacyStatus: project.privacyStatus,
 
-            publicStatsViewable: project.publicStatsViewable,
-            selfDeclaredMadeForKids: project.selfDeclaredMadeForKids,
-          },
+          //   publicStatsViewable: project.publicStatsViewable,
+          //   selfDeclaredMadeForKids: project.selfDeclaredMadeForKids,
+          // },
         },
       })
       .then((res) => res.data)) as youtube_v3.Schema$Video;
   } catch (e) {
+    console.dir(e, { depth: null });
     return [null, (e as Error).message];
   }
 
@@ -232,3 +237,104 @@ export async function updateProjectStatus(
   return [updatedProject!, null];
 }
 
+export async function editProject(
+  id: Project["id"],
+  data: InsertProject,
+): Promise<Result<Project>> {
+  const session = await auth();
+  if (!session) {
+    return [null, "UNAUTHORIZED"];
+  }
+
+  const organization = await db
+    .select({
+      id: organizations.id,
+    })
+    .from(organizations)
+    .leftJoin(projectTable, eq(organizations.id, projectTable.organizationId))
+    .where(eq(projectTable.id, id));
+  if (organization.length === 0) {
+    return [null, "PROJECT_NOT_FOUND"];
+  }
+
+  const isAuthorized = await isUserInOrganization(
+    session.user.id,
+    organization[0]!.id,
+  );
+  if (!isAuthorized) {
+    return [null, "UNAUTHORIZED"];
+  }
+
+  const owner = (
+    await db
+      .select()
+      .from(usersToOrganizations)
+      .leftJoin(
+        organizations,
+        eq(usersToOrganizations.organizationId, organizations.id),
+      )
+      .where(
+        and(
+          eq(organizations.id, organization[0]!.id),
+          eq(usersToOrganizations.role, "owner"),
+        ),
+      )
+  )[0]!;
+
+  const ownerAccount = await getOwnerAccount(
+    owner.users_to_organizations.memberId!,
+  );
+
+  // Create a new OAuth2Client for authorization
+  const youtubeClient = youtube("v3");
+
+  const oauth2Client = new OAuth2Client({
+    clientSecret: env.AUTH_GOOGLE_SECRET,
+    clientId: env.AUTH_GOOGLE_ID,
+
+    credentials: {
+      access_token: ownerAccount?.access_token,
+      refresh_token: ownerAccount?.refresh_token,
+    },
+  });
+
+  console.log("videoId", data.videoId);
+
+  try {
+    await youtubeClient.videos.update({
+      part: ["snippet", "id"],
+      auth: oauth2Client,
+      requestBody: {
+        id: data.videoId,
+        snippet: {
+          title: data.title,
+          // description: data.description,
+          // tags: data.tags?.split(","),
+          categoryId: data.categoryId,
+          // defaultLanguage: data.defaultLanguage,
+        },
+        // status: {
+        //   license: data.license,
+        //   embeddable: data.embeddable,
+        //   privacyStatus: data.privacyStatus,
+
+        //   publicStatsViewable: data.publicStatsViewable,
+        //   selfDeclaredMadeForKids: data.selfDeclaredMadeForKids,
+        // },
+      },
+    });
+  } catch (e) {
+    console.dir(e, { depth: null });
+    return [null, (e as Error).message];
+  }
+
+  const updatedProject = (
+    await db
+      .update(projectTable)
+      .set(data)
+      .where(eq(projectTable.id, id))
+      .returning()
+  )[0];
+
+  return [updatedProject!, null];
+}
