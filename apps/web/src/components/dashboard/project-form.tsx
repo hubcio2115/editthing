@@ -18,7 +18,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import InputSkeleton from "../ui/skeletons/input-skeleton";
 import {
   Tooltip,
@@ -41,13 +41,16 @@ import { Checkbox } from "../ui/checkbox";
 import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
 import CategorySelect from "../create-project/categories-select";
 import LanguageSelect from "../create-project/language-select";
+import type { UseEditProjectMutationResult } from "~/lib/mutations/useEditProjectMutation";
 import type { SupportedLanguages } from "~/i18n/settings";
 import { useTranslation } from "~/i18n/client";
 import { Trans } from "react-i18next";
 
 interface ProjectFormProps {
   defaultValues: InsertProject;
-  mutate: UseCreateProjectMutationResult["mutate"];
+  mutate:
+    | UseCreateProjectMutationResult["mutate"]
+    | UseEditProjectMutationResult["mutate"];
   isPending?: UseCreateProjectMutationResult["isPending"];
   lang: SupportedLanguages;
 }
@@ -64,12 +67,6 @@ export default function ProjectForm({
   });
 
   const { t } = useTranslation(lang, "project-form");
-
-  const formValues = form.watch();
-
-  useEffect(() => {
-    console.log(formValues);
-  }, [formValues]);
 
   const [showMore, setShowMore] = useState(false);
 
