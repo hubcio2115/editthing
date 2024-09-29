@@ -59,7 +59,7 @@ export default function ProjectGrid({ organization }: ProjectGridProps) {
 
   const { data } = useProjectsPaginatedQuery(
     organization.name,
-    page ? +page : 0,
+    page ? +page : 1,
     query ?? "",
   );
 

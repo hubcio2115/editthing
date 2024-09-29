@@ -18,14 +18,13 @@ export default function VideoCard({ project }: ProjectCardProps) {
   const { data: channel } = useChannelSuspenseQuery(project.channelId);
 
   return (
-    <div className="max-w-[350px] sm:max-w-96 mx-auto">
+    <div className="mx-auto max-w-96">
       <Link
         href={`/dashboard/${name}/project/${project.id}`}
         className="flex items-center max-h-min flex-col gap-2"
       >
-        <div className="h-60 w-[320px] sm:w-96 rounded-lg overflow-hidden">
+        <div className="rounded-lg overflow-hidden">
           <Image
-            className="h-60 w-[320px] sm:w-96"
             alt="project thumbnail"
             src={video.snippet?.thumbnails?.standard?.url ?? ""}
             width={video.snippet?.thumbnails?.standard?.width ?? 320}

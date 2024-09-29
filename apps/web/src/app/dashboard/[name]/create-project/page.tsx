@@ -1,8 +1,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import ProjectForm from "~/components/create-project/project-form";
+import ProjectCreateForm from "~/components/create-project/project-create-form";
 import { useCreateProjectMutation } from "~/lib/mutations/useCreateProjectMutation";
+import type { InsertProject } from "~/lib/validators/project";
+
+const defaultValues: InsertProject = {
+  license: "youtube",
+  title: "",
+  description: "",
+  categoryId: null,
+  defaultLanguage: "none",
+  tags: "",
+  embeddable: true,
+  privacyStatus: "unlisted",
+  publicStatsViewable: true,
+  selfDeclaredMadeForKids: false,
+  notifySubscribers: true,
+  channelId: "",
+};
 
 interface CreateProjectPageProps {
   params: { name: string };
@@ -11,7 +27,7 @@ interface CreateProjectPageProps {
 export default function CreateProjectPage({ params }: CreateProjectPageProps) {
   const router = useRouter();
 
-  const mutation = useCreateProjectMutation(params.name, {
+  const { mutate, isPending } = useCreateProjectMutation(params.name, {
     onSuccess: (project) => {
       router.push(`/dashboard/${params.name}/project/${project.id}`);
     },
@@ -22,7 +38,11 @@ export default function CreateProjectPage({ params }: CreateProjectPageProps) {
 
   return (
     <div className="container flex max-w-[800px] flex-1 flex-col items-center pb-11">
-      <ProjectForm mutation={mutation} />
+      <ProjectCreateForm
+        mutate={mutate}
+        isPending={isPending}
+        defaultValues={defaultValues}
+      />
     </div>
   );
 }
