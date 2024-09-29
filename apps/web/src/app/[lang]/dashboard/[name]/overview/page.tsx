@@ -47,7 +47,7 @@ export default async function DashboardOverviewPage({
     <div className="mx-auto flex flex-col flex-1 items-center md:px-2 container pb-10 gap-8">
       <SearchNavigation orgName={params.name} lang={params.lang} />
 
-      <ProjectPagination organizationName={params.name} />
+      <ProjectPagination lang={params.lang} organizationName={params.name} />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:grid-rows-6 2xl:w-[1300px] 2xl:grid-cols-3 2xl:grid-rows-4 flex-1">
         <Suspense fallback={<ProjectsSkeleton />}>

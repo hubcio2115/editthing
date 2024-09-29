@@ -77,7 +77,7 @@ function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
           className="rounded-full w-max"
           onClick={() => setShowWholeDescription((prev) => !prev)}
         >
-          {showWholeDescription ? t("show_more") : t("show_less")}
+          {showWholeDescription ? t("show_less") : t("show_more")}
         </Button>
       </div>
 
