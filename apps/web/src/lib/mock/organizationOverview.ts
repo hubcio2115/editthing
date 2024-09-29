@@ -20,6 +20,7 @@ function getProjectMockData(videos: youtube_v3.Schema$Video[]): Project[] {
     notifySubscribers: true,
     organizationId: 1,
     selfDeclaredMadeForKids: false,
+    status: "unlisted",
   }));
 }
 
