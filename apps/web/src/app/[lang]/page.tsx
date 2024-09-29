@@ -24,7 +24,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex flex-col items-center justify-between border-b border-slate-200 bg-slate-100 p-2">
+      <div className="flex flex-col items-center justify-between border-b border-slate-200 bg-slate-100 p-2 z-10">
         <Navbar lang={params.lang} />
       </div>
 
