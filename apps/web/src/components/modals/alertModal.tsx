@@ -12,6 +12,8 @@ import {
 } from "~/components/ui/alert-dialog";
 
 import { Input } from "../ui/input";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 type AlertModalProps = {
   isOpen: boolean;
@@ -21,6 +23,7 @@ type AlertModalProps = {
   unlockString?: string;
   onCancel: () => void;
   onConfirm: () => void;
+  lang: SupportedLanguages;
 };
 
 export default function AlertModal({
@@ -31,8 +34,12 @@ export default function AlertModal({
   unlockString,
   onCancel,
   onConfirm,
+  lang,
 }: AlertModalProps) {
   const [inputValue, setInputValue] = useState("");
+  const { t } = useTranslation(lang, "translation", {
+    keyPrefix: "alert_modal",
+  });
 
   const isActionDisabled =
     unlockString !== undefined && unlockString !== inputValue;
@@ -46,28 +53,31 @@ export default function AlertModal({
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
+
+        {unlockString !== undefined && (
+          <Input
+            className="w-fit"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+        )}
+
         <AlertDialogFooter>
-          {unlockString !== undefined && (
-            <Input
-              className="w-fit"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-          )}
           <AlertDialogCancel
             onClick={() => {
               onCancel(), setInputValue("");
             }}
           >
-            Cancel
+            {t("cancel_button")}
           </AlertDialogCancel>
+
           <AlertDialogAction
             disabled={isActionDisabled}
             onClick={() => {
               onConfirm(), setInputValue("");
             }}
           >
-            Continue
+            {t("confirm_button")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,0 +1,65 @@
+{
+  "status": {
+    "label": "Status",
+    "unlisted": "Unlisted",
+    "closed": "Closed",
+    "public": "Public"
+  },
+
+  "edit": {
+    "stop_button": "Stop Editing",
+    "start_button": "Edit"
+  },
+
+  "video_player_title": "YouTube video player",
+
+  "project_display": {
+    "subscribe": "Subscribe",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "yes": "Yes",
+    "no": "No",
+
+    "tags": {
+      "label": "Tags",
+      "empty": "None"
+    },
+
+    "license": {
+      "label": "License",
+      "youtube": "Standard YouTube License",
+      "creativeCommon": "Creative Commons - Attribution"
+    },
+
+    "embeddable": {
+      "label": "Embeddable"
+    },
+
+    "language": {
+      "label": "Language"
+    },
+
+    "stats": {
+      "label": "Stats",
+      "public": "Public",
+      "private": "Private"
+    },
+
+    "made_for_kids": {
+      "label": "\"Made for Kids\""
+    },
+
+    "notify_subscribers": {
+      "label": "Notify Subscribers"
+    },
+
+    "category": {
+      "label": "Category"
+    },
+
+    "close_button": "Close",
+    "publish_button": "Publish",
+    "unable_to_publish_info": "We are currently unable to allow you to publish your project. This feature is locked for unauthorized applications that use YouTube API. We're currently in a process of passing a Google audit. For now you can publish your project manually form YouTube Studio.",
+    "reopen_button": "Reopen"
+  }
+}

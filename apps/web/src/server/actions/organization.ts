@@ -98,8 +98,8 @@ export async function getOrganizationProjects(
 
   return {
     projects,
-    total: projectCount[0]!.count,
-    hasNextPage: projectCount[0]!.count > page * 12,
+    total: projectCount[0]?.count!,
+    hasNextPage: projectCount[0]?.count! > page * 12,
   };
 }
 

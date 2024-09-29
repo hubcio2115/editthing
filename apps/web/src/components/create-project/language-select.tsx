@@ -15,15 +15,27 @@ import {
 } from "../ui/command";
 import { cn } from "~/lib/utils";
 import { useLanguagesSuspenseQuery } from "~/lib/queries/useLanguagesQuery";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
-export default function LanguagesSelect({
+interface LanguageSelectProps
+  extends PropsWithChildren<Omit<ControllerRenderProps, "ref">> {
+  lang: SupportedLanguages;
+}
+
+export default function LanguageSelect({
   value,
   onChange,
   disabled,
-}: PropsWithChildren<Omit<ControllerRenderProps, "ref">>) {
-  const { data: languages } = useLanguagesSuspenseQuery();
+  lang,
+}: LanguageSelectProps) {
+  const { data: languages } = useLanguagesSuspenseQuery(lang);
 
   const [open, setOpen] = useState(false);
+
+  const { t } = useTranslation(lang, "project-form", {
+    keyPrefix: "language_select",
+  });
 
   const displayedValue = languages.find((language) => language.id === value)
     ?.snippet?.name;
@@ -42,7 +54,7 @@ export default function LanguagesSelect({
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {displayedValue ?? "Select a language..."}
+          {displayedValue ?? t("placeholder")}
 
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -50,10 +62,10 @@ export default function LanguagesSelect({
 
       <PopoverContent>
         <Command>
-          <CommandInput placeholder="Search a category..." />
+          <CommandInput placeholder={t("search_placeholder")} />
 
           <CommandList>
-            <CommandEmpty>No category found.</CommandEmpty>
+            <CommandEmpty>{t("not_found")}</CommandEmpty>
 
             <CommandGroup>
               {languages.map((language) => (

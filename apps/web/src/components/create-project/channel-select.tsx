@@ -20,13 +20,24 @@ import { Button } from "../ui/button";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import ky from "ky";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
-export default function ChannelsSelect({
+interface ChannelSelectProps extends Omit<ControllerRenderProps, "ref"> {
+  lang: SupportedLanguages;
+}
+
+export default function ChannelSelect({
   value,
   onChange,
   disabled,
-}: Omit<ControllerRenderProps, "ref">) {
+  lang,
+}: ChannelSelectProps) {
   const { name } = useParams();
+
+  const { t } = useTranslation(lang, "project-form", {
+    keyPrefix: "channel_select",
+  });
 
   const [open, setOpen] = useState(false);
 
@@ -78,7 +89,7 @@ export default function ChannelsSelect({
               );
             }
 
-            return <p>Select a channel...</p>;
+            return <p>{t("placeholder")}</p>;
           })()}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -86,10 +97,10 @@ export default function ChannelsSelect({
 
       <PopoverContent align="start">
         <Command>
-          <CommandInput placeholder="Search a channel..." />
+          <CommandInput placeholder={t("placeholder")} />
 
           <CommandList>
-            <CommandEmpty>No channel found.</CommandEmpty>
+            <CommandEmpty>{t("not_found")}</CommandEmpty>
 
             <CommandGroup>
               {channels.map((channel) => (

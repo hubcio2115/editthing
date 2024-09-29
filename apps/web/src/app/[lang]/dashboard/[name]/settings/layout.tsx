@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import { cn } from "~/lib/utils";
 
 type SettingsProps = {
   params: {
     name: string;
+    lang: SupportedLanguages;
   };
 } & PropsWithChildren;
 
 export default function Settings({ params, children }: SettingsProps) {
   const pathname = usePathname();
+  const { t } = useTranslation(params.lang, "settings");
 
   return (
     <div className="mx-auto w-full flex-1 px-6 py-8 sm:p-12">
@@ -24,32 +28,33 @@ export default function Settings({ params, children }: SettingsProps) {
               <Link href={`/dashboard/${params.name}/settings`}>
                 <div
                   className={cn(
-                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
+                    "px-2 pb-2 capitalize border-b lg:border-b-0 lg:border-l lg:pb-0",
                     pathname.split("/").at(-1) === "settings"
-                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
-                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-fuchsia-900 text-fuchsia-900"
+                      : "border-transparent hover:border-slate-300",
                   )}
                 >
-                  general
+                  {t("general.title")}
                 </div>
               </Link>
               <Link href={`/dashboard/${params.name}/settings/members`}>
                 <div
                   className={cn(
-                    "text-l border-transparent px-2 pb-2 capitalize last:border-r-0 lg:pb-0",
+                    "px-2 pb-2 capitalize border-b lg:border-b-0 lg:border-l lg:pb-0",
                     ["members", "invitations"].includes(
                       pathname.split("/").at(-1)!,
                     )
-                      ? "cursor-default border-b border-b-fuchsia-900 text-fuchsia-900 lg:border-b-0 lg:border-l lg:border-l-fuchsia-900"
-                      : "border-slate-300 hover:border-b lg:hover:border-b-0 lg:hover:border-l",
+                      ? "cursor-default border-fuchsia-900 text-fuchsia-900"
+                      : "border-transparent hover:border-slate-300",
                   )}
                 >
-                  members
+                  {t("members.title")}
                 </div>
               </Link>
             </div>
           </nav>
-          <div className="flex-1 lg:w-1">{children}</div>
+
+          {children}
         </div>
       </div>
     </div>

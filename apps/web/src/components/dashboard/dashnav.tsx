@@ -2,24 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import { cn } from "~/lib/utils";
 
 interface DashnavProps {
   orgName: string;
+  lang: SupportedLanguages;
 }
 
-export default function Dashnav({ orgName }: DashnavProps) {
+export default function Dashnav({ orgName, lang }: DashnavProps) {
   const pathname = usePathname();
+  const { t } = useTranslation(lang, "translation", { keyPrefix: "dashnav" });
 
   const links = [
     {
-      path: `/dashboard/${orgName}/overview`,
-      label: "overview",
+      path: `/${lang}/dashboard/${orgName}/overview`,
+      label: t("overview_button"),
     },
     {
-      path: `/dashboard/${orgName}/settings`,
-      label: "settings",
+      path: `/${lang}/dashboard/${orgName}/settings`,
+      label: t("settings_button"),
     },
   ];
 

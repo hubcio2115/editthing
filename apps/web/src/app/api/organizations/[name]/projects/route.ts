@@ -13,7 +13,7 @@ export async function GET(
 
   if (err !== null) {
     if (err === "Not found") {
-      return redirect("404");
+      return redirect("/404");
     }
 
     return NextResponse.json(
@@ -38,7 +38,11 @@ export async function GET(
     );
   }
 
-  const projectsResponse = await getOrganizationProjects(organization.id, +page, query);
+  const projectsResponse = await getOrganizationProjects(
+    organization.id,
+    +page,
+    query,
+  );
 
   return NextResponse.json(projectsResponse);
 }

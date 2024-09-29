@@ -45,15 +45,22 @@ import {
 import { Input } from "./ui/input";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "./ui/toaster/use-toast";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
+interface OrganizationSelectProps {
+  lang: SupportedLanguages;
+}
 
-export default function OrganizationSelect() {
+export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
   const pathname = usePathname();
   const organizationFromPathname = decodeURIComponent(
     // @ts-expect-error Since we are taking something from a pathname there has to be something
-    pathname.split("/").at(2),
+    pathname.split("/").at(3),
   );
   const router = useRouter();
   const { toast } = useToast();
+
+  const { t } = useTranslation(lang, "translation", { keyPrefix: "navbar" });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -155,7 +162,7 @@ export default function OrganizationSelect() {
                   setIsModalOpen(true);
                 }}
               >
-                Add new <Plus size={16} />
+                {t("add_new_organization_button")} <Plus size={16} />
               </div>
             </SelectGroup>
           </SelectContent>
@@ -166,7 +173,7 @@ export default function OrganizationSelect() {
             setIsModalOpen(true);
           }}
         >
-          <span className="mr-3">Create organization</span>
+          <span className="mr-3">{t("create_organization_button")}</span>
 
           <Plus size={16} />
         </Button>
@@ -185,7 +192,7 @@ export default function OrganizationSelect() {
               onSubmit={form.handleSubmit(onSubmit, onError)}
             >
               <DialogHeader>
-                <DialogTitle>New Organization</DialogTitle>
+                <DialogTitle>{t('create_organization_modal.title')}</DialogTitle>
               </DialogHeader>
 
               <FormField
@@ -193,10 +200,11 @@ export default function OrganizationSelect() {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="mt-4 flex flex-col gap-2">
-                    <FormLabel htmlFor="name">Name</FormLabel>
+                    <FormLabel htmlFor="name">{t('create_organization_modal.label')}</FormLabel>
+
                     <FormControl>
                       <Input
-                        placeholder="Your new orgnization name"
+                        placeholder={t('create_organization_modal.placeholder')}
                         {...field}
                       />
                     </FormControl>
@@ -206,7 +214,7 @@ export default function OrganizationSelect() {
               />
 
               <DialogFooter>
-                <Button type="submit">Create</Button>
+                <Button type="submit">{t('create_organization_modal.create_button')}</Button>
               </DialogFooter>
             </form>
           </Form>

@@ -14,12 +14,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import type { SupportedLanguages } from "~/i18n/settings";
+import { useTranslation } from "~/i18n/client";
 
-export default function Navbar() {
+interface NavbarProps {
+  lang: SupportedLanguages;
+}
+
+export default function Navbar({ lang }: NavbarProps) {
   const pathname = usePathname();
   const isOnDashboard = pathname.includes("/dashboard");
 
   const session = useSession();
+
+  const { t } = useTranslation(lang, "translation", { keyPrefix: "navbar" });
 
   const shouldShowOrganizationsSelect =
     session.status === "authenticated" && isOnDashboard;
@@ -32,7 +40,7 @@ export default function Navbar() {
           thing
         </h1>
 
-        {shouldShowOrganizationsSelect ? <OrganizationSelect /> : null}
+        {shouldShowOrganizationsSelect && <OrganizationSelect lang={lang} />}
       </div>
 
       <div>
@@ -51,15 +59,15 @@ export default function Navbar() {
                     className="mr-2 h-4 w-4 hover:cursor-pointer"
                     color="red"
                   />
-                  <span>Log out</span>
+                  <span>{t("logout_button")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {!isOnDashboard && (
-              <Link href="/dashboard/">
+              <Link href={`/${lang}/dashboard/`}>
                 <Button variant="outline" className="rounded-full">
-                  Go to Dashboard
+                  {t("dashboard_button")}
                 </Button>
               </Link>
             )}
@@ -71,7 +79,7 @@ export default function Navbar() {
               signIn();
             }}
           >
-            Sign in
+            {t("signin_button")}
           </Button>
         )}
       </div>

@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "title": "Narzędzie do usprawnienia procesu produkcji wideo",
+    "description": "Sugestii do nowych filmów i zarządzanie dostępem do Twojego kanału nigdy nie było łatwiejsze.",
+    "learn_more": "Dowiedz się więcej"
+  },
+  "feature_section": {
+    "subtitle": "Przesyłaj szybciej",
+    "title": "Wszystko, czego potrzebujesz, aby przesłać nowe wideo",
+    "features": [
+      {
+        "name": "Scalanie do przesłania",
+        "description": "Jeśli wiesz, czym jest git flow, to dokładnie wiesz, o co chodzi w tym narzędziu. Szybko się z nim oswoisz."
+      },
+      {
+        "name": "Bezpieczeństwo",
+        "description": "W końcu masz narzędzie do zarządzania dostępem do swojego kanału w sposób, który zapewnia bezpieczeństwo i nie ogranicza Twojego przepływu pracy."
+      },
+      {
+        "name": "Prosty przepływ",
+        "description": "Nie wymyśliliśmy nic nowego, wzięliśmy coś, co działa, i przenieśliśmy to na nowy obszar."
+      },
+      {
+        "name": "Nie śledzimy Cię",
+        "description": "Przechowujemy o Tobie tylko tyle, ile to konieczne, Twoje klucze dostępu są zaszyfrowane."
+      }
+    ]
+  },
+  "pricing_section": {
+    "monthly": "Miesięcznie",
+    "yearly": "Rocznie",
+    "buy_plan_button": "Kup plan",
+    "pricing_plans": [
+      {
+        "title": "Mały kanał",
+        "description": "Podstawowe narzędzia do prowadzenia małego lub rozwijającego się kanału.",
+        "price": 50,
+        "buttonText": "Kup plan",
+        "features": [
+          "Pełny dostęp do naszych narzędzi",
+          "Ty + 2 dodatkowe miejsca",
+          "Do 1 kanału"
+        ]
+      },
+      {
+        "title": "Mała sieć kanałów",
+        "description": "Wszystko, czego potrzebujesz do zarządzania małą organizacją.",
+        "price": 250,
+        "buttonText": "Kup plan",
+        "features": [
+          "Wszystko w planie Mały kanał",
+          "Ty + 10 dodatkowych miejsc",
+          "Do 3 kanałów"
+        ]
+      },
+      {
+        "title": "Przedsiębiorstwo",
+        "description": "Plan dostosowany do specyficznych potrzeb Twojej firmy.",
+        "price": "Indywidualnie",
+        "buttonText": "Skontaktuj się z działem sprzedaży",
+        "features": [
+          "Wszystko w planie Mała sieć kanałów",
+          "Ty + dowolna liczba dodatkowych miejsc",
+          "Ty określasz liczbę kanałów"
+        ]
+      }
+    ]
+  }
+}
