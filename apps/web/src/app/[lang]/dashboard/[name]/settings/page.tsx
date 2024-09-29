@@ -34,6 +34,7 @@ import {
   getOwnOrganizationByName,
   updateOrganizationName,
 } from "~/server/actions/organization";
+import LocaleSelect from "~/components/locale-select";
 
 type SettingsMembersViewProps = {
   params: {
@@ -136,6 +137,13 @@ export default function SettingsGeneralPage({
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="font-selibold text-xl">{t("title")}</h2>
+
+        <p>{t('language_section.title')}:</p>
+        <LocaleSelect lang={params.lang} />
+      </div>
+
+      <div>
+        <h2 className="font-selibold text-xl">{t('organization_section.title')}</h2>
 
         <Trans
           t={t}
