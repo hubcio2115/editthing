@@ -264,7 +264,7 @@ export default function ProjectForm({
           }}
           className="rounded-full max-w-max"
         >
-          {showMore ? t("show_more") : t("show_less")}
+          {showMore ? t("show_less") : t("show_more")}
         </Button>
 
         {showMore ? (
