@@ -171,6 +171,11 @@ export const privacyStatus = pgEnum("privacyStatus", [
   "unlisted",
   "private",
 ]);
+export const projectStatus = pgEnum("projectStatus", [
+  "unlisted",
+  "public",
+  "closed",
+]);
 
 export const projects = createTable("projects", {
   id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
@@ -178,7 +183,7 @@ export const projects = createTable("projects", {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
   title: varchar("title", { length: 100 }).notNull(),
-  description: varchar("description", { length: 5000 }).notNull(),
+  description: text("description").notNull(),
   categoryId: varchar("category_id", { length: 128 }),
   defaultLanguage: varchar("default_language", { length: 128 }).notNull(),
   embeddable: boolean("embeddable").notNull().default(true),
@@ -191,6 +196,7 @@ export const projects = createTable("projects", {
     .default(false),
   notifySubscribers: boolean("notify_subscribers").notNull().default(true),
   tags: varchar("tags", { length: 500 }),
+  status: projectStatus("status").notNull().default("unlisted"),
 
   channelId: varchar("channel_id", { length: 128 }).notNull(),
   organizationId: bigserial("organization_id", { mode: "number" })
