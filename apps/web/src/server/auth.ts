@@ -9,6 +9,7 @@ import {
   createOrganization,
   getOrganizationByName,
 } from "./api/utils/organizations";
+import { eq } from "drizzle-orm";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -45,8 +46,39 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         id: user.id,
       },
     }),
+
     authorized: async ({ auth }) => {
       return !!auth?.user;
+    },
+
+    signIn: async ({ user, account }) => {
+      if (!account) {
+        return true;
+      }
+
+      const newTokens = {
+        access_token: account.access_token ?? "",
+        expires_at: account.expires_at ?? 0,
+        refresh_token: account.refresh_token ?? "",
+        id_token: account.id_token ?? "",
+      };
+
+      if (Object.values(newTokens).some((value) => !value)) {
+        console.error("one of newTokens value is undefined", newTokens);
+        return true;
+      }
+
+      await db
+        .update(accounts)
+        .set({
+          access_token: newTokens.access_token,
+          id_token: newTokens.id_token,
+          expires_at: newTokens.expires_at,
+          refresh_token: newTokens.refresh_token,
+        })
+        .where(eq(accounts.userId, user.id!));
+
+      return true;
     },
   },
 
@@ -69,6 +101,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             "https://www.googleapis.com/auth/youtube.force-ssl",
           ].join(" "),
           access_type: "offline",
+          prompt: "consent",
         },
       },
     }),
