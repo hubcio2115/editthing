@@ -39,9 +39,12 @@ import {
 } from "../ui/select";
 import { Checkbox } from "../ui/checkbox";
 import type { UseCreateProjectMutationResult } from "~/lib/mutations/useCreateProjectMutation";
-import CategoriesSelect from "../create-project/categories-select";
-import LanguagesSelect from "../create-project/language-select";
+import CategorySelect from "../create-project/categories-select";
+import LanguageSelect from "../create-project/language-select";
 import type { UseEditProjectMutationResult } from "~/lib/mutations/useEditProjectMutation";
+import type { SupportedLanguages } from "~/i18n/settings";
+import { useTranslation } from "~/i18n/client";
+import { Trans } from "react-i18next";
 
 interface ProjectFormProps {
   defaultValues: InsertProject;
@@ -49,17 +52,21 @@ interface ProjectFormProps {
     | UseCreateProjectMutationResult["mutate"]
     | UseEditProjectMutationResult["mutate"];
   isPending?: UseCreateProjectMutationResult["isPending"];
+  lang: SupportedLanguages;
 }
 
 export default function ProjectForm({
   mutate,
   isPending = false,
   defaultValues,
+  lang,
 }: ProjectFormProps) {
   const form = useForm<TProjectForm>({
     resolver: zodResolver(projectFormSchema),
     defaultValues,
   });
+
+  const { t } = useTranslation(lang, "project-form");
 
   const [showMore, setShowMore] = useState(false);
 
@@ -79,13 +86,11 @@ export default function ProjectForm({
           <Info className="size-4" />
 
           <AlertDescription>
-            Currently it is impossible to change the target channel or an
-            uploaded video. Please create a new project if you need to change
-            the target channel or video.
+            {t("cant_change_channel_and_video_info")}
           </AlertDescription>
         </Alert>
 
-        <h1 className="text-2xl font-bold">Details</h1>
+        <h1 className="text-2xl font-bold">{t("details")}</h1>
 
         <FormField
           control={form.control}
@@ -93,7 +98,7 @@ export default function ProjectForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1">
-                <span>Title: (required)</span>
+                <span>{t("title.label")}</span>
 
                 <TooltipProvider>
                   <Tooltip>
@@ -102,12 +107,7 @@ export default function ProjectForm({
                     </TooltipTrigger>
 
                     <TooltipContent className="max-w-96">
-                      <p>
-                        A catchy title can help you to hook viewers. When you
-                        create video titles, it's a good idea to include
-                        keywords that your audience is likely to use when
-                        looking for videos like yours.
-                      </p>
+                      <p>{t("title.tooltip")}</p>
 
                       <br />
 
@@ -116,7 +116,7 @@ export default function ProjectForm({
                         target="_blank"
                         className="text-blue-800 underline"
                       >
-                        Learn more
+                        {t("learn_more")}
                       </a>
                     </TooltipContent>
                   </Tooltip>
@@ -128,7 +128,7 @@ export default function ProjectForm({
                   {...field}
                   type="text"
                   value={field.value ?? ""}
-                  placeholder="Add a title that describes your video (type @ to mention a channel)"
+                  placeholder={t("title.placeholder")}
                 />
               </FormControl>
 
@@ -143,7 +143,7 @@ export default function ProjectForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1">
-                <span>Description:</span>
+                <span>{t("description.label")}:</span>
 
                 <TooltipProvider>
                   <Tooltip>
@@ -152,12 +152,7 @@ export default function ProjectForm({
                     </TooltipTrigger>
 
                     <TooltipContent className="max-w-96">
-                      <p>
-                        Writing descriptions with keywords can help viewers to
-                        find your videos more easily through search. You can
-                        give an overview of your video and place keywords at the
-                        beginning of the description.
-                      </p>
+                      <p>{t("description.tooltip")}</p>
 
                       <br />
 
@@ -166,7 +161,7 @@ export default function ProjectForm({
                         target="_blank"
                         className="text-blue-800 underline"
                       >
-                        Learn more
+                        {t("learn_more")}
                       </a>
                     </TooltipContent>
                   </Tooltip>
@@ -178,7 +173,7 @@ export default function ProjectForm({
                   {...field}
                   className="resize-none h-64"
                   value={field.value ?? ""}
-                  placeholder="Tell viewers about your video (type @ to mention a channel)"
+                  placeholder={t("description.placeholder")}
                 />
               </FormControl>
 
@@ -187,43 +182,36 @@ export default function ProjectForm({
           )}
         />
 
-        <h2 className="font-bold text-lg">Audience</h2>
+        <h2 className="font-bold text-lg">{t("audience")}</h2>
 
         <FormField
           name="selfDeclaredMadeForKids"
           control={form.control}
           render={({ field: { value, onChange, ...field } }) => (
             <FormItem>
-              <FormLabel>Is this video 'Made for Kids'? (required)</FormLabel>
+              <FormLabel>{t("made_for_kids.label")}</FormLabel>
 
               <FormDescription>
-                Regardless of your location, you're legally required to comply
-                with the Children's Online Privacy Protection Act (COPPA) and/or
-                other laws. You're required to tell us whether your videos are
-                'Made for Kids'.{" "}
-                <a
-                  href="https://support.google.com/youtube/answer/9528076"
-                  target="_blank"
-                  className="text-blue-800 underline"
-                >
-                  What is 'Made for Kids' content?
-                </a>
+                <Trans t={t} i18nKey="made_for_kids.description">
+                  <a
+                    href="https://support.google.com/youtube/answer/9528076"
+                    target="_blank"
+                    className="text-blue-800 underline"
+                  />
+                </Trans>
               </FormDescription>
 
               <Alert>
                 <Info className="size-4" />
 
                 <AlertDescription>
-                  Features like personalised ads and notifications won't be
-                  available on videos 'Made for Kids'. Videos that are set as
-                  'Made for Kids' by you are more likely to be recommended
-                  alongside other children's videos.{" "}
+                  {t("made_for_kids.alert_description")}{" "}
                   <a
                     href="https://support.google.com/youtube/answer/9527654"
                     target="_blank"
                     className="text-blue-800 underline"
                   >
-                    Learn More
+                    {t("learn_more")}
                   </a>
                 </AlertDescription>
               </Alert>
@@ -247,7 +235,7 @@ export default function ProjectForm({
                     <RadioGroupItem value="yes" id="for-kids-yes" />
 
                     <FormLabel htmlFor="for-kids-yes">
-                      Yes, it's 'Made for Kids'
+                      {t("made_for_kids.yes_label")}
                     </FormLabel>
                   </div>
 
@@ -255,7 +243,7 @@ export default function ProjectForm({
                     <RadioGroupItem value="no" id="for-kids-no" />
 
                     <FormLabel htmlFor="for-kids-no">
-                      No, it's not 'Made for Kids'
+                      {t("made_for_kids.no_label")}
                     </FormLabel>
                   </div>
                 </RadioGroup>
@@ -273,7 +261,7 @@ export default function ProjectForm({
           }}
           className="rounded-full max-w-max"
         >
-          {showMore ? "Show less" : "Show more"}
+          {showMore ? t("show_less") : t("show_more")}
         </Button>
 
         {showMore ? (
@@ -285,18 +273,18 @@ export default function ProjectForm({
                 render={({ field: { value, ...field } }) => (
                   <FormItem className="flex flex-col justify-between">
                     <div>
-                      <FormLabel className="font-bold text-lg">Tags</FormLabel>
+                      <FormLabel className="font-bold text-lg">
+                        {t("tags.label")}
+                      </FormLabel>
 
                       <FormDescription>
-                        Tags can be useful if content in your video is commonly
-                        misspelt. Otherwise, tags play a minimal role in helping
-                        viewers to find your video.{" "}
+                        {t("tags.description")}{" "}
                         <a
                           href=""
                           target="_blank"
                           className="text-blue-800 underline"
                         >
-                          Learn more
+                          {t("learn_more")}
                         </a>
                       </FormDescription>
                     </div>
@@ -307,8 +295,7 @@ export default function ProjectForm({
                       </FormControl>
 
                       <FormDescription>
-                        Enter a comma after each tag {value?.length ?? 0}
-                        /500
+                        {t("tags.counter", { counter: value?.length ?? 0 })}
                       </FormDescription>
 
                       <FormMessage />
@@ -326,18 +313,19 @@ export default function ProjectForm({
                   <FormItem className="flex flex-col justify-between">
                     <div>
                       <FormLabel className="font-bold text-lg">
-                        Language:
+                        {t("language_select.label")}
                       </FormLabel>
 
                       <FormDescription>
-                        Select your video's language
+                        {t("language_select.description")}
                       </FormDescription>
                     </div>
 
                     <div className="mt-auto mb-0">
                       <FormControl className="mt-auto mb-0">
                         <Suspense fallback={<InputSkeleton />}>
-                          <LanguagesSelect
+                          <LanguageSelect
+                            lang={lang}
                             {...field}
                             value={value ?? ""}
                             onChange={onChange}
@@ -360,18 +348,16 @@ export default function ProjectForm({
                   <FormItem className="flex flex-col justify-between">
                     <div>
                       <FormLabel className="font-bold text-lg">
-                        License
+                        {t("license_select.label")}
                       </FormLabel>
 
                       <FormDescription>
-                        Learn about{" "}
-                        <a
-                          href="https://support.google.com/youtube/answer/2797468"
-                          className="text-blue-800 underline"
-                        >
-                          license types
-                        </a>
-                        .
+                        <Trans t={t} i18nKey="license_select.description">
+                          <a
+                            href="https://support.google.com/youtube/answer/2797468"
+                            className="text-blue-800 underline"
+                          />
+                        </Trans>
                       </FormDescription>
                     </div>
 
@@ -389,11 +375,11 @@ export default function ProjectForm({
 
                           <SelectContent>
                             <SelectItem value="youtube">
-                              Standard YouTube License
+                              {t("license_select.youtube")}
                             </SelectItem>
 
                             <SelectItem value="creativeCommon">
-                              Creative Commons - Attribution
+                              {t("license_select.creative_commons")}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -412,19 +398,18 @@ export default function ProjectForm({
                   <FormItem className="flex flex-col justify-between">
                     <div>
                       <FormLabel className="font-bold text-lg">
-                        Category:
+                        {t("category_select.label")}:
                       </FormLabel>
 
                       <FormDescription>
-                        Add your video to a category so that viewers can find it
-                        more easily
+                        {t("category_select.description")}
                       </FormDescription>
                     </div>
 
                     <div>
                       <FormControl>
                         <Suspense fallback={<InputSkeleton />}>
-                          <CategoriesSelect {...field} />
+                          <CategorySelect lang={lang} {...field} />
                         </Suspense>
                       </FormControl>
 
@@ -449,7 +434,9 @@ export default function ProjectForm({
                           onCheckedChange={onChange}
                         />
                       </FormControl>
-                      Allow embedding
+
+                      {t("embedding.label")}
+
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
@@ -457,17 +444,13 @@ export default function ProjectForm({
                           </TooltipTrigger>
 
                           <TooltipContent>
-                            Allow others to embed your video in their sites.
-                            <br />
-                            This is required for us to be able to show this
-                            video in a project view.
-                            <br />
+                            {t("embedding.tooltip")}{" "}
                             <a
                               href=""
                               target="_blank"
                               className="text-blue-800"
                             >
-                              Learn more
+                              {t("learn_more")}
                             </a>
                           </TooltipContent>
                         </Tooltip>
@@ -489,7 +472,7 @@ export default function ProjectForm({
                           onCheckedChange={onChange}
                         />
                       </FormControl>
-                      Publish to subscriptions feed and notify subscribers
+                      {t("notify_subscribers.label")}
                     </FormLabel>
                   </FormItem>
                 )}
@@ -497,7 +480,7 @@ export default function ProjectForm({
             </div>
           </>
         ) : (
-          <p>Paid promotion, tags and more</p>
+          <p>{t("paid_promotion_and_more")}</p>
         )}
 
         <Button
@@ -505,8 +488,8 @@ export default function ProjectForm({
           type="submit"
           disabled={isPending}
         >
-          Save
-          {isPending ? <Loader2 className="size-4 animate-spin ml-2" /> : null}
+          {t("save_button")}
+          {isPending && <Loader2 className="size-4 animate-spin ml-2" />}
         </Button>
       </form>
     </Form>

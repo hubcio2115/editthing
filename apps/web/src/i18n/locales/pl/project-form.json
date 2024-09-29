@@ -1,0 +1,84 @@
+{
+  "cant_change_channel_and_video_info": "Obecnie nie ma możliwości zmiany docelowego kanału ani przesłanego wideo. Proszę utworzyć nowy projekt, jeśli trzeba zmienić docelowy kanał lub wideo.",
+
+  "channel_select": {
+    "label": "Kanał",
+    "placeholder": "Wybierz kanał...",
+    "not_found": "Nie znaleziono kanału."
+  },
+
+  "video_picker": {
+    "label": "Wideo",
+    "placeholder": "Wybierz plik",
+    "not_found": "Nie znaleziono wideo."
+  },
+
+  "learn_more": "Dowiedz się więcej",
+  "details": "Szczegóły",
+
+  "title": {
+    "label": "Tytuł: (wymagany)",
+    "tooltip": "Chwytliwy tytuł może pomóc przyciągnąć widzów. Tworząc tytuły wideo, warto uwzględnić słowa kluczowe, które twoja publiczność prawdopodobnie wykorzysta, szukając filmów takich jak Twój.",
+    "placeholder": "Dodaj tytuł opisujący Twoje wideo (wpisz @, aby wspomnieć o kanale)"
+  },
+
+  "description": {
+    "label": "Opis",
+    "tooltip": "Pisanie opisów ze słowami kluczowymi może pomóc widzom łatwiej znaleźć Twoje filmy w wyszukiwarce. Możesz podać przegląd swojego wideo i umieścić słowa kluczowe na początku opisu.",
+    "placeholder": "Opowiedz widzom o swoim wideo (wpisz @, aby wspomnieć o kanale)"
+  },
+
+  "audience": "Odbiorcy",
+  "made_for_kids": {
+    "label": "Czy to wideo jest przeznaczone dla dzieci? (wymagane)",
+    "description": "Niezależnie od lokalizacji, jesteś prawnie zobowiązany do przestrzegania Ustawy o ochronie prywatności dzieci w Internecie (COPPA) i/lub innych przepisów. Jesteś zobowiązany do poinformowania nas, czy Twoje filmy są przeznaczone dla dzieci. <0>Co to znaczy „przeznaczone dla dzieci”?</0>",
+    "alert_description": "Funkcje takie jak spersonalizowane reklamy i powiadomienia nie będą dostępne w filmach przeznaczonych dla dzieci. Filmy oznaczone jako „przeznaczone dla dzieci” mają większe szanse na polecenie razem z innymi filmami dla dzieci.",
+    "yes_label": "Tak, jest przeznaczone dla dzieci",
+    "no_label": "Nie, nie jest przeznaczone dla dzieci"
+  },
+
+  "show_more": "Pokaż więcej",
+  "show_less": "Pokaż mniej",
+
+  "tags": {
+    "label": "Tagi",
+    "description": "Tagi mogą być przydatne, jeśli zawartość w Twoim filmie jest często błędnie zapisywana. W przeciwnym razie tagi odgrywają minimalną rolę w pomaganiu widzom w znalezieniu Twojego wideo.",
+    "counter": "Wpisz przecinek po każdym tagu {{counter}}/500"
+  },
+
+  "language_select": {
+    "label": "Język",
+    "description": "Wybierz język Twojego wideo.",
+    "placeholder": "Wybierz język...",
+    "search_placeholder": "Szukaj języka...",
+    "not_found": "Nie znaleziono języka."
+  },
+
+  "license_select": {
+    "label": "Licencja",
+    "description": "Dowiedz się więcej o <0>typach licencji</0>.",
+    "youtube": "Standardowa licencja YouTube",
+    "creative_commons": "Creative Commons - Uznanie autorstwa"
+  },
+
+  "category_select": {
+    "label": "Kategoria",
+    "description": "Dodaj swoje wideo do kategorii, aby widzowie mogli je łatwiej znaleźć.",
+    "placeholder": "Wybierz kategorię...",
+    "search_placeholder": "Szukaj kategorii...",
+    "not_found": "Nie znaleziono kategorii."
+  },
+
+  "embedding": {
+    "label": "Zezwalaj na osadzanie",
+    "tooltip": "Zezwalaj innym na osadzanie Twojego filmu na ich stronach. Jest to wymagane, abyśmy mogli wyświetlić to wideo w widoku projektu."
+  },
+
+  "notify_subscribers": {
+    "label": "Publikuj w kanale subskrypcji i powiadom subskrybentów"
+  },
+
+  "paid_promotion_and_more": "Płatna promocja, tagi i więcej",
+  "create_project_button": "Utwórz projekt",
+  "save_button": "Zapisz"
+}

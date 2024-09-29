@@ -1,0 +1,106 @@
+{
+  "success": "Success",
+  "error": "Error",
+
+  "general": {
+    "title": "General",
+    "description": "Settings and options for the <1>{{name}}</1> organization.",
+    "name_form": {
+      "label": "Organization name",
+      "submit_button": "Save changes"
+    },
+
+    "language_section": {
+      "title": "Change language"
+    },
+
+    "organization_section": {
+      "title": "Organization"
+    },
+
+    "delete_section": {
+      "title": "Delete organization",
+      "description": "Please note that deletion of <1>{{name}}</1> is <2>permanent</2> and <3>cannot be undone</3>.",
+
+      "default_org": {
+        "title": "Default organization",
+        "description": "The default organization <1>cannot</1> be deleted."
+      },
+
+      "delete_modal": {
+        "title": "Are you absolutely sure?",
+        "description": "This will permanently delete the organization and all its data. Enter the name of the organization \"{{name}}\" to confirm."
+      }
+    },
+
+    "toast": {
+      "delete": {
+        "success": "Organization deleted successfully.",
+        "error": "Couldn't delete organization: {{error}}"
+      },
+
+      "update_name": {
+        "success": "Organization name updated to {{name}}.",
+        "error": "Failed to update organization name: {{error}}"
+      }
+    }
+  },
+
+  "members": {
+    "title": "Members",
+    "description": "All members and administrators with access to the organization.",
+
+    "add_member_button": "Invite member",
+    "member_table": {
+      "columns": {
+        "member": "Member",
+        "role": "Role"
+      },
+
+      "roles": {
+        "admin": "admin",
+        "owner": "owner",
+        "user": "user"
+      }
+    },
+
+    "leave_section": {
+      "leave_button": "Leave",
+      "remove_button": "Remove",
+
+      "alert": {
+        "title": "Are you absolutely sure?",
+        "description": "You will transter the ownership of the organization to the selected user. Your role will be changed to admin"
+      }
+    },
+
+    "invite_modal": {
+      "title": "Invite member",
+      "footer": "Send invitation",
+      "email_label": "Email",
+      "input_placeholder": "Enter email address"
+    },
+
+    "toast": {
+      "update_role": {
+        "success": "User role was updated successfully.",
+        "error": "Couldn't update member role: {{error}}"
+      },
+
+      "remove_user": {
+        "success": "Member role updated successfully.",
+        "error": "Failed to remove member: {{error}}"
+      },
+
+      "leave_org": {
+        "success": "You have left the organization.",
+        "error": "Failed to leave organization: {{error}}"
+      },
+
+      "invite_member": {
+        "success": "User with {{email}} was added successfully",
+        "error": "Failed to send an invitation: {{error}}"
+      }
+    }
+  }
+}

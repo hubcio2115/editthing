@@ -1,0 +1,84 @@
+{
+  "cant_change_channel_and_video_info": "Currently it is impossible to change the target channel or an uploaded video. Please create a new project if you need to change the target channel or video.",
+
+  "channel_select": {
+    "label": "Channel",
+    "placeholder": "Select a channel...",
+    "not_found": "No channel found."
+  },
+
+  "video_picker": {
+    "label": "Video",
+    "placeholder": "Choose a file",
+    "not_found": "No video found."
+  },
+
+  "learn_more": "Learn more",
+  "details": "Details",
+
+  "title": {
+    "label": "Title: (required)",
+    "tooltip": "A catchy title can help you to hook viewers. When you create video titles, it's a good idea to include keywords that your audience is likely to use when looking for videos like yours.",
+    "placeholder": "Add a title that describes your video (type @ to mention a channel)"
+  },
+
+  "description": {
+    "label": "Description",
+    "tooltip": "Writing descriptions with keywords can help viewers to find your videos more easily through search. You can give an overview of your video and place keywords at the beginning of the description.",
+    "placeholder": "Tell viewers about your video (type @ to mention a channel)"
+  },
+
+  "audience": "Audience",
+  "made_for_kids": {
+    "label": "Is this video 'Made for Kids'? (required)",
+    "description": "Regardless of your location, you're legally required to comply with the Children's Online Privacy Protection Act (COPPA) and/or other laws. You're required to tell us whether your videos are 'Made for Kids'. <0>What is made for kids?</0>",
+    "alert_description": "Features like personalised ads and notifications won't be available on videos 'Made for Kids'. Videos that are set as 'Made for Kids' by you are more likely to be recommended alongside other children's videos.",
+    "yes_label": "Yes, it's 'Made for Kids",
+    "no_label": "No, it's not 'Made for Kids"
+  },
+
+  "show_more": "Show more",
+  "show_less": "Show less",
+
+  "tags": {
+    "label": "Tags",
+    "description": "Tags can be useful if content in your video is commonly misspelt. Otherwise, tags play a minimal role in helping viewers to find your video.",
+    "counter": "Enter a comma after each tag {{counter}}/500"
+  },
+
+  "language_select": {
+    "label": "Language",
+    "description": "Select your video's language.",
+    "placeholder": "Select a language...",
+    "search_placeholder": "Search for a language...",
+    "not_found": "No language found."
+  },
+
+  "license_select": {
+    "label": "License",
+    "description": "Learn about <0>license types</0>.",
+    "youtube": "Standard YouTube License",
+    "creative_commons": "Creative Commons - Attribution"
+  },
+
+  "category_select": {
+    "label": "Category",
+    "description": "Add your video to a category so that viewers can find it more easily.",
+    "placeholder": "Select a category...",
+    "search_placeholder": "Search for a category...",
+    "not_found": "No category found."
+  },
+
+  "embedding": {
+    "label": "Allow embedding",
+    "tooltip": "Allow others to embed your video in their sites. This is required for us to be able to show this video in a project view."
+  },
+
+  "notify_subscribers": {
+    "label": "Publish to subscriptions feed and notify subscribers"
+  },
+
+  "paid_promotion_and_more": "Paid promotion, tags and more",
+  "create_project_button": "Create project",
+  "save_button": "Save"
+}

@@ -1,0 +1,17 @@
+{
+  "search_placeholder": "Filtruj według tytułu...",
+  "create_project_button": "Dodaj wideo",
+
+  "empty_project_info": {
+    "title": "Nie masz jeszcze żadnych projektów!",
+    "description": "Możesz utworzyć swój pierwszy projekt, klikając <0>tutaj</0>."
+  },
+
+  "no_project_found": {
+    "title": "Nie znaleziono żadnego projektu.",
+    "description": "Zmień zapytanie wyszukiwania."
+  },
+
+  "next_page_button": "Następna",
+  "previous_page_button": "Poprzednia"
+}

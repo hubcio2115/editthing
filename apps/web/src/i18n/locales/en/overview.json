@@ -1,0 +1,17 @@
+{
+  "search_placeholder": "Filter by title...",
+  "create_project_button": "Add video",
+
+  "empty_project_info": {
+    "title": "You don't have any projects yet!",
+    "description": "You can create your very first project by clicking <0>here</0>."
+  },
+
+  "no_project_found": {
+    "title": "No project found!",
+    "description": "Please refine your search query."
+  },
+
+  "next_page_button": "Next",
+  "previous_page_button": "Previous"
+}
