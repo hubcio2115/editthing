@@ -10,5 +10,8 @@
   "no_project_found": {
     "title": "No project found!",
     "description": "Please refine your search query."
-  }
+  },
+
+  "next_page_button": "Next",
+  "previous_page_button": "Previous"
 }

@@ -37,10 +37,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return redirect("/404");
   }
 
-  const [languages, languagesErr] = await getYoutubeSupportedLanguages(
-    params.lang,
-  );
-  const [categories, categoriesErr] = await getYoutubeCategories(params.lang);
+  const [[languages, languagesErr], [categories, categoriesErr]] =
+    await Promise.all([
+      getYoutubeSupportedLanguages(params.lang),
+      getYoutubeCategories(params.lang),
+    ]);
 
   if (languagesErr !== null || categoriesErr !== null) {
     throw new Error("Something went wrong on our end");

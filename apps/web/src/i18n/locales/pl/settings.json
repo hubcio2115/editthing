@@ -10,6 +10,14 @@
       "submit_button": "Zapisz zmiany"
     },
 
+    "language_section": {
+      "title": "Zmień język"
+    },
+
+    "organization_section": {
+      "title": "Organizacja"
+    },
+
     "delete_section": {
       "title": "Usuń organizację",
       "description": "Proszę zauważyć, że usunięcie organizacji <1>{{name}}</1> jest <2>trwałe</2> i <3>nieodwracalne</3>.",

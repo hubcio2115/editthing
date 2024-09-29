@@ -5,6 +5,8 @@ import { FALLBACK_LANG, LANGUAGES, COOKIE_NAME } from "./i18n/settings";
 
 const authedPathsRegex = new RegExp(`^/(${LANGUAGES.join("|")})/dashboard.*`);
 
+acceptLanguage.languages(LANGUAGES);
+
 export default auth((req) => {
   let lang;
   if (req.cookies.has(COOKIE_NAME))

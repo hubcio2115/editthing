@@ -82,26 +82,7 @@ export default function ProjectCreateForm({
   }, [video, channel]);
 
   function onSuccess(data: TProjectForm) {
-    const formData = new FormData();
-
-    formData.append("license", data.license!);
-    formData.append("title", data.title!);
-    formData.append("description", data.description!);
-    formData.append("categoryId", data.categoryId!);
-    formData.append("defaultLanguage", data.defaultLanguage!);
-    formData.append("tags", data.tags!);
-    formData.append("embeddable", `${data.embeddable!}`);
-    formData.append("privacyStatus", data.privacyStatus!);
-    formData.append("publicStatsViewable", `${data.publicStatsViewable!}`);
-    formData.append(
-      "selfDeclaredMadeForKids",
-      `${data.selfDeclaredMadeForKids!}`,
-    );
-    formData.append("notifySubscribers", `${data.notifySubscribers!}`);
-    formData.append("channelId", data.channelId);
-    formData.append("video", data.video);
-
-    mutate(formData);
+    mutate(data);
   }
 
   function onError(errors: FieldErrors<TProjectForm>) {
@@ -333,7 +314,7 @@ export default function ProjectCreateForm({
               }}
               className="rounded-full max-w-max"
             >
-              {showMore ? t("show_more") : t("show_less")}
+              {showMore ? t("show_less") : t("show_more")}
             </Button>
 
             {showMore ? (

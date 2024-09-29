@@ -3,7 +3,15 @@
     "dashboard_button": "Go to Dashboard",
     "logout_button": "Logout",
     "signin_button": "Sign In",
-    "add_new_organization_button": "Add New new"
+    "add_new_organization_button": "Add new",
+    "create_organization_button": "Create organization",
+
+    "create_organization_modal": {
+      "title": "New organization",
+      "label": "Organization name",
+      "placeholder": "Your organization name",
+      "create_button": "Create"
+    }
   },
 
   "dashnav": {

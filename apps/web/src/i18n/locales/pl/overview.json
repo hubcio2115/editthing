@@ -10,5 +10,8 @@
   "no_project_found": {
     "title": "Nie znaleziono żadnego projektu.",
     "description": "Zmień zapytanie wyszukiwania."
-  }
+  },
+
+  "next_page_button": "Następna",
+  "previous_page_button": "Poprzednia"
 }
