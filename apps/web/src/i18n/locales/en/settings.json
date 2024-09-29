@@ -10,6 +10,14 @@
       "submit_button": "Save changes"
     },
 
+    "language_section": {
+      "title": "Change language"
+    },
+
+    "organization_section": {
+      "title": "Organization"
+    },
+
     "delete_section": {
       "title": "Delete organization",
       "description": "Please note that deletion of <1>{{name}}</1> is <2>permanent</2> and <3>cannot be undone</3>.",

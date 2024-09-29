@@ -58,6 +58,8 @@
     },
 
     "close_button": "Zamknij",
-    "publish_button": "Opublikuj"
+    "publish_button": "Opublikuj",
+    "unable_to_publish_info": "Obecnie nie możemy pozwolić Ci na publikację Twojego projektu. Ta funkcja jest zablokowana dla nieautoryzowanych aplikacji korzystających z YouTube API. Obecnie jesteśmy w trakcie przechodzenia audytu Google. Na razie możesz opublikować swój projekt ręcznie z poziomu YouTube Studio.",
+    "reopen_button": "Otwórz ponownie"
   }
 }

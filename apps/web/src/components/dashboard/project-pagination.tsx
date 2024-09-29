@@ -12,17 +12,22 @@ import {
 } from "../ui/pagination";
 import type { Organization } from "~/lib/validators/organization";
 import { useProjectsPaginatedQuery } from "~/lib/queries/useProjectsQuery";
+import type { SupportedLanguages } from "~/i18n/settings";
+import { useTranslation } from "~/i18n/client";
 
 interface ProjectPaginationProps {
   organizationName: Organization["name"];
+  lang: SupportedLanguages;
 }
 
 export default function ProjectPagination({
   organizationName,
+  lang,
 }: ProjectPaginationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation(lang, "overview", { keyPrefix: "" });
 
   const page = searchParams.get("page") ?? "1";
   const query = searchParams.get("q") ?? "";
@@ -47,7 +52,9 @@ export default function ProjectPagination({
               onClick={() => {
                 if (+page! > 1) changePage(+page! - 1);
               }}
-            />
+            >
+              {t("next_page_button")}
+            </PaginationPrevious>
           </PaginationItem>
 
           <div className="flex order-0 col-span-2 md:col-span-4 mx-auto relative -left-5 @[20.5rem]:static">
@@ -89,7 +96,7 @@ export default function ProjectPagination({
                   pages.push(
                     <PaginationItem key={i}>
                       <PaginationLink
-                        isActive={i === +page!}
+                        isActive={i === +page! + 1}
                         onClick={() => {
                           changePage(i);
                         }}
@@ -125,7 +132,9 @@ export default function ProjectPagination({
               onClick={() => {
                 if (data.hasNextPage) changePage(+page! + 1);
               }}
-            />
+            >
+              {t("previous_page_button")}
+            </PaginationNext>
           </PaginationItem>
         </PaginationContent>
       </Pagination>

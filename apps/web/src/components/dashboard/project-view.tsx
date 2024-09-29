@@ -5,12 +5,21 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { Project } from "~/lib/validators/project";
 import { Button } from "../ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import ProjectForm from "./project-form";
 import { Badge } from "../ui/badge";
-import { GitPullRequestClosed, Merge } from "lucide-react";
+import { GitPullRequestClosed, Loader2, Merge } from "lucide-react";
 import { useLanguagesQuery } from "~/lib/queries/useLanguagesQuery";
 import { useCategoriesQuery } from "~/lib/queries/useCategoriesQuery";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { useProjectStatusMutation } from "~/lib/mutations/useProjectStatusMutation";
+import { useProjectQuery } from "~/lib/queries/useProjectsQuery";
+import { useEditProjectMutation } from "~/lib/mutations/useEditProjectMutation";
 import type { SupportedLanguages } from "~/i18n/settings";
 import { useTranslation } from "~/i18n/client";
 
@@ -24,10 +33,6 @@ function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
   const [showWholeDescription, setShowWholeDescription] = useState(false);
   const descriptionLines = project.description.split("\n");
 
-  const { t } = useTranslation(lang, "project-page", {
-    keyPrefix: "project_display",
-  });
-
   const { data: languages } = useLanguagesQuery(lang);
   const language = languages?.find(
     (language) => language.id === project.defaultLanguage,
@@ -37,6 +42,18 @@ function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
   const category = categories?.find(
     (category) => category.id === project.categoryId,
   );
+
+  const { t } = useTranslation(lang, "project-page", {
+    keyPrefix: "project_display",
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useProjectStatusMutation(project.id, {
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["project", project.id] });
+    },
+  });
 
   return (
     <>
@@ -73,12 +90,14 @@ function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
           <p>{descriptionLines[0]}</p>
         )}
 
-        <Button
-          className="rounded-full w-max"
-          onClick={() => setShowWholeDescription((prev) => !prev)}
-        >
-          {showWholeDescription ? t("show_more") : t("show_less")}
-        </Button>
+        {descriptionLines.length > 1 && (
+          <Button
+            className="rounded-full w-max"
+            onClick={() => setShowWholeDescription((prev) => !prev)}
+          >
+            {showWholeDescription ? t("show_less") : t("show_more")}
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -128,15 +147,53 @@ function ProjectDisplay({ channel, project, lang }: ProjectDisplayProps) {
       </div>
 
       <div className="container flex justify-end gap-4">
-        <Button variant="destructive" className="gap-2">
-          <GitPullRequestClosed className="size-4" />
-          {t("close_button")}
-        </Button>
+        {project.status === "unlisted" ? (
+          <>
+            <Button
+              variant="destructive"
+              className="gap-2"
+              disabled={isPending}
+              onClick={() => {
+                mutate("closed");
+              }}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin size-4" />
+              ) : (
+                <GitPullRequestClosed className="size-4" />
+              )}
+              {t("close_button")}
+            </Button>
 
-        <Button className="gap-2">
-          <Merge className="size-4" />
-          {t("publish_button")}
-        </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button className="gap-2" disabled>
+                      <Merge className="size-4" />
+                      {t("publish_button")}
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+
+                <TooltipContent className="max-w-96">
+                  {t("unable_to_publish_info")}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </>
+        ) : (
+          <Button
+            className="gap-2"
+            disabled={isPending}
+            onClick={() => {
+              mutate("unlisted");
+            }}
+          >
+            {isPending && <Loader2 className="animate-spin size-4" />}
+            {t("reopen_button")}
+          </Button>
+        )}
       </div>
     </>
   );
@@ -151,7 +208,7 @@ interface ProjectViewProps {
 }
 
 export default function ProjectView({
-  project,
+  project: initialProject,
   channel,
   languages,
   categories,
@@ -173,7 +230,16 @@ export default function ProjectView({
     }
   }, []);
 
-  const { mutate } = useMutation({});
+  const { data: project, refetch } = useProjectQuery(initialProject.id, {
+    initialData: initialProject,
+  });
+
+  const { mutate, isPending } = useEditProjectMutation(project!.id, {
+    onSuccess: () => {
+      refetch();
+      setIsEditing(false);
+    },
+  });
 
   return (
     <div className="mx-auto flex w-full flex-col flex-1 pb-10 gap-4 max-w-[1260px]">
@@ -193,7 +259,7 @@ export default function ProjectView({
       </div>
 
       <iframe
-        src={`https://www.youtube.com/embed/${project.videoId}`}
+        src={`https://www.youtube.com/embed/${project!.videoId}`}
         className="border-none relative w-full aspect-video"
         title={t("video_player_title")}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -203,9 +269,14 @@ export default function ProjectView({
 
       <div className="self-start flex flex-col gap-2 container">
         {isEdititng ? (
-          <ProjectForm lang={lang} mutate={mutate} defaultValues={project} />
+          <ProjectForm
+            lang={lang}
+            mutate={mutate}
+            isPending={isPending}
+            defaultValues={project!}
+          />
         ) : (
-          <ProjectDisplay lang={lang} project={project} channel={channel} />
+          <ProjectDisplay lang={lang} project={project!} channel={channel} />
         )}
       </div>
     </div>

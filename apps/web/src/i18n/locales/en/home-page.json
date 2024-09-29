@@ -1,13 +1,12 @@
 {
   "hero": {
     "title": "Tool to streamline your video production pipeline",
-    "description": "Giving feedback, suggestions and managing your channel's access don't get easier than this. Inspired by Git a tool for iterating on software that actually works.",
+    "description": "Suggestions to your new uploads and managing your channel's access won't get easier than this.",
     "learn_more": "Learn more"
   },
   "feature_section": {
     "subtitle": "Upload faster",
     "title": "Everything you need to upload your new video",
-    "description": "Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum pulvinar et feugiat blandit at. In mi viverra elit nunc.",
     "features": [
       {
         "name": "Merge to upload",

@@ -162,7 +162,7 @@ export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
                   setIsModalOpen(true);
                 }}
               >
-                Add new <Plus size={16} />
+                {t("add_new_organization_button")} <Plus size={16} />
               </div>
             </SelectGroup>
           </SelectContent>
@@ -173,7 +173,7 @@ export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
             setIsModalOpen(true);
           }}
         >
-          <span className="mr-3">Create organization</span>
+          <span className="mr-3">{t("create_organization_button")}</span>
 
           <Plus size={16} />
         </Button>
@@ -192,7 +192,7 @@ export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
               onSubmit={form.handleSubmit(onSubmit, onError)}
             >
               <DialogHeader>
-                <DialogTitle>New Organization</DialogTitle>
+                <DialogTitle>{t('create_organization_modal.title')}</DialogTitle>
               </DialogHeader>
 
               <FormField
@@ -200,10 +200,11 @@ export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="mt-4 flex flex-col gap-2">
-                    <FormLabel htmlFor="name">Name</FormLabel>
+                    <FormLabel htmlFor="name">{t('create_organization_modal.label')}</FormLabel>
+
                     <FormControl>
                       <Input
-                        placeholder="Your new orgnization name"
+                        placeholder={t('create_organization_modal.placeholder')}
                         {...field}
                       />
                     </FormControl>
@@ -213,7 +214,7 @@ export default function OrganizationSelect({ lang }: OrganizationSelectProps) {
               />
 
               <DialogFooter>
-                <Button type="submit">Create</Button>
+                <Button type="submit">{t('create_organization_modal.create_button')}</Button>
               </DialogFooter>
             </form>
           </Form>
