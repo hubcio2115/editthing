@@ -3,11 +3,19 @@
     "dashboard_button": "Przejdź do pulpitu",
     "logout_button": "Wyloguj",
     "signin_button": "Zaloguj się",
-    "add_new_organization_button": "Dodaj nową organizację"
+    "add_new_organization_button": "Dodaj organizację",
+    "create_organization_button": "Utwórz organizację",
+
+    "create_organization_modal": {
+      "title": "Utwórz organizację",
+      "label": "Nazwa organizacji",
+      "placeholder": "Wpisz nazwę organizacji",
+      "create_button": "Utwórz"
+    }
   },
 
   "dashnav": {
-    "overview_button": "Przegląd",
+    "overview_button": "Pulpit",
     "settings_button": "Ustawienia"
   },
 
