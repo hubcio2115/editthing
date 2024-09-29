@@ -233,6 +233,7 @@ export default function ProjectView({
   const { mutate, isPending } = useEditProjectMutation(project!.id, {
     onSuccess: () => {
       refetch();
+      setIsEditing(false);
     },
   });
 
