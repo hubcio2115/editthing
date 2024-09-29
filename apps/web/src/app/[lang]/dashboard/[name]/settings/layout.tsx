@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { useTranslation } from "~/i18n/client";
+import type { SupportedLanguages } from "~/i18n/settings";
 
 import { cn } from "~/lib/utils";
 
 type SettingsProps = {
   params: {
     name: string;
+    lang: SupportedLanguages;
   };
 } & PropsWithChildren;
 
 export default function Settings({ params, children }: SettingsProps) {
   const pathname = usePathname();
+  const { t } = useTranslation(params.lang, "settings");
 
   return (
     <div className="mx-auto w-full flex-1 px-6 py-8 sm:p-12">
@@ -30,7 +34,7 @@ export default function Settings({ params, children }: SettingsProps) {
                       : "border-transparent hover:border-slate-300",
                   )}
                 >
-                  general
+                  {t("general.title")}
                 </div>
               </Link>
               <Link href={`/dashboard/${params.name}/settings/members`}>
@@ -44,7 +48,7 @@ export default function Settings({ params, children }: SettingsProps) {
                       : "border-transparent hover:border-slate-300",
                   )}
                 >
-                  members
+                  {t("members.title")}
                 </div>
               </Link>
             </div>
