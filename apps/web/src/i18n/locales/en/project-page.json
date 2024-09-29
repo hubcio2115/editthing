@@ -58,6 +58,8 @@
     },
 
     "close_button": "Close",
-    "publish_button": "Publish"
+    "publish_button": "Publish",
+    "unable_to_publish_info": "We are currently unable to allow you to publish your project. This feature is locked for unauthorized applications that use YouTube API. We're currently in a process of passing a Google audit. For now you can publish your project manually form YouTube Studio.",
+    "reopen_button": "Reopen"
   }
 }
