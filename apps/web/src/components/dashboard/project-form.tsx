@@ -64,8 +64,7 @@ export default function ProjectForm({
   const [showMore, setShowMore] = useState(false);
 
   function onSuccess(data: TProjectForm) {
-    console.log(data);
-    // mutate(data);
+    mutate(data);
   }
 
   return (

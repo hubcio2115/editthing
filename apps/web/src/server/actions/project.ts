@@ -302,25 +302,25 @@ export async function editProject(
 
   try {
     await youtubeClient.videos.update({
-      part: ["snippet", "id"],
+      part: ["snippet", "status", "id"],
       auth: oauth2Client,
       requestBody: {
         id: data.videoId,
         snippet: {
           title: data.title,
-          // description: data.description,
-          // tags: data.tags?.split(","),
+          description: data.description,
+          tags: data.tags?.split(","),
           categoryId: data.categoryId,
-          // defaultLanguage: data.defaultLanguage,
+          defaultLanguage: data.defaultLanguage,
         },
-        // status: {
-        //   license: data.license,
-        //   embeddable: data.embeddable,
-        //   privacyStatus: data.privacyStatus,
+        status: {
+          license: data.license,
+          embeddable: data.embeddable,
+          privacyStatus: data.privacyStatus,
 
-        //   publicStatsViewable: data.publicStatsViewable,
-        //   selfDeclaredMadeForKids: data.selfDeclaredMadeForKids,
-        // },
+          publicStatsViewable: data.publicStatsViewable,
+          selfDeclaredMadeForKids: data.selfDeclaredMadeForKids,
+        },
       },
     });
   } catch (e) {
