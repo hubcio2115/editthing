@@ -2,7 +2,7 @@
 
 ## What?
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a [Next.js](https://nextjs.org/) project bootstrapped with `create-t3-app`.
 
 This is a Next.js project we've been tasked to do for our University curriculum. This'll be a web app that will act as a middle man between video editor freelancers and youtubers.
 
