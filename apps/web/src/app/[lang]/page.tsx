@@ -19,6 +19,8 @@ interface HomePageProps {
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage({ params }: HomePageProps) {
   const { t } = await translation(params.lang, "home-page");
 
